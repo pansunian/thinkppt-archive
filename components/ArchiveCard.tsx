@@ -10,7 +10,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      className="group relative w-full h-[420px] mt-8 perspective-1000 cursor-pointer font-sans"
+      // Changed: Added max-w-[290px] and mx-auto to narrow the card and center it
+      className="group relative w-full max-w-[290px] mx-auto h-[420px] mt-8 perspective-1000 cursor-pointer font-sans"
     >
       
       {/* 2. Folder Back (The visual background) */}
