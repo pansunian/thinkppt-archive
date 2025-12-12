@@ -286,7 +286,7 @@ export default function App() {
                                 onError={() => setLogoError(true)}
                             />
                         ) : (
-                            <h1 className="font-black text-2xl uppercase tracking-tighter">{BRAND_CONFIG.text}.COM</h1>
+                            <h1 className="font-black text-2xl tracking-tighter">{BRAND_CONFIG.text}.COM</h1>
                         )}
                     </div>
                     <div className="flex justify-between items-end">
@@ -326,17 +326,17 @@ export default function App() {
             >
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (
                      <div className="w-8 h-20 flex items-center justify-center overflow-hidden">
-                         {/* 手机端 Logo 顺时针旋转 90 度 (rotate-90)，尺寸调整为 h-6 以适应竖向宽度 */}
+                         {/* 手机端 Logo 顺时针旋转 90 度 (rotate-90)，尺寸缩小为 h-4 并限制 max-w 以防止溢出 */}
                          <img 
                             src={BRAND_CONFIG.logoUrl} 
                             alt={BRAND_CONFIG.text} 
-                            className="h-6 w-auto max-w-none object-contain rotate-90"
+                            className="h-4 w-auto max-w-[64px] object-contain rotate-90"
                             onError={() => setLogoError(true)}
                          />
                      </div>
                  ) : (
-                    <span className="block [writing-mode:vertical-rl] font-black text-[10px] tracking-widest text-black py-2 uppercase">
-                        {BRAND_CONFIG.text.slice(0, 5)}
+                    <span className="block [writing-mode:vertical-rl] font-black text-[10px] tracking-widest text-black py-2">
+                        {BRAND_CONFIG.text}
                     </span>
                  )}
             </button>
@@ -420,7 +420,7 @@ export default function App() {
                                 onError={() => setLogoError(true)}
                             />
                         ) : (
-                            <span className="font-black text-2xl uppercase tracking-tighter text-black">
+                            <span className="font-black text-2xl tracking-tighter text-black">
                                 {BRAND_CONFIG.text}
                             </span>
                         )}
