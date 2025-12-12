@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#FDFBF7" />
+    <!-- Removed theme-color to allow transparent/glass effect in Safari -->
     <title>ThinkPPT | 深刻 PPT</title>
     
     <!-- 0. PRELOAD FONTS: Force browser to download these immediately -->
@@ -72,8 +72,8 @@
       body {
         /* Apply the "Small Font" (Text font) globally */
         font-family: 'ThinkPPT-Text', sans-serif;
-        /* Set base background to Paper Color (#FDFBF7) for Mobile Safari bounce effect */
-        background-color: #FDFBF7;
+        /* Default white background to support transparency in Safari if needed */
+        background-color: #ffffff;
         -webkit-font-smoothing: antialiased; /* Make fonts look thinner/cleaner on Mac */
         -moz-osx-font-smoothing: grayscale;
       }

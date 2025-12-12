@@ -182,7 +182,7 @@ export default function App() {
     : schemes;
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] md:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
+    <div className="min-h-screen bg-transparent md:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
       
       {/* Background Texture (The Desk) - Hidden on Mobile */}
       <div className="hidden md:block fixed inset-0 pointer-events-none opacity-40 z-0" 
