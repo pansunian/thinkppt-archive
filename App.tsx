@@ -2,23 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { ArchiveCard } from './components/ArchiveCard';
 import { Archivist } from './components/Archivist';
 import { SchemeDetail } from './components/SchemeDetail';
-import { CATEGORIES, MOCK_SCHEMES } from './constants';
+import { CATEGORIES, MOCK_SCHEMES, PALETTE } from './constants';
 import { Scheme } from './types';
 import { mapNotionResultToSchemes } from './utils/notionMapper';
 
 // --- CONFIGURATION START ---
-// 您可以在这里修改顶部导航条的链接和文字
 const NAV_LINKS = [
-  { label: '首页', href: '#' },
-  { label: 'ThinkPPT官网', href: 'https://www.thinkppt.com' }, // 示例：链接到您的主站
-  { label: '关于', href: '#' }
+  { label: 'ThinkPPT官网', href: 'https://www.thinkppt.com', color: '#FFC8DD' },
+  { label: '关于本站', href: '#', color: '#A2D2FF' }
 ];
 // --- CONFIGURATION END ---
 
 export default function App() {
   const [isSealed, setIsSealed] = useState(true);
   const [activeCategory, setActiveCategory] = useState('全部');
-  const [scrolled, setScrolled] = useState(false);
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
   
   // Data State
@@ -41,7 +38,6 @@ export default function App() {
           setLoading(true);
       }
 
-      // Append cursor query param if it exists
       const url = cursor ? `/api/schemes?cursor=${cursor}` : '/api/schemes';
       const res = await fetch(url);
       
@@ -53,9 +49,6 @@ export default function App() {
            setHasMore(false);
       } else if (!res.ok) {
            const err = await res.json();
-           console.error("API Error:", err);
-           
-           // Extract friendly error message
            let friendlyMsg = res.statusText;
            if (err.details) {
              if (typeof err.details === 'string') {
@@ -69,9 +62,7 @@ export default function App() {
                 friendlyMsg = err.details.message;
              }
            }
-           
            if (!cursor) {
-               // Only show debug msg on initial load error
                setDebugMsg(`API Error: ${friendlyMsg}`);
                setSchemes(MOCK_SCHEMES);
                setUseMock(true);
@@ -87,7 +78,6 @@ export default function App() {
                setUseMock(true);
                setHasMore(false);
            } else {
-               // Update State
                if (cursor) {
                    setSchemes(prev => [...prev, ...mappedData]);
                } else {
@@ -95,7 +85,6 @@ export default function App() {
                    setDebugMsg("");
                    setUseMock(false);
                }
-               
                setNextCursor(data.next_cursor);
                setHasMore(data.has_more);
            }
@@ -114,7 +103,6 @@ export default function App() {
     }
   };
 
-  // Initial Load
   useEffect(() => {
     fetchSchemes();
   }, []);
@@ -129,15 +117,14 @@ export default function App() {
     ? schemes 
     : schemes.filter(s => s.category === activeCategory);
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-[#FDFBF7] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden">
+    <div className="min-h-screen bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
       
+      {/* Background Texture (The Desk) */}
+      <div className="fixed inset-0 pointer-events-none opacity-40 z-0" 
+           style={{ backgroundImage: 'radial-gradient(#a39f94 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
+      </div>
+
       {/* =========================================================================
           1. Macaron Archive Bag Overlay (Loading / Sealed State)
          ========================================================================= */}
@@ -158,39 +145,21 @@ export default function App() {
         >
             {/* Top Flap */}
             <div className="absolute top-0 w-full h-32 bg-[#FFC8DD] border-b-[3px] border-black z-20 rounded-t-lg flex justify-center pt-4 shadow-sm">
-                 {/* Visual Crease */}
                  <div className="w-full h-px bg-black/5 absolute bottom-1"></div>
-                 
-                 {/* Top Button (Grommet) - Z-Index 50 to sit ON TOP of the string start */}
                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-50 flex items-center justify-center">
                     <div className="w-2 h-2 rounded-full bg-black/30"></div>
                  </div>
             </div>
 
             {/* String Mechanism */}
-            {/* Located precisely to bridge Top Button Center (y=~96px) and Bottom Button Center (y=~176px) */}
             <svg className="absolute top-[96px] left-1/2 -translate-x-1/2 w-24 h-[200px] z-40 pointer-events-none overflow-visible">
                  <defs>
                     <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
                       <feDropShadow dx="1" dy="1" stdDeviation="1.5" floodColor="#000" floodOpacity="0.4"/>
                     </filter>
                  </defs>
-                 
-                 {/* 
-                    Path Logic:
-                    1. Start at (48, 0) - Behind Top Button
-                    2. Drop down to (48, 80) - Center of Bottom Button (Diff is 80px)
-                    3. Wind around (48, 80)
-                 */}
                  <path 
-                    d="
-                      M 48,0 
-                      L 48,78
-                      C 68,78 72,105 48,105 
-                      C 24,105 28,78 48,78 
-                      C 60,78 62,95 50,110
-                      Q 40,125 52,160
-                    "
+                    d="M 48,0 L 48,78 C 68,78 72,105 48,105 C 24,105 28,78 48,78 C 60,78 62,95 50,110 Q 40,125 52,160"
                     fill="none" 
                     stroke="#FDFBF7" 
                     strokeWidth="3" 
@@ -200,18 +169,15 @@ export default function App() {
                  />
             </svg>
 
-            {/* Bottom Button (Grommet) - Z-Index 30 to sit UNDER the string winding */}
             <div className="absolute top-40 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
                  <div className="w-2 h-2 rounded-full bg-black/30"></div>
             </div>
 
-            {/* Stamp */}
             <div className="absolute top-24 right-8 z-30 w-20 h-20 bg-[#A2D2FF] border-2 border-black rounded-full flex flex-col items-center justify-center transform rotate-12 shadow-sm mix-blend-hard-light opacity-90">
                 <span className="font-black text-lg leading-none">NEW</span>
                 <span className="text-[10px] font-mono">2025</span>
             </div>
 
-            {/* Label Area */}
             <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
                 <div className="border-b-2 border-dotted border-black mb-2 pb-1">
                     <span className="font-mono text-[10px] text-gray-400">PROJECT NAME</span>
@@ -235,164 +201,186 @@ export default function App() {
 
 
       {/* =========================================================================
-          2. Folder Tab Navbar
+          2. THE FOLDER TAB NAVIGATION (Fixed Header)
          ========================================================================= */}
-      <nav 
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-out border-b-2 border-transparent ${scrolled ? 'bg-[#FDFBF7]/95 backdrop-blur-sm pt-0 shadow-sm' : 'bg-transparent pt-3'}`}
-      >
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
-            <div 
-                className={`flex items-end gap-1 relative z-10 top-[3px] overflow-x-auto w-full`}
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-                <style>{`
-                    /* Hide scrollbar for Chrome, Safari and Opera */
-                    .overflow-x-auto::-webkit-scrollbar {
-                        display: none;
-                    }
-                `}</style>
-                <div 
-                    className={`
-                        bg-black text-white 
-                        px-3 md:px-6 
-                        rounded-t-xl border-2 border-black border-b-0 flex items-center gap-2 transition-all duration-300 origin-bottom flex-shrink-0 
-                        ${scrolled ? 'h-10 md:h-12 py-1 md:py-2' : 'h-12 md:h-16 py-2 md:py-3'}
-                    `}
+      <header className="fixed top-0 left-0 right-0 z-40 px-2 md:px-8 pt-4 md:pt-6 bg-gradient-to-b from-[#e8e4da] via-[#e8e4da] to-transparent pointer-events-none">
+        <div className="max-w-7xl mx-auto relative pointer-events-auto">
+            
+            <div className="flex items-end overflow-x-auto w-full no-scrollbar relative pl-1" style={{ scrollbarWidth: 'none' }}>
+                
+                {/* 2.0 LOGO TAB (Wider, distinctive) */}
+                <button
+                    onClick={() => {
+                        setActiveCategory('全部');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[1px]"
                 >
-                    <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#FFC8DD]"></div>
-                    <span className="font-bold font-mono tracking-tighter text-xs md:text-base">THINK_PPT</span>
-                </div>
+                    <div className="w-full h-full rounded-t-xl border-t border-x border-black/10 bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
+                        <span className="font-black text-2xl uppercase tracking-tighter text-black">ThinkPPT</span>
+                    </div>
+                </button>
 
-                {NAV_LINKS.map((link, idx) => {
-                    const colors = ['bg-[#CDEAC0]', 'bg-[#A2D2FF]', 'bg-[#FFF6BD]'];
-                    const color = colors[idx % colors.length];
+                {/* 2.1 CATEGORY TABS (Macaron colored) */}
+                {CATEGORIES.map((category, idx) => {
+                    const isActive = activeCategory === category;
+                    // Cycle through palette for each tab
+                    const tabColor = PALETTE[idx % PALETTE.length];
+                    
+                    // Style Adjustments
+                    const heightClass = isActive ? 'h-14 translate-y-[1px]' : 'h-12 translate-y-[3px] hover:-translate-y-0.5';
+                    const zIndex = isActive ? 'z-40' : 'z-10 hover:z-20';
+                    // If not active, darken/desaturate slightly using filter, or just rely on z-index
+                    const opacityClass = isActive ? 'opacity-100' : 'opacity-90 hover:opacity-100';
                     
                     return (
-                        <a 
-                          href={link.href}
-                          key={link.label}
-                          // Add target="_blank" if it's an external link
-                          target={link.href.startsWith('http') ? "_blank" : "_self"}
-                          rel={link.href.startsWith('http') ? "noopener noreferrer" : ""}
-                          className={`
-                            ${color} 
-                            px-5 md:px-8 
-                            rounded-t-xl border-2 border-black border-b-0 
-                            font-bold font-mono text-xs md:text-sm 
-                            flex items-center justify-center flex-shrink-0
-                            transition-all duration-200 ease-out origin-bottom
-                            relative
-                            group
-                            ${scrolled ? 'h-9 md:h-10' : 'h-11 md:h-14'}
-                            hover:h-12 md:hover:h-16 hover:-translate-y-0.5
-                          `}
+                        <button
+                            key={category}
+                            onClick={() => {
+                                setActiveCategory(category);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className={`
+                                relative group flex-shrink-0 mr-[-8px] 
+                                px-0 transition-all duration-300 ease-out
+                                ${zIndex} ${heightClass} ${opacityClass}
+                            `}
                         >
-                            <span className="group-hover:-translate-y-1 transition-transform duration-200">{link.label}</span>
-                        </a>
-                    )
+                            {/* The Tab Shape */}
+                            <div 
+                                className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-5 md:px-6 min-w-[100px] md:min-w-[130px]`}
+                                style={{ backgroundColor: tabColor }}
+                            >
+                                {/* The "Label" inside the tab */}
+                                <span className={`font-mono text-[10px] md:text-xs font-bold uppercase tracking-wider text-black/70 group-hover:text-black transition-colors ${isActive ? 'text-black' : ''}`}>
+                                    {category}
+                                </span>
+                            </div>
+                        </button>
+                    );
                 })}
-                {/* Spacer to allow scrolling past the last item slightly */}
-                <div className="w-4 flex-shrink-0"></div>
+
+                {/* Spacer */}
+                <div className="flex-grow min-w-[20px]"></div>
+
+                {/* 2.2 UTILITY TABS (Fixed vertical text orientation) */}
+                <div className="flex items-end gap-3 pl-4">
+                    {NAV_LINKS.map((link) => (
+                         <a 
+                            key={link.label}
+                            href={link.href}
+                            target={link.href.startsWith('http') ? "_blank" : "_self"}
+                            rel="noreferrer"
+                            className="relative group h-12 w-10 md:h-14 md:w-12 rounded-t-lg border border-black/10 shadow-sm flex items-center justify-center transition-transform hover:-translate-y-2 z-0 hover:z-40 pb-2"
+                            style={{ backgroundColor: link.color }}
+                         >
+                            {/* writing-mode-vertical-rl makes text flow top-to-bottom naturally */}
+                            <span className="font-mono text-[9px] font-bold writing-mode-vertical text-black/60 group-hover:text-black tracking-widest">
+                                {link.label.slice(0, 4)}
+                            </span>
+                         </a>
+                    ))}
+                </div>
             </div>
-            
-            <div className="w-full h-3 bg-black border-2 border-black relative z-20 shadow-sm rounded-sm"></div>
         </div>
-      </nav>
+      </header>
 
 
       {/* =========================================================================
-          3. Main Content
+          3. MAIN CONTENT (The Folder Body)
          ========================================================================= */}
-      <main className="pt-36 px-4 md:px-8 max-w-7xl mx-auto min-h-screen pb-24">
+      <main className="flex-grow pt-[calc(3.5rem+12px)] md:pt-[calc(3.5rem+24px)] px-2 md:px-8 pb-12 z-20">
         
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div>
-                <span className="font-mono text-xs font-bold text-gray-400 mb-2 block">// EXPLORE COLLECTIONS</span>
-                <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tight text-gray-900">
-                    Scheme<br/>Archive.
-                </h1>
+        {/* The "Paper" Container connected to tabs */}
+        <div className="max-w-7xl mx-auto min-h-[85vh] bg-[#FDFBF7] rounded-b-lg rounded-tr-lg shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t border-black/5">
+            
+            {/* Visual Header Inside Folder */}
+            <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">
+                            // ARCHIVE_DRAWER_01 / {activeCategory}
+                        </span>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-gray-900 mb-2">
+                            {activeCategory === '全部' ? 'Master Archive' : activeCategory}
+                        </h1>
+                        <p className="font-mono text-xs text-gray-500 max-w-lg">
+                            Browsing collection: {filteredSchemes.length} files found.
+                        </p>
+                    </div>
+                    {/* Decorative Stamp */}
+                    <div className="hidden md:flex w-24 h-24 border-4 border-red-500/20 rounded-full items-center justify-center -rotate-12">
+                        <span className="text-red-500/30 font-black text-xl uppercase">Confidential</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Content Grid */}
+            <div className="px-6 md:px-12 py-12">
+                {/* Debug Banner */}
+                {useMock && (
+                    <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 border-dashed rounded-lg font-mono text-xs flex justify-between items-center text-wrap break-all">
+                        <span className="text-yellow-800">⚠️ 演示模式: {debugMsg}</span>
+                        <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="underline ml-4 whitespace-nowrap">检查配置</a>
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
+                    {filteredSchemes.map(scheme => (
+                        <ArchiveCard 
+                        key={scheme.id} 
+                        scheme={scheme} 
+                        onClick={() => setSelectedScheme(scheme)}
+                        />
+                    ))}
+                </div>
+                
+                {filteredSchemes.length === 0 && !loading && (
+                    <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50 text-center p-8">
+                        <p className="mb-2 uppercase tracking-widest">[ Empty Folder ]</p>
+                    </div>
+                )}
+
+                {/* Load More Button - Integrated Style */}
+                {!useMock && hasMore && (
+                    <div className="mt-20 flex justify-center">
+                        <button
+                            onClick={handleLoadMore}
+                            disabled={loadingMore}
+                            className="
+                                group relative overflow-hidden bg-[#e8e4da] text-black font-mono font-bold text-xs 
+                                px-8 py-3 rounded border border-black/10
+                                shadow-[2px_2px_0px_rgba(0,0,0,0.1)]
+                                hover:translate-y-0.5 hover:shadow-none
+                                disabled:opacity-50 transition-all
+                            "
+                        >
+                            {loadingMore ? 'Retrieving files...' : 'Load Additional Records +'}
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Folder Footer Flap (Visual End of Folder) */}
+            <div className="relative h-16 bg-[#FDFBF7] rounded-b-lg border-t border-black/5 mt-auto flex items-center justify-center overflow-hidden">
+                {/* Texture */}
+                <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'radial-gradient(#000 0.5px, transparent 0.5px)', backgroundSize: '4px 4px' }}></div>
+                
+                {/* Embossed Lines */}
+                <div className="absolute inset-x-0 bottom-3 h-[2px] bg-black/5 border-b border-white"></div>
+                <div className="absolute inset-x-0 bottom-6 h-[2px] bg-black/5 border-b border-white"></div>
+                
+                <span className="relative z-10 font-mono text-[10px] text-gray-400 uppercase tracking-widest">
+                    ThinkPPT Archive System © 2025
+                </span>
             </div>
             
-            <div className="flex flex-wrap gap-2 justify-end max-w-md">
-                {CATEGORIES.map((category) => (
-                    <button
-                        key={category}
-                        onClick={() => setActiveCategory(category)}
-                        className={`
-                            px-4 py-2 font-mono text-xs font-bold border-2 border-black rounded-full transition-all shadow-[2px_2px_0px_#e5e7eb]
-                            ${activeCategory === category 
-                                ? 'bg-black text-white transform -translate-y-0.5 shadow-none' 
-                                : 'bg-white text-black hover:bg-gray-50'
-                            }
-                        `}
-                    >
-                        {category}
-                    </button>
-                ))}
-            </div>
         </div>
-
-        {/* Debug Banner if using Mock Data */}
-        {useMock && (
-             <div className="mb-8 p-4 bg-yellow-100 border-2 border-black border-dashed rounded-lg font-mono text-xs flex justify-between items-center text-wrap break-all">
-                 <span className="text-yellow-800 font-bold">⚠️ 模式: {debugMsg || '未连接到 Notion 数据库'}</span>
-                 <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="underline ml-4 whitespace-nowrap">检查配置</a>
-             </div>
-        )}
-
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
-            {filteredSchemes.map(scheme => (
-                <ArchiveCard 
-                  key={scheme.id} 
-                  scheme={scheme} 
-                  onClick={() => setSelectedScheme(scheme)}
-                />
-            ))}
-        </div>
-        
-        {filteredSchemes.length === 0 && !loading && (
-             <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 text-center p-8">
-                 <p className="mb-2">[ NO FOLDERS FOUND ]</p>
-             </div>
-        )}
-
-        {/* Load More Button */}
-        {!useMock && hasMore && (
-            <div className="mt-20 flex justify-center">
-                <button
-                    onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    className="
-                        group relative overflow-hidden bg-white text-black font-mono font-bold text-sm 
-                        px-12 py-4 border-2 border-black rounded-full 
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
-                        hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] 
-                        active:translate-y-1 active:shadow-none
-                        disabled:opacity-50 disabled:cursor-wait
-                        transition-all duration-150
-                    "
-                >
-                    {loadingMore ? (
-                        <span className="flex items-center gap-2">
-                            <span className="w-2 h-2 bg-black rounded-full animate-bounce"></span>
-                            LOADING ARCHIVE...
-                        </span>
-                    ) : (
-                        <span className="flex items-center gap-2 uppercase">
-                            Load More Schemes
-                            <svg className="w-4 h-4 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </span>
-                    )}
-                </button>
-            </div>
-        )}
-
       </main>
 
       <Archivist />
       
-      {/* Detail Modal Overlay */}
+      {/* Detail Modal */}
       {selectedScheme && (
         <SchemeDetail 
           scheme={selectedScheme} 
@@ -400,10 +388,6 @@ export default function App() {
         />
       )}
 
-      {/* Footer Decoration */}
-      <footer className="border-t-2 border-black bg-white py-12 text-center font-mono text-xs text-gray-400">
-        THINKPPT ARCHIVE © 2025 // DESIGNED WITH MACARON_OS
-      </footer>
     </div>
   );
 }
