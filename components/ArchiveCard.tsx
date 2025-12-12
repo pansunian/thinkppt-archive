@@ -10,9 +10,9 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      // Mobile: w-[88%] max-w-[360px] h-[450px]
+      // Mobile: w-[94%] max-w-[380px] h-[450px] (Widened from 88%/360px)
       // Desktop: md:w-full md:max-w-[290px] md:h-[400px]
-      className="group relative w-[88%] max-w-[360px] md:w-full md:max-w-[290px] mx-auto h-[450px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none"
+      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[290px] mx-auto h-[450px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none"
     >
       
       {/* 2. Folder Back (The visual background) */}
