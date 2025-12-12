@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArchiveCard } from './components/ArchiveCard';
 import { Archivist } from './components/Archivist';
 import { SchemeDetail } from './components/SchemeDetail';
-import { CATEGORIES, MOCK_SCHEMES, PALETTE } from './constants';
+import { CATEGORIES as DEFAULT_CATEGORIES, MOCK_SCHEMES, PALETTE } from './constants';
 import { Scheme } from './types';
 import { mapNotionResultToSchemes } from './utils/notionMapper';
 
@@ -33,7 +33,11 @@ const SkeletonCard = () => (
 
 export default function App() {
   const [isSealed, setIsSealed] = useState(true);
+  
+  // Navigation State
   const [activeCategory, setActiveCategory] = useState('全部');
+  const [categories, setCategories] = useState<string[]>(['全部']); // Start with default, will populate from API
+  
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
   
   // Data State
@@ -48,21 +52,35 @@ export default function App() {
   const [loadingMore, setLoadingMore] = useState(false);
 
   // Fetch Data Function
-  const fetchSchemes = async (cursor: string | null = null) => {
+  // Added optional 'categoryOverride' to support fetching a specific category before state updates
+  const fetchSchemes = async (cursor: string | null = null, categoryOverride?: string) => {
     try {
+      const currentCategory = categoryOverride !== undefined ? categoryOverride : activeCategory;
+
       if (cursor) {
           setLoadingMore(true);
       } else {
           setLoading(true);
       }
 
-      const url = cursor ? `/api/schemes?cursor=${cursor}` : '/api/schemes';
+      // Construct URL with category parameter
+      let url = cursor 
+        ? `/api/schemes?cursor=${cursor}` 
+        : `/api/schemes`;
+      
+      // Append category to URL query
+      if (currentCategory && currentCategory !== '全部') {
+        const separator = url.includes('?') ? '&' : '?';
+        url += `${separator}category=${encodeURIComponent(currentCategory)}`;
+      }
+
       const res = await fetch(url);
       
       if (res.status === 401) {
            console.warn("Notion API Key missing.");
            setDebugMsg("请在 Vercel 环境变量中配置 NOTION_API_KEY");
            setSchemes(MOCK_SCHEMES);
+           setCategories(DEFAULT_CATEGORIES); // Fallback to hardcoded categories
            setUseMock(true);
            setHasMore(false);
       } else if (!res.ok) {
@@ -83,17 +101,26 @@ export default function App() {
            if (!cursor) {
                setDebugMsg(`API Error: ${friendlyMsg}`);
                setSchemes(MOCK_SCHEMES);
+               setCategories(DEFAULT_CATEGORIES);
                setUseMock(true);
                setHasMore(false);
            }
       } else {
            const data = await res.json();
            const mappedData = mapNotionResultToSchemes(data);
+            
+           // Update dynamic categories from API if available
+           if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
+              setCategories(data.categories);
+           }
 
            if (!cursor && mappedData.length === 0) {
-               setDebugMsg("连接成功，但数据库为空");
-               setSchemes(MOCK_SCHEMES);
-               setUseMock(true);
+               if (!useMock) {
+                  // Valid response but empty database
+                  setSchemes([]); 
+               } else {
+                   setSchemes(MOCK_SCHEMES);
+               }
                setHasMore(false);
            } else {
                if (cursor) {
@@ -112,6 +139,7 @@ export default function App() {
       if (!cursor) {
         setDebugMsg("网络请求失败");
         setSchemes(MOCK_SCHEMES); 
+        setCategories(DEFAULT_CATEGORIES);
         setUseMock(true);
         setHasMore(false);
       }
@@ -123,7 +151,8 @@ export default function App() {
 
   useEffect(() => {
     fetchSchemes();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   const handleLoadMore = () => {
     if (nextCursor && !loadingMore) {
@@ -131,9 +160,26 @@ export default function App() {
     }
   };
 
-  const filteredSchemes = activeCategory === '全部' 
-    ? schemes 
-    : schemes.filter(s => s.category === activeCategory);
+  const handleCategoryChange = (category: string) => {
+      if (activeCategory === category) return;
+      
+      setActiveCategory(category);
+      setSchemes([]); // Clear current list immediately
+      setNextCursor(null);
+      setHasMore(false);
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Trigger fetch with new category
+      fetchSchemes(null, category);
+  };
+
+  // If using Mock data, we filter client-side. 
+  // If using real API, 'schemes' already contains filtered data from server.
+  const displayedSchemes = useMock 
+    ? (activeCategory === '全部' ? schemes : schemes.filter(s => s.category === activeCategory))
+    : schemes;
 
   return (
     <div className="min-h-screen bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
@@ -154,7 +200,6 @@ export default function App() {
         }}
       >
         <div 
-            // PERF OPTIMIZATION: Removed "!loading" check so user can enter immediately
             onClick={() => setIsSealed(false)}
             className={`
                 relative w-[340px] h-[480px] bg-[#FFDAC1] border-[3px] border-black rounded-xl shadow-[12px_12px_0px_0px_#d1d5db] 
@@ -222,55 +267,36 @@ export default function App() {
       {/* =========================================================================
           2. THE FOLDER TAB NAVIGATION
          ========================================================================= */}
-      {/* 
-         UPDATES:
-         1. Removed "fixed top-0 left-0 right-0" -> Changed to "relative w-full" to scroll with page.
-         2. Removed "bg-gradient-to-b" to allow body texture to show through, removed "pointer-events-none".
-      */}
       <header className="relative w-full z-40 px-2 md:px-8 pt-4 md:pt-6 pointer-events-auto">
         <div className="max-w-7xl mx-auto relative pointer-events-auto">
             
-            {/* ALIGNMENT FIX: Removed `pl-1` to align perfectly with content below which uses `max-w-7xl mx-auto px-2 md:px-8` */}
             <div className="flex items-end overflow-x-auto w-full no-scrollbar relative" style={{ scrollbarWidth: 'none' }}>
                 
-                {/* 2.0 LOGO TAB (Wider, distinctive) */}
+                {/* 2.0 LOGO TAB */}
                 <button
-                    onClick={() => {
-                        setActiveCategory('全部');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    // GAP FIX: increased translate-y to 3px to push it down onto the border
+                    onClick={() => handleCategoryChange('全部')}
                     className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[3px]"
                 >
-                    {/* UPDATE: Removed "border-t border-x border-black/10" */}
                     <div className="w-full h-full rounded-t-xl bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
                         <span className="font-black text-2xl uppercase tracking-tighter text-black">ThinkPPT</span>
                     </div>
                 </button>
 
-                {/* 2.1 CATEGORY TABS (Macaron colored) */}
-                {CATEGORIES.map((category, idx) => {
+                {/* 2.1 DYNAMIC CATEGORY TABS (API Driven) */}
+                {categories.map((category, idx) => {
                     const isActive = activeCategory === category;
                     const tabColor = PALETTE[idx % PALETTE.length];
                     
-                    // GAP FIX: 
-                    // 1. Active tab: translate-y-[3px] ensures it sits ON the border.
-                    // 2. Inactive tab: translate-y-[6px] pushes it deeper behind. 
-                    // 3. Hover: hover:-translate-y-0.5 lifts it but NOT enough to create a gap (starts from 6px down, moves up to ~3px down).
-                    
                     const heightClass = isActive 
                         ? 'h-14 translate-y-[3px] z-40' 
-                        : 'h-14 translate-y-[6px] hover:translate-y-[2px] z-10 hover:z-20'; // Adjusted hover math
+                        : 'h-14 translate-y-[6px] hover:translate-y-[2px] z-10 hover:z-20'; 
                     
                     const opacityClass = isActive ? 'opacity-100' : 'opacity-90 hover:opacity-100';
                     
                     return (
                         <button
                             key={category}
-                            onClick={() => {
-                                setActiveCategory(category);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
+                            onClick={() => handleCategoryChange(category)}
                             className={`
                                 relative group flex-shrink-0 mr-[-8px] 
                                 px-0 transition-all duration-200 ease-out
@@ -294,8 +320,7 @@ export default function App() {
                 {/* Spacer */}
                 <div className="flex-grow min-w-[20px]"></div>
 
-                {/* 2.2 UTILITY TABS (Fixed vertical text orientation) */}
-                {/* UPDATE: Added -translate-x-[5px] to move left */}
+                {/* 2.2 UTILITY TABS */}
                 <div className="flex items-end gap-3 pl-4 -translate-x-[5px]">
                     {NAV_LINKS.map((link) => (
                          <a 
@@ -303,11 +328,9 @@ export default function App() {
                             href={link.href}
                             target={link.href.startsWith('http') ? "_blank" : "_self"}
                             rel="noreferrer"
-                            // UPDATE: Reduced height from h-12/h-14 to h-10/h-12
                             className="relative group h-10 w-10 md:h-12 md:w-12 rounded-t-lg border border-black/10 shadow-sm flex items-center justify-center transition-transform hover:-translate-y-2 z-0 hover:z-40 pb-2"
                             style={{ backgroundColor: link.color }}
                          >
-                            {/* writing-mode-vertical-rl makes text flow top-to-bottom naturally */}
                             <span className="font-mono text-[9px] font-bold writing-mode-vertical text-black/60 group-hover:text-black tracking-widest">
                                 {link.label.slice(0, 4)}
                             </span>
@@ -322,7 +345,6 @@ export default function App() {
       {/* =========================================================================
           3. MAIN CONTENT (The Folder Body)
          ========================================================================= */}
-      {/* UPDATE: Removed "pt-[calc...]" as header is no longer fixed */}
       <main className="flex-grow px-2 md:px-8 pb-12 z-20">
         
         {/* The "Paper" Container connected to tabs */}
@@ -339,7 +361,7 @@ export default function App() {
                             {activeCategory === '全部' ? 'Master Archive' : activeCategory}
                         </h1>
                         <p className="font-mono text-xs text-gray-500 max-w-lg">
-                            {loading ? '正在检索文件...' : `已检索到 ${filteredSchemes.length} 个档案.`}
+                            {loading ? '正在检索文件...' : `已检索到 ${displayedSchemes.length} 个档案.`}
                         </p>
                     </div>
                     {/* Decorative Stamp */}
@@ -365,7 +387,7 @@ export default function App() {
                         // Show Skeletons when loading
                         Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
                     ) : (
-                        filteredSchemes.map(scheme => (
+                        displayedSchemes.map(scheme => (
                             <ArchiveCard 
                             key={scheme.id} 
                             scheme={scheme} 
@@ -375,9 +397,10 @@ export default function App() {
                     )}
                 </div>
                 
-                {!loading && filteredSchemes.length === 0 && (
+                {!loading && displayedSchemes.length === 0 && (
                     <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50 text-center p-8">
                         <p className="mb-2 uppercase tracking-widest">[ 空文件夹 ]</p>
+                        <p className="text-xs">该分类下暂无已归档方案</p>
                     </div>
                 )}
 

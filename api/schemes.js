@@ -1,7 +1,7 @@
 export default async function handler(request, response) {
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
   const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
-  const { cursor } = request.query; // Get cursor from frontend
+  const { cursor, category } = request.query; 
 
   // 1. Check Credentials
   if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
@@ -11,19 +11,77 @@ export default async function handler(request, response) {
   }
 
   try {
-    // 2. Fetch Database Pages (Paginated)
-    // We fetch 50 items as requested.
+    const headers = {
+      'Authorization': `Bearer ${NOTION_API_KEY}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
+    };
+
+    // 2. Fetch Database Metadata to get Category Options
+    // We do this to ensure tabs match Notion's configuration exactly
+    let categoryOptions = [];
+    let categoryPropName = '';
+
+    try {
+        const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${NOTION_API_KEY}`,
+                'Notion-Version': '2022-06-28',
+            }
+        });
+        if (dbRes.ok) {
+            const dbData = await dbRes.json();
+            const properties = dbData.properties || {};
+            
+            // Try to find the Category property (checking common names)
+            const candidateNames = ['Category', 'Class', 'Type', '分类', '类别'];
+            
+            // First pass: look for exact name match in candidates
+            for (const key in properties) {
+                if (properties[key].type === 'select' && candidateNames.includes(key)) {
+                    categoryPropName = key;
+                    categoryOptions = properties[key].select.options.map(o => o.name);
+                    break;
+                }
+            }
+
+            // Second pass: if not found, look for partial match
+            if (!categoryPropName) {
+                for (const key in properties) {
+                    if (properties[key].type === 'select' && candidateNames.some(n => key.includes(n))) {
+                        categoryPropName = key;
+                        categoryOptions = properties[key].select.options.map(o => o.name);
+                        break;
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("Failed to fetch database metadata for categories", e);
+    }
+
+    // 3. Prepare Query Body with Filter
+    const queryBody = {
+      page_size: 50, // Load 50 items per page
+      start_cursor: cursor || undefined,
+    };
+
+    // Apply Filter if category is selected and valid property found
+    if (category && category !== '全部' && categoryPropName) {
+        queryBody.filter = {
+            property: categoryPropName,
+            select: {
+                equals: category
+            }
+        };
+    }
+
+    // 4. Fetch Database Pages
     const notionRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${NOTION_API_KEY}`,
-        'Notion-Version': '2022-06-28',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        page_size: 50, // Load 50 items per page
-        start_cursor: cursor || undefined, // Use cursor if provided
-      }),
+      headers: headers,
+      body: JSON.stringify(queryBody),
     });
 
     if (!notionRes.ok) {
@@ -38,11 +96,9 @@ export default async function handler(request, response) {
     const data = await notionRes.json();
     const rawPages = data.results;
     
-    // 3. ENRICHMENT STEP: Fetch first content block for each page to find an image
-    // Using Promise.all for the batch of 50
+    // 5. ENRICHMENT STEP: Fetch first content block for each page to find an image
     const enrichedResults = await Promise.all(rawPages.map(async (page) => {
         try {
-            // We fetch the first 5 blocks to look for an image
             const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=5`, {
                 method: 'GET',
                 headers: {
@@ -53,30 +109,28 @@ export default async function handler(request, response) {
 
             if (blocksRes.ok) {
                 const blocksData = await blocksRes.json();
-                // Find the first block that is of type 'image'
                 const imageBlock = blocksData.results.find(b => b.type === 'image');
                 
                 if (imageBlock) {
                     const imageUrl = imageBlock.image.type === 'file' 
                         ? imageBlock.image.file.url 
                         : imageBlock.image.external.url;
-                    
-                    // Inject this new property into the page object
                     return { ...page, first_content_image: imageUrl };
                 }
             }
         } catch (error) {
             console.error(`Failed to fetch blocks for page ${page.id}`, error);
         }
-        
         return page; 
     }));
     
-    // 4. Return results with pagination info
+    // 6. Return results + Dynamic Categories
     return response.status(200).json({ 
         results: enrichedResults,
         next_cursor: data.next_cursor,
-        has_more: data.has_more
+        has_more: data.has_more,
+        // Always include '全部' at the start
+        categories: ['全部', ...categoryOptions]
     });
 
   } catch (error) {
