@@ -8,8 +8,8 @@ import { mapNotionResultToSchemes } from './utils/notionMapper';
 
 // --- CONFIGURATION START ---
 const NAV_LINKS = [
-  { label: 'ThinkPPT官网', href: 'https://www.thinkppt.com', color: '#FFC8DD' },
-  { label: '关于本站', href: '#', color: '#A2D2FF' }
+  { label: '官网', href: 'https://www.thinkppt.com', color: '#FFC8DD' },
+  { label: '关于', href: '#', color: '#A2D2FF' }
 ];
 // --- CONFIGURATION END ---
 
@@ -272,24 +272,25 @@ export default function App() {
             
             <div className="flex items-end overflow-x-auto w-full no-scrollbar relative" style={{ scrollbarWidth: 'none' }}>
                 
-                {/* 2.0 LOGO TAB */}
+                {/* 2.0 LOGO TAB - Large & Anchored */}
                 <button
                     onClick={() => handleCategoryChange('全部')}
-                    className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[3px]"
+                    className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[4px]"
                 >
                     <div className="w-full h-full rounded-t-xl bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
                         <span className="font-black text-2xl uppercase tracking-tighter text-black">ThinkPPT</span>
                     </div>
                 </button>
 
-                {/* 2.1 DYNAMIC CATEGORY TABS (API Driven) */}
+                {/* 2.1 DYNAMIC CATEGORY TABS (API Driven) - Smaller Size */}
                 {categories.map((category, idx) => {
                     const isActive = activeCategory === category;
                     const tabColor = PALETTE[idx % PALETTE.length];
                     
+                    // Logic: Smaller height (h-11 vs h-14), Deep overlap translate (4px/8px) to prevent gaps
                     const heightClass = isActive 
-                        ? 'h-14 translate-y-[3px] z-40' 
-                        : 'h-14 translate-y-[6px] hover:translate-y-[2px] z-10 hover:z-20'; 
+                        ? 'h-11 translate-y-[4px] z-40' 
+                        : 'h-11 translate-y-[8px] hover:translate-y-[4px] z-10 hover:z-20'; 
                     
                     const opacityClass = isActive ? 'opacity-100' : 'opacity-90 hover:opacity-100';
                     
@@ -303,9 +304,9 @@ export default function App() {
                                 ${heightClass} ${opacityClass}
                             `}
                         >
-                            {/* The Tab Shape */}
+                            {/* The Tab Shape - Smaller Width */}
                             <div 
-                                className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-5 md:px-6 min-w-[100px] md:min-w-[130px] pt-1`}
+                                className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-4 md:px-5 min-w-[90px] md:min-w-[100px] pt-1`}
                                 style={{ backgroundColor: tabColor }}
                             >
                                 {/* The "Label" inside the tab */}
@@ -320,7 +321,7 @@ export default function App() {
                 {/* Spacer */}
                 <div className="flex-grow min-w-[20px]"></div>
 
-                {/* 2.2 UTILITY TABS */}
+                {/* 2.2 UTILITY TABS - Wider but narrower than category, Shorter height, No gaps */}
                 <div className="flex items-end gap-3 pl-4 -translate-x-[5px]">
                     {NAV_LINKS.map((link) => (
                          <a 
@@ -328,11 +329,18 @@ export default function App() {
                             href={link.href}
                             target={link.href.startsWith('http') ? "_blank" : "_self"}
                             rel="noreferrer"
-                            className="relative group h-10 w-10 md:h-12 md:w-12 rounded-t-lg border border-black/10 shadow-sm flex items-center justify-center transition-transform hover:-translate-y-2 z-0 hover:z-40 pb-2"
+                            className="
+                                relative group 
+                                h-8 w-16 md:h-9 md:w-[70px] 
+                                rounded-t-lg border border-black/10 shadow-sm 
+                                flex items-center justify-center 
+                                transition-transform translate-y-[8px] hover:translate-y-[4px] 
+                                z-0 hover:z-40 pt-1
+                            "
                             style={{ backgroundColor: link.color }}
                          >
-                            <span className="font-mono text-[9px] font-bold writing-mode-vertical text-black/60 group-hover:text-black tracking-widest">
-                                {link.label.slice(0, 4)}
+                            <span className="font-mono text-[8px] font-bold text-black/60 group-hover:text-black tracking-tight whitespace-nowrap">
+                                {link.label}
                             </span>
                          </a>
                     ))}
