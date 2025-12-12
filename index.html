@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#e8e4da" />
+    <meta name="theme-color" content="#FDFBF7" />
     <title>ThinkPPT | 深刻 PPT</title>
     
     <!-- 0. PRELOAD FONTS: Force browser to download these immediately -->
@@ -72,12 +72,17 @@
       body {
         /* Apply the "Small Font" (Text font) globally */
         font-family: 'ThinkPPT-Text', sans-serif;
-        background-color: #e8e4da;
-        /* Dot grid pattern matching the app theme */
-        background-image: radial-gradient(#a39f94 1px, transparent 1px);
-        background-size: 20px 20px;
+        /* Set base background to Paper Color (#FDFBF7) for Mobile Safari bounce effect */
+        background-color: #FDFBF7;
         -webkit-font-smoothing: antialiased; /* Make fonts look thinner/cleaner on Mac */
         -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* On Desktop, revert body background to Desk Color (#e8e4da) just in case */
+      @media (min-width: 768px) {
+        body {
+            background-color: #e8e4da;
+        }
       }
 
       /* Apply the "Title Font" to all Headings globally as a fallback */

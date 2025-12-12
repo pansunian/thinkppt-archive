@@ -182,10 +182,10 @@ export default function App() {
     : schemes;
 
   return (
-    <div className="min-h-screen bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
+    <div className="min-h-screen bg-[#FDFBF7] md:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
       
-      {/* Background Texture (The Desk) */}
-      <div className="fixed inset-0 pointer-events-none opacity-40 z-0" 
+      {/* Background Texture (The Desk) - Hidden on Mobile */}
+      <div className="hidden md:block fixed inset-0 pointer-events-none opacity-40 z-0" 
            style={{ backgroundImage: 'radial-gradient(#a39f94 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
       </div>
 
@@ -267,9 +267,9 @@ export default function App() {
       {/* =========================================================================
           2.0 MOBILE SIDEBAR NAVIGATION (Vertical Tabs)
           Visible only on mobile/tablet (hidden md)
-          UPDATED: Aligned to top, added top padding, changed to justify-start
+          UPDATED: Aligned to top, padding removed (pt-0)
          ========================================================================= */}
-      <nav className="md:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-none pb-4 pt-4 w-12">
+      <nav className="md:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-none pb-4 pt-0 w-12">
         <div className="flex flex-col gap-1 pointer-events-auto items-start">
             
             {/* LOGO TAB (Home/All) - Distinct & Larger */}
