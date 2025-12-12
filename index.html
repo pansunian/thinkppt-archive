@@ -30,20 +30,40 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-      /* 1. Define Custom Title Font */
+      /* --- FONT DEFINITIONS --- */
+      /* Note: We map the SAME file to both 400 (Normal) and 700 (Bold) 
+         to ensure Desktop browsers use it even when 'font-bold' is applied. */
+
+      /* 1. Title Font - Normal */
       @font-face {
         font-family: 'ThinkPPT-Title';
         src: url('https://panzhiming-notion.oss-cn-shanghai.aliyuncs.com/title.woff') format('woff');
-        font-weight: normal;
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      /* 1. Title Font - Force Bold Mapping */
+      @font-face {
+        font-family: 'ThinkPPT-Title';
+        src: url('https://panzhiming-notion.oss-cn-shanghai.aliyuncs.com/title.woff') format('woff');
+        font-weight: 700;
         font-style: normal;
         font-display: swap;
       }
 
-      /* 2. Define Custom Body/Small Font */
+      /* 2. Text Font - Normal */
       @font-face {
         font-family: 'ThinkPPT-Text';
         src: url('https://panzhiming-notion.oss-cn-shanghai.aliyuncs.com/text.woff2') format('woff2');
-        font-weight: normal;
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      /* 2. Text Font - Force Bold Mapping */
+      @font-face {
+        font-family: 'ThinkPPT-Text';
+        src: url('https://panzhiming-notion.oss-cn-shanghai.aliyuncs.com/text.woff2') format('woff2');
+        font-weight: 700;
         font-style: normal;
         font-display: swap;
       }
@@ -55,6 +75,8 @@
         /* Dot grid pattern */
         background-image: radial-gradient(#ccc 1px, transparent 1px);
         background-size: 20px 20px;
+        -webkit-font-smoothing: antialiased; /* Make fonts look thinner/cleaner on Mac */
+        -moz-osx-font-smoothing: grayscale;
       }
 
       /* Apply the "Title Font" to all Headings globally as a fallback */
@@ -100,5 +122,17 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
+    
+    <!-- Debug Script for CORS: Check console if fonts fail -->
+    <script>
+      document.fonts.ready.then(function () {
+        console.log('Fonts loaded state:', document.fonts.status);
+        const fontCheck = new FontFace('CheckTest', 'url(https://panzhiming-notion.oss-cn-shanghai.aliyuncs.com/title.woff)');
+        fontCheck.load().catch(e => {
+            console.error('Font Load Error (Likely CORS):', e);
+            console.log('%c Please enable CORS in Aliyun OSS Console!', 'background: red; color: white; font-size: 16px; padding: 4px;');
+        });
+      });
+    </script>
   </body>
 </html>

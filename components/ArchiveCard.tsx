@@ -73,7 +73,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 
       {/* 3. Folder Front Pocket (Low profile with Texture and Lines) */}
       <div 
-        className="absolute bottom-0 left-0 right-0 h-[110px] rounded-b-xl z-20 pointer-events-none flex flex-col justify-start p-5 border-t border-white/40 shadow-[0_-2px_4px_rgba(0,0,0,0.02)] overflow-hidden"
+        className="absolute bottom-0 left-0 right-0 h-[110px] rounded-b-xl rounded-t-2xl z-20 pointer-events-none flex flex-col justify-start p-5 border-t border-white/40 shadow-[0_-2px_4px_rgba(0,0,0,0.02)] overflow-hidden"
         style={{ backgroundColor: scheme.color }}
       >
          {/* Texture Overlay: Subtle grain/noise for cardstock feel */}
