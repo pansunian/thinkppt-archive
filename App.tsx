@@ -168,8 +168,7 @@ export default function App() {
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
             {/* 
-                Update: Added overflow-x-auto, no-scrollbar, and mask-linear-fade to allow horizontal scrolling on mobile.
-                Added style={{ scrollbarWidth: 'none' }} to hide Firefox scrollbar. 
+                Update: Optimized for mobile. Smaller font size, reduced padding, compact height.
             */}
             <div 
                 className={`flex items-end gap-1 relative z-10 top-[3px] overflow-x-auto w-full`}
@@ -182,10 +181,15 @@ export default function App() {
                     }
                 `}</style>
                 <div 
-                    className={`bg-black text-white px-6 rounded-t-xl border-2 border-black border-b-0 flex items-center gap-2 transition-all duration-300 origin-bottom flex-shrink-0 ${scrolled ? 'h-12 py-2' : 'h-16 py-3'}`}
+                    className={`
+                        bg-black text-white 
+                        px-3 md:px-6 
+                        rounded-t-xl border-2 border-black border-b-0 flex items-center gap-2 transition-all duration-300 origin-bottom flex-shrink-0 
+                        ${scrolled ? 'h-10 md:h-12 py-1 md:py-2' : 'h-12 md:h-16 py-2 md:py-3'}
+                    `}
                 >
-                    <div className="w-4 h-4 rounded-full bg-[#FFC8DD]"></div>
-                    <span className="font-bold font-mono tracking-tighter">THINK_PPT</span>
+                    <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#FFC8DD]"></div>
+                    <span className="font-bold font-mono tracking-tighter text-xs md:text-base">THINK_PPT</span>
                 </div>
 
                 {NAV_LINKS.map((link, idx) => {
@@ -201,13 +205,15 @@ export default function App() {
                           rel={link.href.startsWith('http') ? "noopener noreferrer" : ""}
                           className={`
                             ${color} 
-                            px-8 rounded-t-xl border-2 border-black border-b-0 font-bold font-mono text-sm 
+                            px-5 md:px-8 
+                            rounded-t-xl border-2 border-black border-b-0 
+                            font-bold font-mono text-xs md:text-sm 
                             flex items-center justify-center flex-shrink-0
                             transition-all duration-200 ease-out origin-bottom
                             relative
                             group
-                            ${scrolled ? 'h-10' : 'h-14'}
-                            hover:h-16 hover:-translate-y-0.5
+                            ${scrolled ? 'h-9 md:h-10' : 'h-11 md:h-14'}
+                            hover:h-12 md:hover:h-16 hover:-translate-y-0.5
                           `}
                         >
                             <span className="group-hover:-translate-y-1 transition-transform duration-200">{link.label}</span>

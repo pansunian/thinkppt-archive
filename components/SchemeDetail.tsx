@@ -223,7 +223,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-12 space-y-4">
                             <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
-                            <span className="font-mono text-xs text-gray-400 animate-pulse">RETRIEVING ARCHIVE CONTENT...</span>
+                            <span className="font-mono text-xs text-gray-400 animate-pulse">正在获取档案内容...</span>
                         </div>
                     ) : content.length > 0 ? (
                         <div className="max-w-3xl mx-auto">
@@ -233,15 +233,15 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                         </div>
                     ) : (
                         <div className="text-center py-12 text-gray-400 font-mono text-xs">
-                            [ NO ADDITIONAL CONTENT FOUND IN FILE ]
+                            [ 该方案暂无详细内容 ]
                         </div>
                     )}
 
                     {/* Download Action */}
                     <section className="pt-4 pb-8 border-t border-dashed border-gray-200 mt-12">
                         <div className="flex flex-col items-center justify-center text-center mb-6">
-                            <h3 className="font-black text-2xl uppercase mb-2">Ready to use?</h3>
-                            <p className="text-gray-500 text-sm max-w-md">Get full access to the source file and presentation structure.</p>
+                            <h3 className="font-black text-2xl uppercase mb-2">立即使用</h3>
+                            <p className="text-gray-500 text-sm max-w-md">获取完整源文件及演示结构。</p>
                         </div>
                         {scheme.downloadUrl ? (
                             <a 
@@ -252,13 +252,13 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                             >
                                 <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
                                 <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
-                                    <span>Download Source File</span>
+                                    <span>下载源文件</span>
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                 </div>
                             </a>
                         ) : (
                             <button disabled className="w-full max-w-md mx-auto block py-4 bg-gray-100 text-gray-400 font-bold text-sm uppercase tracking-widest cursor-not-allowed rounded-lg border border-gray-200">
-                                No Download Available
+                                暂无下载资源
                             </button>
                         )}
                     </section>

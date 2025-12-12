@@ -10,10 +10,10 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      // Changed: 
-      // Mobile: w-[88%] max-w-[360px] h-[480px] (Wider and taller)
-      // Desktop: md:w-full md:max-w-[290px] md:h-[420px] (Original size)
-      className="group relative w-[88%] max-w-[360px] md:w-full md:max-w-[290px] mx-auto h-[480px] md:h-[420px] mt-8 perspective-1000 cursor-pointer font-sans"
+      // Mobile: w-[88%] max-w-[360px] h-[450px]
+      // Desktop: md:w-full md:max-w-[290px] md:h-[400px]
+      // Adjusted heights to accommodate the shorter 16:9 image while keeping text space
+      className="group relative w-[88%] max-w-[360px] md:w-full md:max-w-[290px] mx-auto h-[450px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans"
     >
       
       {/* 2. Folder Back (The visual background) */}
@@ -35,8 +35,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       {/* 1. The Paper Content (Main Card) */}
       <div className="absolute left-3 right-3 top-8 bottom-3 bg-white rounded-lg z-10 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-20 group-hover:shadow-xl group-hover:rotate-1 flex flex-col overflow-hidden border border-gray-200">
          
-         {/* Image Area */}
-         <div className="h-64 md:h-60 w-full relative overflow-hidden bg-gray-100 shrink-0 border-b border-gray-100">
+         {/* Image Area - Changed to 16:9 Aspect Ratio */}
+         <div className="w-full aspect-video relative overflow-hidden bg-gray-100 shrink-0 border-b border-gray-100">
             <img 
                 src={scheme.imageUrl} 
                 alt={scheme.title}
@@ -66,7 +66,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                     ))}
                  </div>
                  <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest group-hover:text-black transition-colors">
-                    View Details →
+                    查看详情 →
                  </span>
             </div>
          </div>
