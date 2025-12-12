@@ -393,7 +393,7 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
                     {loading && !useMock ? (
                         // Show Skeletons when loading
-                        Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
+                        Array(48).fill(0).map((_, i) => <SkeletonCard key={i} />)
                     ) : (
                         displayedSchemes.map(scheme => (
                             <ArchiveCard 

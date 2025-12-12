@@ -63,7 +63,7 @@ export default async function handler(request, response) {
 
     // 3. Prepare Query Body with Filter
     const queryBody = {
-      page_size: 50, // Load 50 items per page
+      page_size: 48, // Load 48 items per page as requested
       start_cursor: cursor || undefined,
     };
 

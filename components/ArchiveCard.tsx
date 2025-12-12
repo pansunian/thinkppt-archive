@@ -32,10 +32,10 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       </div>
 
       {/* 1. The Paper Content (Main Card) */}
-      <div className="absolute left-3 right-3 top-8 bottom-3 bg-white rounded-lg z-10 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-20 group-hover:shadow-xl group-hover:rotate-1 flex flex-col overflow-hidden border border-gray-200">
+      <div className="absolute left-3 right-3 top-8 bottom-3 bg-white rounded-lg z-10 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-20 group-hover:shadow-xl group-hover:rotate-1 flex flex-col overflow-hidden">
          
          {/* Image Area - 16:9 Aspect Ratio */}
-         <div className="w-full aspect-video relative overflow-hidden bg-gray-100 shrink-0 border-b border-gray-100">
+         <div className="w-full aspect-video relative overflow-hidden bg-gray-100 shrink-0">
             <img 
                 src={scheme.imageUrl} 
                 alt={scheme.title}
