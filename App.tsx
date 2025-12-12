@@ -33,6 +33,7 @@ const SkeletonCard = () => (
 
 export default function App() {
   const [isSealed, setIsSealed] = useState(true);
+  const [showOverlay, setShowOverlay] = useState(true);
   
   // Navigation State
   const [activeCategory, setActiveCategory] = useState('全部');
@@ -50,6 +51,16 @@ export default function App() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  // Remove Overlay from DOM after transition
+  useEffect(() => {
+    if (!isSealed) {
+        const timer = setTimeout(() => {
+            setShowOverlay(false);
+        }, 1200); // Wait for transition duration + buffer
+        return () => clearTimeout(timer);
+    }
+  }, [isSealed]);
 
   // Fetch Data Function
   // Added optional 'categoryOverride' to support fetching a specific category before state updates
@@ -182,7 +193,7 @@ export default function App() {
     : schemes;
 
   return (
-    <div className="min-h-screen bg-transparent md:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
+    <div className="min-h-[100dvh] bg-transparent md:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
       
       {/* Background Texture (The Desk) - Hidden on Mobile */}
       <div className="hidden md:block fixed inset-0 pointer-events-none opacity-40 z-0" 
@@ -192,77 +203,78 @@ export default function App() {
       {/* =========================================================================
           1. Macaron Archive Bag Overlay (Loading / Sealed State)
          ========================================================================= */}
-      {/* CHANGED: Background color from #F0EBE0 to white on mobile to prevent Safari beige bar */}
-      <div 
-        className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-white md:bg-[#F0EBE0] transition-transform duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${!isSealed ? '-translate-y-full pointer-events-none' : ''}`}
-        style={{
-            backgroundImage: 'radial-gradient(#d1ccc0 1px, transparent 1px)', 
-            backgroundSize: '24px 24px'
-        }}
-      >
+      {showOverlay && (
         <div 
-            onClick={() => setIsSealed(false)}
-            className={`
-                relative w-[340px] h-[480px] bg-[#FFDAC1] border-[3px] border-black rounded-xl shadow-[12px_12px_0px_0px_#d1d5db] 
-                flex flex-col items-center select-none overflow-hidden transition-transform duration-300
-                cursor-pointer group hover:-translate-y-2
-            `}
+            className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-white md:bg-[#F0EBE0] transition-transform duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${!isSealed ? '-translate-y-full pointer-events-none' : ''}`}
+            style={{
+                backgroundImage: 'radial-gradient(#d1ccc0 1px, transparent 1px)', 
+                backgroundSize: '24px 24px'
+            }}
         >
-            {/* Top Flap */}
-            <div className="absolute top-0 w-full h-32 bg-[#FFC8DD] border-b-[3px] border-black z-20 rounded-t-lg flex justify-center pt-4 shadow-sm">
-                 <div className="w-full h-px bg-black/5 absolute bottom-1"></div>
-                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-50 flex items-center justify-center">
+            <div 
+                onClick={() => setIsSealed(false)}
+                className={`
+                    relative w-[340px] h-[480px] bg-[#FFDAC1] border-[3px] border-black rounded-xl shadow-[12px_12px_0px_0px_#d1d5db] 
+                    flex flex-col items-center select-none overflow-hidden transition-transform duration-300
+                    cursor-pointer group hover:-translate-y-2
+                `}
+            >
+                {/* Top Flap */}
+                <div className="absolute top-0 w-full h-32 bg-[#FFC8DD] border-b-[3px] border-black z-20 rounded-t-lg flex justify-center pt-4 shadow-sm">
+                    <div className="w-full h-px bg-black/5 absolute bottom-1"></div>
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-50 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-black/30"></div>
+                    </div>
+                </div>
+
+                {/* String Mechanism */}
+                <svg className="absolute top-[96px] left-1/2 -translate-x-1/2 w-24 h-[200px] z-40 pointer-events-none overflow-visible">
+                    <defs>
+                        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feDropShadow dx="1" dy="1" stdDeviation="1.5" floodColor="#000" floodOpacity="0.4"/>
+                        </filter>
+                    </defs>
+                    <path 
+                        d="M 48,0 L 48,78 C 68,78 72,105 48,105 C 24,105 28,78 48,78 C 60,78 62,95 50,110 Q 40,125 52,160"
+                        fill="none" 
+                        stroke="#FDFBF7" 
+                        strokeWidth="3" 
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        filter="url(#shadow)"
+                    />
+                </svg>
+
+                <div className="absolute top-40 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
                     <div className="w-2 h-2 rounded-full bg-black/30"></div>
-                 </div>
-            </div>
-
-            {/* String Mechanism */}
-            <svg className="absolute top-[96px] left-1/2 -translate-x-1/2 w-24 h-[200px] z-40 pointer-events-none overflow-visible">
-                 <defs>
-                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                      <feDropShadow dx="1" dy="1" stdDeviation="1.5" floodColor="#000" floodOpacity="0.4"/>
-                    </filter>
-                 </defs>
-                 <path 
-                    d="M 48,0 L 48,78 C 68,78 72,105 48,105 C 24,105 28,78 48,78 C 60,78 62,95 50,110 Q 40,125 52,160"
-                    fill="none" 
-                    stroke="#FDFBF7" 
-                    strokeWidth="3" 
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    filter="url(#shadow)"
-                 />
-            </svg>
-
-            <div className="absolute top-40 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
-                 <div className="w-2 h-2 rounded-full bg-black/30"></div>
-            </div>
-
-            <div className="absolute top-24 right-8 z-30 w-20 h-20 bg-[#A2D2FF] border-2 border-black rounded-full flex flex-col items-center justify-center transform rotate-12 shadow-sm mix-blend-hard-light opacity-90">
-                <span className="font-black text-lg leading-none">NEW</span>
-                <span className="text-[10px] font-mono">2025</span>
-            </div>
-
-            <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
-                <div className="border-b-2 border-dotted border-black mb-2 pb-1">
-                    <span className="font-mono text-[10px] text-gray-400">PROJECT NAME</span>
-                    <h1 className="font-black text-2xl uppercase tracking-tighter">ThinkPPT.COM</h1>
                 </div>
-                <div className="flex justify-between items-end">
-                    <span className="font-mono text-[10px] text-gray-400 font-bold">
-                         {useMock ? '演示模式' : '深刻PPT'}
-                    </span>
-                    <span className="font-mono font-bold text-xs bg-black text-white px-2 py-0.5 rounded-full">
-                         {loading ? '加载中' : '开启'}
-                    </span>
-                </div>
-            </div>
 
-            <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest text-center px-4 max-w-full truncate text-red-500 font-bold">
-                {debugMsg ? debugMsg : (loading ? '正在同步档案...' : '点击启封')}
-            </p>
+                <div className="absolute top-24 right-8 z-30 w-20 h-20 bg-[#A2D2FF] border-2 border-black rounded-full flex flex-col items-center justify-center transform rotate-12 shadow-sm mix-blend-hard-light opacity-90">
+                    <span className="font-black text-lg leading-none">NEW</span>
+                    <span className="text-[10px] font-mono">2025</span>
+                </div>
+
+                <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
+                    <div className="border-b-2 border-dotted border-black mb-2 pb-1">
+                        <span className="font-mono text-[10px] text-gray-400">PROJECT NAME</span>
+                        <h1 className="font-black text-2xl uppercase tracking-tighter">ThinkPPT.COM</h1>
+                    </div>
+                    <div className="flex justify-between items-end">
+                        <span className="font-mono text-[10px] text-gray-400 font-bold">
+                            {useMock ? '演示模式' : '深刻PPT'}
+                        </span>
+                        <span className="font-mono font-bold text-xs bg-black text-white px-2 py-0.5 rounded-full">
+                            {loading ? '加载中' : '开启'}
+                        </span>
+                    </div>
+                </div>
+
+                <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest text-center px-4 max-w-full truncate text-red-500 font-bold">
+                    {debugMsg ? debugMsg : (loading ? '正在同步档案...' : '点击启封')}
+                </p>
+            </div>
         </div>
-      </div>
+      )}
 
 
       {/* =========================================================================
@@ -433,7 +445,7 @@ export default function App() {
         {/* The "Paper" Container connected to tabs 
             UPDATED: Mobile full height, no rounded corners, no top border, WHITE BG on Mobile
         */}
-        <div className="max-w-7xl mx-auto min-h-screen md:min-h-[85vh] bg-white md:bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-none shadow-none md:shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t-0 md:border-t border-black/5">
+        <div className="max-w-7xl mx-auto min-h-[100dvh] md:min-h-[85vh] bg-white md:bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-none shadow-none md:shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t-0 md:border-t border-black/5">
             
             {/* Visual Header Inside Folder */}
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
