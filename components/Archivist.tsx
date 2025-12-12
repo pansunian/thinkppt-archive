@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { generateSchemeOutline } from '../services/geminiService';
 import { GeneratedOutline } from '../types';
@@ -80,9 +79,15 @@ export const Archivist: React.FC = () => {
                 </button>
               </form>
 
+              {/* API Indicator */}
+              <div className="text-[10px] font-mono text-gray-400 text-center mb-4 uppercase tracking-wider flex items-center justify-center gap-1">
+                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                 Powered by Google Gemini
+              </div>
+
               {/* Result Ticket */}
               {result && (
-                <div className="bg-white border border-black p-0 relative shadow-md transform rotate-1">
+                <div className="bg-white border border-black p-0 relative shadow-md transform rotate-1 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   {/* Ticket Header */}
                   <div className="border-b border-black p-2 bg-gray-50 flex justify-between items-center">
                     <span className="font-mono text-[10px] uppercase text-gray-500">TICKET-NO. {Math.floor(Math.random() * 1000)}</span>
