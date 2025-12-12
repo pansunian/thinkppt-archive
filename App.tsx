@@ -267,8 +267,9 @@ export default function App() {
       {/* =========================================================================
           2.0 MOBILE SIDEBAR NAVIGATION (Vertical Tabs)
           Visible only on mobile/tablet (hidden md)
+          UPDATED: Aligned to top, added top padding, changed to justify-start
          ========================================================================= */}
-      <nav className="md:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-center items-start pointer-events-none py-4 w-12">
+      <nav className="md:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-none pb-4 pt-4 w-12">
         <div className="flex flex-col gap-1 pointer-events-auto items-start">
             
             {/* LOGO TAB (Home/All) - Distinct & Larger */}
@@ -424,12 +425,14 @@ export default function App() {
 
       {/* =========================================================================
           3. MAIN CONTENT (The Folder Body)
-          Added 'pl-10 md:pl-8' to accommodate mobile sidebar
+          UPDATED: Mobile full screen mode (removed padding/margins)
          ========================================================================= */}
-      <main className="flex-grow px-2 pl-12 md:pl-8 pb-12 z-20 md:pt-0 pt-6">
+      <main className="flex-grow pl-12 md:pl-8 md:px-2 md:pb-12 z-20 md:pt-0">
         
-        {/* The "Paper" Container connected to tabs */}
-        <div className="max-w-7xl mx-auto min-h-[85vh] bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t border-black/5">
+        {/* The "Paper" Container connected to tabs 
+            UPDATED: Mobile full height, no rounded corners, no top border
+        */}
+        <div className="max-w-7xl mx-auto min-h-screen md:min-h-[85vh] bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-none shadow-none md:shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t-0 md:border-t border-black/5">
             
             {/* Visual Header Inside Folder */}
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
@@ -506,7 +509,7 @@ export default function App() {
             </div>
 
             {/* Folder Footer Flap (Visual End of Folder) */}
-            <div className="relative h-16 bg-[#FDFBF7] rounded-b-lg border-t border-black/5 mt-auto flex items-center justify-center overflow-hidden">
+            <div className="relative h-16 bg-[#FDFBF7] md:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center overflow-hidden">
                 {/* Texture */}
                 <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'radial-gradient(#000 0.5px, transparent 0.5px)', backgroundSize: '4px 4px' }}></div>
                 
