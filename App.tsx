@@ -27,76 +27,103 @@ export default function App() {
   const [useMock, setUseMock] = useState(false);
   const [debugMsg, setDebugMsg] = useState('');
 
-  // Fetch Data on Load
-  useEffect(() => {
-    const fetchSchemes = async () => {
-      try {
-        // Attempt to fetch from our Vercel API
-        const res = await fetch('/api/schemes');
-        
-        if (res.status === 401) {
-             console.warn("Notion API Key missing.");
-             setDebugMsg("请在 Vercel 环境变量中配置 NOTION_API_KEY");
-             setSchemes(MOCK_SCHEMES);
-             setUseMock(true);
-        } else if (!res.ok) {
-             const err = await res.json();
-             console.error("API Error:", err);
-             
-             // Extract friendly error message from Notion response if available
-             let friendlyMsg = res.statusText;
-             if (err.details) {
-               if (typeof err.details === 'string') {
-                  // Try parsing if it's a stringified JSON (legacy handling)
-                  try {
-                    const parsed = JSON.parse(err.details);
-                    friendlyMsg = parsed.message || err.details;
-                  } catch {
-                    friendlyMsg = err.details;
-                  }
-               } else if (err.details.message) {
-                  friendlyMsg = err.details.message;
-               }
-             }
-             
-             // Intelligent Error Translation
-             if (friendlyMsg.includes("is a page, not a database")) {
-                 setDebugMsg("配置错误：您使用的是 Page ID。请打开页面内的表格为全屏(Full Page)，复制 URL 中的 Database ID。");
-             } else if (friendlyMsg.includes("Could not find database")) {
-                 setDebugMsg("API错误：无法找到数据库。请检查 Database ID 是否正确，或 Integration 是否已连接到该页面。");
-             } else if (friendlyMsg.includes("unauthorized")) {
-                 setDebugMsg("API Key 无效或未授权。请检查 Notion Integration 设置。");
-             } else {
-                 setDebugMsg(`API Error: ${friendlyMsg}`);
-             }
+  // Pagination State
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-             setSchemes(MOCK_SCHEMES);
-             setUseMock(true);
-        } else {
-             const data = await res.json();
-             const mappedData = mapNotionResultToSchemes(data);
-             if (mappedData.length === 0) {
-                 setDebugMsg("连接成功，但数据库为空");
-                 setSchemes(MOCK_SCHEMES);
-                 setUseMock(true);
-             } else {
-                 setSchemes(mappedData);
-                 setUseMock(false);
-                 setDebugMsg("");
-             }
-        }
-      } catch (error) {
-        console.error("Failed to load archive:", error);
-        setDebugMsg("网络请求失败");
-        setSchemes(MOCK_SCHEMES); // Fallback
-        setUseMock(true);
-      } finally {
-        setLoading(false);
+  // Fetch Data Function
+  const fetchSchemes = async (cursor: string | null = null) => {
+    try {
+      if (cursor) {
+          setLoadingMore(true);
+      } else {
+          setLoading(true);
       }
-    };
 
+      // Append cursor query param if it exists
+      const url = cursor ? `/api/schemes?cursor=${cursor}` : '/api/schemes';
+      const res = await fetch(url);
+      
+      if (res.status === 401) {
+           console.warn("Notion API Key missing.");
+           setDebugMsg("请在 Vercel 环境变量中配置 NOTION_API_KEY");
+           setSchemes(MOCK_SCHEMES);
+           setUseMock(true);
+           setHasMore(false);
+      } else if (!res.ok) {
+           const err = await res.json();
+           console.error("API Error:", err);
+           
+           // Extract friendly error message
+           let friendlyMsg = res.statusText;
+           if (err.details) {
+             if (typeof err.details === 'string') {
+                try {
+                  const parsed = JSON.parse(err.details);
+                  friendlyMsg = parsed.message || err.details;
+                } catch {
+                  friendlyMsg = err.details;
+                }
+             } else if (err.details.message) {
+                friendlyMsg = err.details.message;
+             }
+           }
+           
+           if (!cursor) {
+               // Only show debug msg on initial load error
+               setDebugMsg(`API Error: ${friendlyMsg}`);
+               setSchemes(MOCK_SCHEMES);
+               setUseMock(true);
+               setHasMore(false);
+           }
+      } else {
+           const data = await res.json();
+           const mappedData = mapNotionResultToSchemes(data);
+
+           if (!cursor && mappedData.length === 0) {
+               setDebugMsg("连接成功，但数据库为空");
+               setSchemes(MOCK_SCHEMES);
+               setUseMock(true);
+               setHasMore(false);
+           } else {
+               // Update State
+               if (cursor) {
+                   setSchemes(prev => [...prev, ...mappedData]);
+               } else {
+                   setSchemes(mappedData);
+                   setDebugMsg("");
+                   setUseMock(false);
+               }
+               
+               setNextCursor(data.next_cursor);
+               setHasMore(data.has_more);
+           }
+      }
+    } catch (error) {
+      console.error("Failed to load archive:", error);
+      if (!cursor) {
+        setDebugMsg("网络请求失败");
+        setSchemes(MOCK_SCHEMES); 
+        setUseMock(true);
+        setHasMore(false);
+      }
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  // Initial Load
+  useEffect(() => {
     fetchSchemes();
   }, []);
+
+  const handleLoadMore = () => {
+    if (nextCursor && !loadingMore) {
+        fetchSchemes(nextCursor);
+    }
+  };
 
   const filteredSchemes = activeCategory === '全部' 
     ? schemes 
@@ -134,29 +161,35 @@ export default function App() {
                  {/* Visual Crease */}
                  <div className="w-full h-px bg-black/5 absolute bottom-1"></div>
                  
-                 {/* Top Button (Grommet) */}
-                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
+                 {/* Top Button (Grommet) - Z-Index 50 to sit ON TOP of the string start */}
+                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-50 flex items-center justify-center">
                     <div className="w-2 h-2 rounded-full bg-black/30"></div>
                  </div>
             </div>
 
-            {/* String Mechanism (The Winding Twine) */}
-            <svg className="absolute top-[105px] left-1/2 -translate-x-1/2 w-24 h-48 z-40 pointer-events-none overflow-visible">
+            {/* String Mechanism */}
+            {/* Located precisely to bridge Top Button Center (y=~96px) and Bottom Button Center (y=~176px) */}
+            <svg className="absolute top-[96px] left-1/2 -translate-x-1/2 w-24 h-[200px] z-40 pointer-events-none overflow-visible">
                  <defs>
-                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.3"/>
+                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feDropShadow dx="1" dy="1" stdDeviation="1.5" floodColor="#000" floodOpacity="0.4"/>
                     </filter>
                  </defs>
                  
-                 {/* String Path: From top button, wrapping around bottom button twice, then hanging */}
+                 {/* 
+                    Path Logic:
+                    1. Start at (48, 0) - Behind Top Button
+                    2. Drop down to (48, 80) - Center of Bottom Button (Diff is 80px)
+                    3. Wind around (48, 80)
+                 */}
                  <path 
                     d="
-                      M 48,14 
-                      L 48,55 
-                      C 68,55 70,88 48,88 
-                      C 26,88 28,55 48,55 
-                      C 65,55 68,80 52,100
-                      Q 42,120 48,140
+                      M 48,0 
+                      L 48,78
+                      C 68,78 72,105 48,105 
+                      C 24,105 28,78 48,78 
+                      C 60,78 62,95 50,110
+                      Q 40,125 52,160
                     "
                     fill="none" 
                     stroke="#FDFBF7" 
@@ -167,7 +200,7 @@ export default function App() {
                  />
             </svg>
 
-            {/* Bottom Button (Grommet) on the Body */}
+            {/* Bottom Button (Grommet) - Z-Index 30 to sit UNDER the string winding */}
             <div className="absolute top-40 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
                  <div className="w-2 h-2 rounded-full bg-black/30"></div>
             </div>
@@ -208,9 +241,6 @@ export default function App() {
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-out border-b-2 border-transparent ${scrolled ? 'bg-[#FDFBF7]/95 backdrop-blur-sm pt-0 shadow-sm' : 'bg-transparent pt-3'}`}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
-            {/* 
-                Update: Optimized for mobile. Smaller font size, reduced padding, compact height.
-            */}
             <div 
                 className={`flex items-end gap-1 relative z-10 top-[3px] overflow-x-auto w-full`}
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -321,10 +351,41 @@ export default function App() {
             ))}
         </div>
         
-        {filteredSchemes.length === 0 && (
+        {filteredSchemes.length === 0 && !loading && (
              <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 text-center p-8">
                  <p className="mb-2">[ NO FOLDERS FOUND ]</p>
              </div>
+        )}
+
+        {/* Load More Button */}
+        {!useMock && hasMore && (
+            <div className="mt-20 flex justify-center">
+                <button
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="
+                        group relative overflow-hidden bg-white text-black font-mono font-bold text-sm 
+                        px-12 py-4 border-2 border-black rounded-full 
+                        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
+                        hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] 
+                        active:translate-y-1 active:shadow-none
+                        disabled:opacity-50 disabled:cursor-wait
+                        transition-all duration-150
+                    "
+                >
+                    {loadingMore ? (
+                        <span className="flex items-center gap-2">
+                            <span className="w-2 h-2 bg-black rounded-full animate-bounce"></span>
+                            LOADING ARCHIVE...
+                        </span>
+                    ) : (
+                        <span className="flex items-center gap-2 uppercase">
+                            Load More Schemes
+                            <svg className="w-4 h-4 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </span>
+                    )}
+                </button>
+            </div>
         )}
 
       </main>
