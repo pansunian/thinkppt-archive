@@ -10,24 +10,44 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      // Mobile: w-[94%] max-w-[380px] h-[450px] (Widened from 88%/360px)
+      // Mobile: w-[94%] max-w-[380px] h-[440px]
       // Desktop: md:w-full md:max-w-[290px] md:h-[400px]
-      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[290px] mx-auto h-[450px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none"
+      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[290px] mx-auto h-[440px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none"
     >
       
       {/* 2. Folder Back (The visual background) */}
       <div 
-        className="absolute inset-x-0 bottom-0 top-8 rounded-xl z-0 transition-transform duration-300 group-hover:translate-y-2 shadow-sm border-2 border-transparent"
+        className="absolute inset-x-0 bottom-0 top-8 rounded-b-xl rounded-t-xl z-0 transition-transform duration-300 group-hover:translate-y-2 shadow-sm"
         style={{ backgroundColor: scheme.color }}
       >
-        {/* The "Tab" - Distinct rounded file tab */}
-        <div 
-            className="absolute -top-8 left-0 w-[140px] h-9 rounded-t-xl z-0 flex items-center justify-center border-t-2 border-x-2 border-black/5"
-            style={{ backgroundColor: scheme.color }}
-        >
-             <span className="font-mono text-[10px] font-bold opacity-50 tracking-widest text-black">
-                VOL.{scheme.year}
-             </span>
+        {/* The Custom Shape Tab - SVG implementation for simple rounded tab */}
+        {/* UPDATED: Shifted tab to left-[5px] (moved left 7px) and -top-[33px] (moved down to hide corner seam) */}
+        <div className="absolute -top-[33px] left-[5px] w-[100px] h-[36px] z-0">
+             <svg viewBox="0 0 100 36" preserveAspectRatio="none" className="w-full h-full text-current" style={{ color: scheme.color }}>
+                {/* 
+                    Tab Shape Path (Simple Rounded):
+                    - 12px radius corners
+                    - Straight vertical sides
+                */}
+                <path 
+                   d="M0,36 L0,12 C0,5 5,0 12,0 L88,0 C95,0 100,5 100,12 L100,36 Z" 
+                   fill="currentColor"
+                />
+                {/* Subtle stroke for definition */}
+                <path 
+                    d="M0,36 L0,12 C0,5 5,0 12,0 L88,0 C95,0 100,5 100,12 L100,36" 
+                    fill="none" 
+                    stroke="rgba(0,0,0,0.05)" 
+                    strokeWidth="2"
+                />
+             </svg>
+             
+             {/* Text Label */}
+             <div className="absolute inset-0 flex items-center justify-center pt-2">
+                 <span className="font-mono text-[10px] font-bold opacity-50 tracking-widest text-black whitespace-nowrap">
+                    VOL.{scheme.year}
+                 </span>
+             </div>
         </div>
       </div>
 
@@ -76,6 +96,9 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
         className="absolute bottom-0 left-0 right-0 h-[110px] rounded-b-xl rounded-t-2xl z-20 pointer-events-none flex flex-col justify-start p-5 border-t border-white/40 shadow-[0_-2px_4px_rgba(0,0,0,0.02)] overflow-hidden"
         style={{ backgroundColor: scheme.color }}
       >
+         {/* LIGHTENING OVERLAY: Added to create contrast with the back folder */}
+         <div className="absolute inset-0 bg-white/20 pointer-events-none"></div>
+
          {/* Texture Overlay: Subtle grain/noise for cardstock feel */}
          <div 
             className="absolute inset-0 opacity-10 mix-blend-multiply pointer-events-none"

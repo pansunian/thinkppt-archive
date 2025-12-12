@@ -291,7 +291,7 @@ export default function App() {
                     </div>
                     <div className="flex justify-between items-end">
                         <span className="font-mono text-[10px] text-gray-400 font-bold">
-                            {useMock ? '演示模式' : '深刻PPT'}
+                            策划人的方案档案馆
                         </span>
                         <span className="font-mono font-bold text-xs bg-black text-white px-2 py-0.5 rounded-full">
                             {loading ? '加载中' : '开启'}
@@ -514,10 +514,6 @@ export default function App() {
                         <p className="font-mono text-xs text-gray-500 max-w-lg">
                             {loading ? '正在检索文件...' : `已检索到 ${displayedSchemes.length} 个档案.`}
                         </p>
-                    </div>
-                    {/* Decorative Stamp */}
-                    <div className="hidden md:flex w-24 h-24 border-4 border-red-500/20 rounded-full items-center justify-center -rotate-12">
-                        <span className="text-red-500/30 font-black text-xl uppercase">绝密</span>
                     </div>
                 </div>
             </div>
