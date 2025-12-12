@@ -439,8 +439,9 @@ export default function App() {
       {/* =========================================================================
           3. MAIN CONTENT (The Folder Body)
           UPDATED: Mobile full screen mode (removed padding/margins)
+          UPDATED DESKTOP: md:px-8 aligned with header
          ========================================================================= */}
-      <main className="flex-grow pl-12 md:pl-8 md:px-2 md:pb-12 z-20 md:pt-0">
+      <main className="flex-grow pl-12 md:px-8 md:pb-12 z-20 md:pt-0">
         
         {/* The "Paper" Container connected to tabs 
             UPDATED: Mobile full height, no rounded corners, no top border, WHITE BG on Mobile
