@@ -251,7 +251,7 @@ export default function App() {
                     <span className="font-mono text-[10px] text-gray-400 font-bold">
                          {useMock ? '演示模式' : '深刻PPT'}
                     </span>
-                    <span className="font-bold text-xs bg-black text-white px-2 py-0.5 rounded-full">
+                    <span className="font-mono font-bold text-xs bg-black text-white px-2 py-0.5 rounded-full">
                          {loading ? '加载中' : '开启'}
                     </span>
                 </div>
