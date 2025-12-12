@@ -25,9 +25,20 @@ export default async function handler(request, response) {
 
     // 3. Handle Notion Errors
     if (!notionRes.ok) {
-      const errorText = await notionRes.text();
-      console.error('Notion API Error:', errorText);
-      return response.status(notionRes.status).json({ error: 'Notion API refused connection', details: errorText });
+      let errorDetails;
+      try {
+        // Try to parse the error as JSON first for cleaner debugging
+        errorDetails = await notionRes.json();
+      } catch (e) {
+        // Fallback to text if it's not JSON (e.g. 502 Bad Gateway html)
+        errorDetails = await notionRes.text();
+      }
+      
+      console.error('Notion API Error:', errorDetails);
+      return response.status(notionRes.status).json({ 
+        error: 'Notion API Error', 
+        details: errorDetails 
+      });
     }
 
     const data = await notionRes.json();

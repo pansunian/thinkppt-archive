@@ -42,7 +42,24 @@ export default function App() {
         } else if (!res.ok) {
              const err = await res.json();
              console.error("API Error:", err);
-             setDebugMsg(`API Error: ${err.details || res.statusText}`);
+             
+             // Extract friendly error message from Notion response if available
+             let friendlyMsg = res.statusText;
+             if (err.details) {
+               if (typeof err.details === 'string') {
+                  // Try parsing if it's a stringified JSON (legacy handling)
+                  try {
+                    const parsed = JSON.parse(err.details);
+                    friendlyMsg = parsed.message || err.details;
+                  } catch {
+                    friendlyMsg = err.details;
+                  }
+               } else if (err.details.message) {
+                  friendlyMsg = err.details.message;
+               }
+             }
+             
+             setDebugMsg(`API Error: ${friendlyMsg}`);
              setSchemes(MOCK_SCHEMES);
              setUseMock(true);
         } else {
@@ -126,8 +143,8 @@ export default function App() {
                 </div>
             </div>
 
-            <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest text-center px-4">
-                {loading ? 'CONNECTING TO ARCHIVE...' : (debugMsg || 'TOUCH TO UNSEAL')}
+            <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest text-center px-4 max-w-full truncate text-red-500 font-bold">
+                {debugMsg ? debugMsg : (loading ? 'CONNECTING TO ARCHIVE...' : 'TOUCH TO UNSEAL')}
             </p>
         </div>
       </div>
@@ -215,9 +232,9 @@ export default function App() {
 
         {/* Debug Banner if using Mock Data */}
         {useMock && (
-             <div className="mb-8 p-4 bg-yellow-100 border-2 border-black border-dashed rounded-lg font-mono text-xs flex justify-between items-center">
-                 <span className="text-yellow-800">⚠️ 演示模式: {debugMsg || '未连接到 Notion 数据库'}</span>
-                 <a href="https://vercel.com" target="_blank" rel="noreferrer" className="underline font-bold">检查配置</a>
+             <div className="mb-8 p-4 bg-yellow-100 border-2 border-black border-dashed rounded-lg font-mono text-xs flex justify-between items-center text-wrap break-all">
+                 <span className="text-yellow-800 font-bold">⚠️ 模式: {debugMsg || '未连接到 Notion 数据库'}</span>
+                 <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="underline ml-4 whitespace-nowrap">检查配置</a>
              </div>
         )}
 
