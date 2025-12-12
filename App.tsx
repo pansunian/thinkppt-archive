@@ -129,16 +129,57 @@ export default function App() {
                 ${loading ? 'cursor-wait opacity-80' : 'cursor-pointer group hover:-translate-y-2'}
             `}
         >
+            {/* Top Flap */}
             <div className="absolute top-0 w-full h-32 bg-[#FFC8DD] border-b-[3px] border-black z-20 rounded-t-lg flex justify-center pt-4 shadow-sm">
-                 <div className="w-16 h-4 bg-white/50 rounded-full"></div>
+                 {/* Visual Crease */}
+                 <div className="w-full h-px bg-black/5 absolute bottom-1"></div>
+                 
+                 {/* Top Button (Grommet) */}
+                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-black/30"></div>
+                 </div>
             </div>
 
-            <div className="absolute top-24 right-8 z-30 w-20 h-20 bg-[#A2D2FF] border-2 border-black rounded-full flex flex-col items-center justify-center transform rotate-12 shadow-sm">
+            {/* String Mechanism (The Winding Twine) */}
+            <svg className="absolute top-[105px] left-1/2 -translate-x-1/2 w-24 h-48 z-40 pointer-events-none overflow-visible">
+                 <defs>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.3"/>
+                    </filter>
+                 </defs>
+                 
+                 {/* String Path: From top button, wrapping around bottom button twice, then hanging */}
+                 <path 
+                    d="
+                      M 48,14 
+                      L 48,55 
+                      C 68,55 70,88 48,88 
+                      C 26,88 28,55 48,55 
+                      C 65,55 68,80 52,100
+                      Q 42,120 48,140
+                    "
+                    fill="none" 
+                    stroke="#FDFBF7" 
+                    strokeWidth="3" 
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    filter="url(#shadow)"
+                 />
+            </svg>
+
+            {/* Bottom Button (Grommet) on the Body */}
+            <div className="absolute top-40 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
+                 <div className="w-2 h-2 rounded-full bg-black/30"></div>
+            </div>
+
+            {/* Stamp */}
+            <div className="absolute top-24 right-8 z-30 w-20 h-20 bg-[#A2D2FF] border-2 border-black rounded-full flex flex-col items-center justify-center transform rotate-12 shadow-sm mix-blend-hard-light opacity-90">
                 <span className="font-black text-lg leading-none">NEW</span>
                 <span className="text-[10px] font-mono">2025</span>
             </div>
 
-            <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb]">
+            {/* Label Area */}
+            <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
                 <div className="border-b-2 border-dotted border-black mb-2 pb-1">
                     <span className="font-mono text-[10px] text-gray-400">PROJECT NAME</span>
                     <h1 className="font-black text-3xl uppercase tracking-tight">ThinkPPT</h1>
