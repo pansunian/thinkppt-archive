@@ -1,9 +1,10 @@
 import { Scheme } from '../types';
+import { PALETTE } from '../constants';
 
 export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
   if (!notionData || !notionData.results) return [];
 
-  return notionData.results.map((page: any) => {
+  return notionData.results.map((page: any, index: number) => {
     const props = page.properties;
 
     // Helper to safely get values from different Notion property types with fallback keys
@@ -63,6 +64,9 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
        return 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?auto=format&fit=crop&w=800&q=80'; 
     };
 
+    // Assign a default color from palette based on index if no color provided in Notion
+    const defaultColor = PALETTE[index % PALETTE.length];
+
     // Mapping with fallbacks for common Notion column names
     return {
       id: page.id,
@@ -75,7 +79,7 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       date: getDate(['Date', 'Time', 'Created', '日期', '时间']) || new Date().toISOString().split('T')[0],
       description: getText(['Description', 'Summary', 'Intro', '描述', '简介']),
       tags: getMultiSelect(['Tags', 'Keywords', '标签']),
-      color: getText(['Color', 'Hex', 'Theme', '颜色']) || '#FFC8DD',
+      color: getText(['Color', 'Hex', 'Theme', '颜色']) || defaultColor,
       imageUrl: getImage(['Image', 'Cover', 'Photo', '图片', '封面']),
     };
   });

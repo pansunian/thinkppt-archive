@@ -59,7 +59,17 @@ export default function App() {
                }
              }
              
-             setDebugMsg(`API Error: ${friendlyMsg}`);
+             // Intelligent Error Translation
+             if (friendlyMsg.includes("is a page, not a database")) {
+                 setDebugMsg("配置错误：您使用的是 Page ID。请打开页面内的表格为全屏(Full Page)，复制 URL 中的 Database ID。");
+             } else if (friendlyMsg.includes("Could not find database")) {
+                 setDebugMsg("API错误：无法找到数据库。请检查 Database ID 是否正确，或 Integration 是否已连接到该页面。");
+             } else if (friendlyMsg.includes("unauthorized")) {
+                 setDebugMsg("API Key 无效或未授权。请检查 Notion Integration 设置。");
+             } else {
+                 setDebugMsg(`API Error: ${friendlyMsg}`);
+             }
+
              setSchemes(MOCK_SCHEMES);
              setUseMock(true);
         } else {
