@@ -10,8 +10,10 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      // Changed: Added max-w-[290px] and mx-auto to narrow the card and center it
-      className="group relative w-full max-w-[290px] mx-auto h-[420px] mt-8 perspective-1000 cursor-pointer font-sans"
+      // Changed: 
+      // Mobile: w-[88%] max-w-[360px] h-[480px] (Wider and taller)
+      // Desktop: md:w-full md:max-w-[290px] md:h-[420px] (Original size)
+      className="group relative w-[88%] max-w-[360px] md:w-full md:max-w-[290px] mx-auto h-[480px] md:h-[420px] mt-8 perspective-1000 cursor-pointer font-sans"
     >
       
       {/* 2. Folder Back (The visual background) */}
@@ -34,7 +36,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       <div className="absolute left-3 right-3 top-8 bottom-3 bg-white rounded-lg z-10 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-20 group-hover:shadow-xl group-hover:rotate-1 flex flex-col overflow-hidden border border-gray-200">
          
          {/* Image Area */}
-         <div className="h-60 w-full relative overflow-hidden bg-gray-100 shrink-0 border-b border-gray-100">
+         <div className="h-64 md:h-60 w-full relative overflow-hidden bg-gray-100 shrink-0 border-b border-gray-100">
             <img 
                 src={scheme.imageUrl} 
                 alt={scheme.title}

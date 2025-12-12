@@ -53,14 +53,22 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
         return '';
     };
 
-    // For images, we support both File uploads (expiring URLs) and External Links
+    // UPDATED: Priority is now Native Page Cover -> File Property -> External Link Property -> Fallback
     const getImage = (keys: string[]) => {
+       // 1. Check Native Page Cover (The standard image at the top of a Notion page)
+       if (page.cover) {
+           if (page.cover.type === 'external') return page.cover.external.url;
+           if (page.cover.type === 'file') return page.cover.file.url;
+       }
+
+       // 2. Check Database Properties (if user manually made an "Image" column)
        const prop = getProp(keys);
        if (prop?.type === 'files' && prop.files.length > 0) {
            const file = prop.files[0];
            return file.type === 'file' ? file.file.url : file.external.url;
        }
-       // Fallback placeholder
+       
+       // 3. Fallback placeholder
        return 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?auto=format&fit=crop&w=800&q=80'; 
     };
 

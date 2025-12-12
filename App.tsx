@@ -167,9 +167,22 @@ export default function App() {
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-out border-b-2 border-transparent ${scrolled ? 'bg-[#FDFBF7]/95 backdrop-blur-sm pt-0 shadow-sm' : 'bg-transparent pt-3'}`}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8 relative">
-            <div className={`flex items-end gap-1 relative z-10 top-[3px]`}>
+            {/* 
+                Update: Added overflow-x-auto, no-scrollbar, and mask-linear-fade to allow horizontal scrolling on mobile.
+                Added style={{ scrollbarWidth: 'none' }} to hide Firefox scrollbar. 
+            */}
+            <div 
+                className={`flex items-end gap-1 relative z-10 top-[3px] overflow-x-auto w-full`}
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+                <style>{`
+                    /* Hide scrollbar for Chrome, Safari and Opera */
+                    .overflow-x-auto::-webkit-scrollbar {
+                        display: none;
+                    }
+                `}</style>
                 <div 
-                    className={`bg-black text-white px-6 rounded-t-xl border-2 border-black border-b-0 flex items-center gap-2 transition-all duration-300 origin-bottom ${scrolled ? 'h-12 py-2' : 'h-16 py-3'}`}
+                    className={`bg-black text-white px-6 rounded-t-xl border-2 border-black border-b-0 flex items-center gap-2 transition-all duration-300 origin-bottom flex-shrink-0 ${scrolled ? 'h-12 py-2' : 'h-16 py-3'}`}
                 >
                     <div className="w-4 h-4 rounded-full bg-[#FFC8DD]"></div>
                     <span className="font-bold font-mono tracking-tighter">THINK_PPT</span>
@@ -189,7 +202,7 @@ export default function App() {
                           className={`
                             ${color} 
                             px-8 rounded-t-xl border-2 border-black border-b-0 font-bold font-mono text-sm 
-                            flex items-center justify-center
+                            flex items-center justify-center flex-shrink-0
                             transition-all duration-200 ease-out origin-bottom
                             relative
                             group
@@ -201,6 +214,8 @@ export default function App() {
                         </a>
                     )
                 })}
+                {/* Spacer to allow scrolling past the last item slightly */}
+                <div className="w-4 flex-shrink-0"></div>
             </div>
             
             <div className="w-full h-3 bg-black border-2 border-black relative z-20 shadow-sm rounded-sm"></div>
