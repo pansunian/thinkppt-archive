@@ -12,8 +12,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       onClick={onClick}
       // Mobile: w-[88%] max-w-[360px] h-[450px]
       // Desktop: md:w-full md:max-w-[290px] md:h-[400px]
-      // Adjusted heights to accommodate the shorter 16:9 image while keeping text space
-      className="group relative w-[88%] max-w-[360px] md:w-full md:max-w-[290px] mx-auto h-[450px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans"
+      className="group relative w-[88%] max-w-[360px] md:w-full md:max-w-[290px] mx-auto h-[450px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none"
     >
       
       {/* 2. Folder Back (The visual background) */}
@@ -27,7 +26,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
             style={{ backgroundColor: scheme.color }}
         >
              <span className="font-mono text-[10px] font-bold opacity-50 tracking-widest text-black">
-                VOL.{scheme.year} // {scheme.id.slice(-3).padStart(3,'0')}
+                VOL.{scheme.year}
              </span>
         </div>
       </div>
@@ -35,7 +34,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       {/* 1. The Paper Content (Main Card) */}
       <div className="absolute left-3 right-3 top-8 bottom-3 bg-white rounded-lg z-10 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-20 group-hover:shadow-xl group-hover:rotate-1 flex flex-col overflow-hidden border border-gray-200">
          
-         {/* Image Area - Changed to 16:9 Aspect Ratio */}
+         {/* Image Area - 16:9 Aspect Ratio */}
          <div className="w-full aspect-video relative overflow-hidden bg-gray-100 shrink-0 border-b border-gray-100">
             <img 
                 src={scheme.imageUrl} 
@@ -72,25 +71,51 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
          </div>
       </div>
 
-      {/* 3. Folder Front Pocket (Low profile) */}
+      {/* 3. Folder Front Pocket (Low profile with Texture and Lines) */}
       <div 
-        className="absolute bottom-0 left-0 right-0 h-[100px] rounded-b-xl z-20 pointer-events-none flex flex-col justify-end p-5 border-t border-white/30 shadow-[0_-1px_2px_rgba(0,0,0,0.02)]"
+        className="absolute bottom-0 left-0 right-0 h-[110px] rounded-b-xl z-20 pointer-events-none flex flex-col justify-start p-5 border-t border-white/40 shadow-[0_-2px_4px_rgba(0,0,0,0.02)] overflow-hidden"
         style={{ backgroundColor: scheme.color }}
       >
-         <div className="absolute top-0 left-0 right-0 h-px bg-white/40"></div>
-         
-         <div className="flex justify-between items-end opacity-60 mix-blend-multiply">
+         {/* Texture Overlay: Subtle grain/noise for cardstock feel */}
+         <div 
+            className="absolute inset-0 opacity-10 mix-blend-multiply pointer-events-none"
+            style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '4px 4px' }}
+         ></div>
+
+         {/* Top Bevel Highlight (Thickness) */}
+         <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/50"></div>
+
+         {/* Content - Pushed up slightly to make room for ridges */}
+         <div className="relative z-10 flex justify-between items-start opacity-70 mix-blend-multiply mt-1">
              <div className="flex flex-col">
-                 <span className="font-mono text-[9px] uppercase tracking-wider mb-1">Category</span>
-                 <span className="font-bold text-xs font-mono uppercase tracking-wide border-b border-black/20 pb-0.5">
+                 <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-left opacity-70">Category</span>
+                 <span className="font-bold text-xs font-mono uppercase tracking-wide border-b-2 border-black/10 pb-0.5">
                     {scheme.category}
                  </span>
              </div>
              <div className="flex flex-col items-end">
-                <span className="font-mono text-[9px] uppercase tracking-wider mb-1">Client</span>
-                <span className="font-bold text-xs font-mono">{scheme.brand}</span>
+                <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-right opacity-70">ID Code</span>
+                <span className="font-bold text-xs font-mono tracking-tighter">{scheme.id.slice(-4).padStart(4, '0')}</span>
              </div>
          </div>
+
+         {/* DECORATIVE: Embossed Ridges / Lines at the bottom */}
+         <div className="absolute bottom-0 left-0 right-0 flex flex-col z-0">
+            {/* Ridge 1 */}
+            <div className="h-[3px] w-full bg-black/5 border-b border-white/20 mb-[3px]"></div>
+            {/* Ridge 2 */}
+            <div className="h-[3px] w-full bg-black/5 border-b border-white/20 mb-[3px]"></div>
+            {/* Ridge 3 */}
+            <div className="h-[3px] w-full bg-black/5 border-b border-white/20 mb-[12px]"></div>
+         </div>
+
+         {/* Client Name Overlay on top of ridges (optional style) or above */}
+         <div className="absolute bottom-4 left-5 right-5 z-10 flex justify-center">
+             <span className="font-black text-[3rem] leading-none opacity-[0.07] mix-blend-multiply truncate pointer-events-none w-full text-center tracking-tighter font-mono">
+                 {scheme.brand}
+             </span>
+         </div>
+
       </div>
 
     </div>
