@@ -220,9 +220,14 @@ export default function App() {
 
 
       {/* =========================================================================
-          2. THE FOLDER TAB NAVIGATION (Fixed Header)
+          2. THE FOLDER TAB NAVIGATION
          ========================================================================= */}
-      <header className="fixed top-0 left-0 right-0 z-40 px-2 md:px-8 pt-4 md:pt-6 bg-gradient-to-b from-[#e8e4da] via-[#e8e4da] to-transparent pointer-events-none">
+      {/* 
+         UPDATES:
+         1. Removed "fixed top-0 left-0 right-0" -> Changed to "relative w-full" to scroll with page.
+         2. Removed "bg-gradient-to-b" to allow body texture to show through, removed "pointer-events-none".
+      */}
+      <header className="relative w-full z-40 px-2 md:px-8 pt-4 md:pt-6 pointer-events-auto">
         <div className="max-w-7xl mx-auto relative pointer-events-auto">
             
             {/* ALIGNMENT FIX: Removed `pl-1` to align perfectly with content below which uses `max-w-7xl mx-auto px-2 md:px-8` */}
@@ -237,7 +242,8 @@ export default function App() {
                     // GAP FIX: increased translate-y to 3px to push it down onto the border
                     className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[3px]"
                 >
-                    <div className="w-full h-full rounded-t-xl border-t border-x border-black/10 bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
+                    {/* UPDATE: Removed "border-t border-x border-black/10" */}
+                    <div className="w-full h-full rounded-t-xl bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
                         <span className="font-black text-2xl uppercase tracking-tighter text-black">ThinkPPT</span>
                     </div>
                 </button>
@@ -289,14 +295,16 @@ export default function App() {
                 <div className="flex-grow min-w-[20px]"></div>
 
                 {/* 2.2 UTILITY TABS (Fixed vertical text orientation) */}
-                <div className="flex items-end gap-3 pl-4">
+                {/* UPDATE: Added -translate-x-[5px] to move left */}
+                <div className="flex items-end gap-3 pl-4 -translate-x-[5px]">
                     {NAV_LINKS.map((link) => (
                          <a 
                             key={link.label}
                             href={link.href}
                             target={link.href.startsWith('http') ? "_blank" : "_self"}
                             rel="noreferrer"
-                            className="relative group h-12 w-10 md:h-14 md:w-12 rounded-t-lg border border-black/10 shadow-sm flex items-center justify-center transition-transform hover:-translate-y-2 z-0 hover:z-40 pb-2"
+                            // UPDATE: Reduced height from h-12/h-14 to h-10/h-12
+                            className="relative group h-10 w-10 md:h-12 md:w-12 rounded-t-lg border border-black/10 shadow-sm flex items-center justify-center transition-transform hover:-translate-y-2 z-0 hover:z-40 pb-2"
                             style={{ backgroundColor: link.color }}
                          >
                             {/* writing-mode-vertical-rl makes text flow top-to-bottom naturally */}
@@ -314,7 +322,8 @@ export default function App() {
       {/* =========================================================================
           3. MAIN CONTENT (The Folder Body)
          ========================================================================= */}
-      <main className="flex-grow pt-[calc(3.5rem+12px)] md:pt-[calc(3.5rem+24px)] px-2 md:px-8 pb-12 z-20">
+      {/* UPDATE: Removed "pt-[calc...]" as header is no longer fixed */}
+      <main className="flex-grow px-2 md:px-8 pb-12 z-20">
         
         {/* The "Paper" Container connected to tabs */}
         <div className="max-w-7xl mx-auto min-h-[85vh] bg-[#FDFBF7] rounded-b-lg rounded-tr-lg shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t border-black/5">
