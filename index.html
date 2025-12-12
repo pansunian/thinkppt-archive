@@ -6,20 +6,61 @@
     <title>ThinkPPT Archive</title>
     <!-- Keep Tailwind CDN for simplicity -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Configure Tailwind to use new fonts -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['ThinkPPT-Text', 'sans-serif'],
+              mono: ['ThinkPPT-Text', 'monospace'], /* Mapping small/mono text to the new body font as requested */
+              heading: ['ThinkPPT-Title', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+
     <style>
+      /* 1. Define Custom Title Font */
+      @font-face {
+        font-family: 'ThinkPPT-Title';
+        src: url('https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/8c277b02-1fee-42f2-afdb-02cecbd48cff.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      /* 2. Define Custom Body/Small Font */
+      @font-face {
+        font-family: 'ThinkPPT-Text';
+        src: url('https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/5afcb017-146a-44e9-a7a2-da1475e69f59.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
       body {
-        font-family: 'Space Grotesk', sans-serif;
+        /* Apply the "Small Font" (Text font) globally */
+        font-family: 'ThinkPPT-Text', sans-serif;
         background-color: #f0f0f0;
         /* Dot grid pattern */
         background-image: radial-gradient(#ccc 1px, transparent 1px);
         background-size: 20px 20px;
       }
-      .font-mono {
-        font-family: 'JetBrains Mono', monospace;
+
+      /* Apply the "Title Font" to all Headings */
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'ThinkPPT-Title', sans-serif;
       }
+      
+      /* Override .font-mono to use the "Small Font" instead of system monospace */
+      .font-mono {
+        font-family: 'ThinkPPT-Text', monospace !important;
+        letter-spacing: 0.05em; /* Add slight tracking for a cleaner "small text" look */
+      }
+
       /* Custom Scrollbar for the Archive feel */
       ::-webkit-scrollbar {
         width: 12px;
