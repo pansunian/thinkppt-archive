@@ -7,10 +7,29 @@ import { Scheme } from './types';
 import { mapNotionResultToSchemes } from './utils/notionMapper';
 
 // --- CONFIGURATION START ---
+
+// 1. 导航链接配置
 const NAV_LINKS = [
   { label: '官网', href: 'https://www.thinkppt.com', color: '#FFC8DD' },
   { label: '关于', href: '#', color: '#A2D2FF' }
 ];
+
+// 2. 品牌/Logo 配置
+const BRAND_CONFIG = {
+  // 模式: 'image' (图片Logo) 或 'text' (文字Logo)
+  mode: 'image', 
+  
+  // 文字模式下的内容
+  text: 'ThinkPPT',
+  
+  // 图片模式下的 URL 地址
+  // 将您的 logo.png 图片放入项目根目录下的 'public' 文件夹中
+  logoUrl: '/logo.png',
+  
+  // 图片的高度 (Tailwind class, e.g., 'h-6', 'h-8')
+  heightClass: 'h-8' 
+};
+
 // --- CONFIGURATION END ---
 
 // Skeleton Card Component for loading state
@@ -34,6 +53,7 @@ const SkeletonCard = () => (
 export default function App() {
   const [isSealed, setIsSealed] = useState(true);
   const [showOverlay, setShowOverlay] = useState(true);
+  const [logoError, setLogoError] = useState(false); // Track if logo failed to load
   
   // Navigation State
   const [activeCategory, setActiveCategory] = useState('全部');
@@ -257,7 +277,7 @@ export default function App() {
                 <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
                     <div className="border-b-2 border-dotted border-black mb-2 pb-1">
                         <span className="font-mono text-[10px] text-gray-400">PROJECT NAME</span>
-                        <h1 className="font-black text-2xl uppercase tracking-tighter">ThinkPPT.COM</h1>
+                        <h1 className="font-black text-2xl uppercase tracking-tighter">{BRAND_CONFIG.text}.COM</h1>
                     </div>
                     <div className="flex justify-between items-end">
                         <span className="font-mono text-[10px] text-gray-400 font-bold">
@@ -294,9 +314,20 @@ export default function App() {
                     ${activeCategory === '全部' ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}
                 `}
             >
-                 <span className="block [writing-mode:vertical-rl] font-black text-[10px] tracking-widest text-black py-2">
-                    THINK
-                 </span>
+                 {BRAND_CONFIG.mode === 'image' && !logoError ? (
+                     <div className="w-6 h-12 flex items-center justify-center">
+                         <img 
+                            src={BRAND_CONFIG.logoUrl} 
+                            alt={BRAND_CONFIG.text} 
+                            className="w-full max-h-full object-contain [writing-mode:vertical-rl]"
+                            onError={() => setLogoError(true)}
+                         />
+                     </div>
+                 ) : (
+                    <span className="block [writing-mode:vertical-rl] font-black text-[10px] tracking-widest text-black py-2 uppercase">
+                        {BRAND_CONFIG.text.slice(0, 5)}
+                    </span>
+                 )}
             </button>
 
             {/* Categories (Skip '全部' as it's the logo) */}
@@ -364,13 +395,24 @@ export default function App() {
             
             <div className="flex items-end overflow-x-auto w-full no-scrollbar relative" style={{ scrollbarWidth: 'none' }}>
                 
-                {/* 2.0 LOGO TAB */}
+                {/* 2.0 LOGO TAB - CONFIGURABLE */}
                 <button
                     onClick={() => handleCategoryChange('全部')}
                     className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[4px]"
                 >
                     <div className="w-full h-full rounded-t-xl bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
-                        <span className="font-black text-2xl uppercase tracking-tighter text-black">ThinkPPT</span>
+                        {BRAND_CONFIG.mode === 'image' && !logoError ? (
+                            <img 
+                                src={BRAND_CONFIG.logoUrl}
+                                alt={BRAND_CONFIG.text}
+                                className={`${BRAND_CONFIG.heightClass} w-auto object-contain select-none pointer-events-none`}
+                                onError={() => setLogoError(true)}
+                            />
+                        ) : (
+                            <span className="font-black text-2xl uppercase tracking-tighter text-black">
+                                {BRAND_CONFIG.text}
+                            </span>
+                        )}
                     </div>
                 </button>
 

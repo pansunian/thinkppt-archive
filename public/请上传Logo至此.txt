@@ -1,0 +1,4 @@
+请将您的 Logo 图片命名为 logo.png 并上传到这个文件夹中 (public/)。
+上传后，网站会自动加载 /logo.png。
+
+Please upload your logo image named 'logo.png' into this folder.
