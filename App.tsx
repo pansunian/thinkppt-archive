@@ -276,8 +276,18 @@ export default function App() {
 
                 <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
                     <div className="border-b-2 border-dotted border-black mb-2 pb-1">
-                        <span className="font-mono text-[10px] text-gray-400">PROJECT NAME</span>
-                        <h1 className="font-black text-2xl uppercase tracking-tighter">{BRAND_CONFIG.text}.COM</h1>
+                        <span className="font-mono text-[10px] text-gray-400 block mb-1">PROJECT NAME</span>
+                        {/* 档案袋 LOGO 显示 - 替换了原来的文字 */}
+                        {BRAND_CONFIG.mode === 'image' && !logoError ? (
+                            <img 
+                                src={BRAND_CONFIG.logoUrl}
+                                alt={BRAND_CONFIG.text}
+                                className="h-10 w-auto object-contain mb-1"
+                                onError={() => setLogoError(true)}
+                            />
+                        ) : (
+                            <h1 className="font-black text-2xl uppercase tracking-tighter">{BRAND_CONFIG.text}.COM</h1>
+                        )}
                     </div>
                     <div className="flex justify-between items-end">
                         <span className="font-mono text-[10px] text-gray-400 font-bold">
@@ -315,11 +325,12 @@ export default function App() {
                 `}
             >
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (
-                     <div className="w-6 h-12 flex items-center justify-center">
+                     <div className="w-8 h-20 flex items-center justify-center overflow-hidden">
+                         {/* 手机端 Logo 顺时针旋转 90 度 (rotate-90)，尺寸调整为 h-6 以适应竖向宽度 */}
                          <img 
                             src={BRAND_CONFIG.logoUrl} 
                             alt={BRAND_CONFIG.text} 
-                            className="w-full max-h-full object-contain [writing-mode:vertical-rl]"
+                            className="h-6 w-auto max-w-none object-contain rotate-90"
                             onError={() => setLogoError(true)}
                          />
                      </div>
