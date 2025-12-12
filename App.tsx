@@ -13,6 +13,24 @@ const NAV_LINKS = [
 ];
 // --- CONFIGURATION END ---
 
+// Skeleton Card Component for loading state
+const SkeletonCard = () => (
+  <div className="relative w-full aspect-[3/4] md:aspect-[3/4.2] mx-auto mt-8 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+    <div className="w-full aspect-video bg-gray-200 animate-pulse"></div>
+    <div className="p-5 flex flex-col flex-grow space-y-4">
+      <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+      <div className="space-y-2">
+        <div className="h-3 bg-gray-100 rounded animate-pulse"></div>
+        <div className="h-3 bg-gray-100 rounded w-5/6 animate-pulse"></div>
+      </div>
+      <div className="mt-auto flex gap-2">
+        <div className="h-4 w-12 bg-gray-100 rounded animate-pulse"></div>
+        <div className="h-4 w-12 bg-gray-100 rounded animate-pulse"></div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function App() {
   const [isSealed, setIsSealed] = useState(true);
   const [activeCategory, setActiveCategory] = useState('全部');
@@ -136,11 +154,12 @@ export default function App() {
         }}
       >
         <div 
-            onClick={() => !loading && setIsSealed(false)}
+            // PERF OPTIMIZATION: Removed "!loading" check so user can enter immediately
+            onClick={() => setIsSealed(false)}
             className={`
                 relative w-[340px] h-[480px] bg-[#FFDAC1] border-[3px] border-black rounded-xl shadow-[12px_12px_0px_0px_#d1d5db] 
                 flex flex-col items-center select-none overflow-hidden transition-transform duration-300
-                ${loading ? 'cursor-wait opacity-80' : 'cursor-pointer group hover:-translate-y-2'}
+                cursor-pointer group hover:-translate-y-2
             `}
         >
             {/* Top Flap */}
@@ -181,20 +200,20 @@ export default function App() {
             <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
                 <div className="border-b-2 border-dotted border-black mb-2 pb-1">
                     <span className="font-mono text-[10px] text-gray-400">PROJECT NAME</span>
-                    <h1 className="font-black text-3xl uppercase tracking-tight">ThinkPPT</h1>
+                    <h1 className="font-black text-2xl uppercase tracking-tighter">ThinkPPT.COM</h1>
                 </div>
                 <div className="flex justify-between items-end">
-                    <span className="font-mono text-[10px] text-gray-400">
-                        {loading ? 'SYNCING...' : (useMock ? 'DEMO MODE' : 'LIVE DATA')}
+                    <span className="font-mono text-[10px] text-gray-400 font-bold">
+                         {useMock ? '演示模式' : '深刻PPT'}
                     </span>
                     <span className="font-bold text-xs bg-black text-white px-2 py-0.5 rounded-full">
-                        {loading ? 'WAIT' : 'OPEN'}
+                         {loading ? '加载中' : '开启'}
                     </span>
                 </div>
             </div>
 
             <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest text-center px-4 max-w-full truncate text-red-500 font-bold">
-                {debugMsg ? debugMsg : (loading ? 'CONNECTING TO ARCHIVE...' : 'TOUCH TO UNSEAL')}
+                {debugMsg ? debugMsg : (loading ? '正在同步档案...' : '点击启封')}
             </p>
         </div>
       </div>
@@ -206,7 +225,8 @@ export default function App() {
       <header className="fixed top-0 left-0 right-0 z-40 px-2 md:px-8 pt-4 md:pt-6 bg-gradient-to-b from-[#e8e4da] via-[#e8e4da] to-transparent pointer-events-none">
         <div className="max-w-7xl mx-auto relative pointer-events-auto">
             
-            <div className="flex items-end overflow-x-auto w-full no-scrollbar relative pl-1" style={{ scrollbarWidth: 'none' }}>
+            {/* ALIGNMENT FIX: Removed `pl-1` to align perfectly with content below which uses `max-w-7xl mx-auto px-2 md:px-8` */}
+            <div className="flex items-end overflow-x-auto w-full no-scrollbar relative" style={{ scrollbarWidth: 'none' }}>
                 
                 {/* 2.0 LOGO TAB (Wider, distinctive) */}
                 <button
@@ -214,7 +234,8 @@ export default function App() {
                         setActiveCategory('全部');
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[1px]"
+                    // GAP FIX: increased translate-y to 3px to push it down onto the border
+                    className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[3px]"
                 >
                     <div className="w-full h-full rounded-t-xl border-t border-x border-black/10 bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
                         <span className="font-black text-2xl uppercase tracking-tighter text-black">ThinkPPT</span>
@@ -224,13 +245,17 @@ export default function App() {
                 {/* 2.1 CATEGORY TABS (Macaron colored) */}
                 {CATEGORIES.map((category, idx) => {
                     const isActive = activeCategory === category;
-                    // Cycle through palette for each tab
                     const tabColor = PALETTE[idx % PALETTE.length];
                     
-                    // Style Adjustments
-                    const heightClass = isActive ? 'h-14 translate-y-[1px]' : 'h-12 translate-y-[3px] hover:-translate-y-0.5';
-                    const zIndex = isActive ? 'z-40' : 'z-10 hover:z-20';
-                    // If not active, darken/desaturate slightly using filter, or just rely on z-index
+                    // GAP FIX: 
+                    // 1. Active tab: translate-y-[3px] ensures it sits ON the border.
+                    // 2. Inactive tab: translate-y-[6px] pushes it deeper behind. 
+                    // 3. Hover: hover:-translate-y-0.5 lifts it but NOT enough to create a gap (starts from 6px down, moves up to ~3px down).
+                    
+                    const heightClass = isActive 
+                        ? 'h-14 translate-y-[3px] z-40' 
+                        : 'h-14 translate-y-[6px] hover:translate-y-[2px] z-10 hover:z-20'; // Adjusted hover math
+                    
                     const opacityClass = isActive ? 'opacity-100' : 'opacity-90 hover:opacity-100';
                     
                     return (
@@ -242,13 +267,13 @@ export default function App() {
                             }}
                             className={`
                                 relative group flex-shrink-0 mr-[-8px] 
-                                px-0 transition-all duration-300 ease-out
-                                ${zIndex} ${heightClass} ${opacityClass}
+                                px-0 transition-all duration-200 ease-out
+                                ${heightClass} ${opacityClass}
                             `}
                         >
                             {/* The Tab Shape */}
                             <div 
-                                className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-5 md:px-6 min-w-[100px] md:min-w-[130px]`}
+                                className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-5 md:px-6 min-w-[100px] md:min-w-[130px] pt-1`}
                                 style={{ backgroundColor: tabColor }}
                             >
                                 {/* The "Label" inside the tab */}
@@ -305,12 +330,12 @@ export default function App() {
                             {activeCategory === '全部' ? 'Master Archive' : activeCategory}
                         </h1>
                         <p className="font-mono text-xs text-gray-500 max-w-lg">
-                            Browsing collection: {filteredSchemes.length} files found.
+                            {loading ? '正在检索文件...' : `已检索到 ${filteredSchemes.length} 个档案.`}
                         </p>
                     </div>
                     {/* Decorative Stamp */}
                     <div className="hidden md:flex w-24 h-24 border-4 border-red-500/20 rounded-full items-center justify-center -rotate-12">
-                        <span className="text-red-500/30 font-black text-xl uppercase">Confidential</span>
+                        <span className="text-red-500/30 font-black text-xl uppercase">绝密</span>
                     </div>
                 </div>
             </div>
@@ -325,19 +350,25 @@ export default function App() {
                     </div>
                 )}
 
+                {/* Loading Skeletons OR Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
-                    {filteredSchemes.map(scheme => (
-                        <ArchiveCard 
-                        key={scheme.id} 
-                        scheme={scheme} 
-                        onClick={() => setSelectedScheme(scheme)}
-                        />
-                    ))}
+                    {loading && !useMock ? (
+                        // Show Skeletons when loading
+                        Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
+                    ) : (
+                        filteredSchemes.map(scheme => (
+                            <ArchiveCard 
+                            key={scheme.id} 
+                            scheme={scheme} 
+                            onClick={() => setSelectedScheme(scheme)}
+                            />
+                        ))
+                    )}
                 </div>
                 
-                {filteredSchemes.length === 0 && !loading && (
+                {!loading && filteredSchemes.length === 0 && (
                     <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50 text-center p-8">
-                        <p className="mb-2 uppercase tracking-widest">[ Empty Folder ]</p>
+                        <p className="mb-2 uppercase tracking-widest">[ 空文件夹 ]</p>
                     </div>
                 )}
 
@@ -355,7 +386,7 @@ export default function App() {
                                 disabled:opacity-50 transition-all
                             "
                         >
-                            {loadingMore ? 'Retrieving files...' : 'Load Additional Records +'}
+                            {loadingMore ? '正在调取...' : '加载更多档案 +'}
                         </button>
                     </div>
                 )}

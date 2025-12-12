@@ -3,24 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ThinkPPT Archive</title>
-    <!-- Keep Tailwind CDN for simplicity -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ThinkPPT | 深刻 PPT</title>
     
-    <!-- Configure Tailwind to use new fonts -->
+    <!-- 1. Configure Tailwind BEFORE loading the library -->
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['ThinkPPT-Text', 'sans-serif'],
-              mono: ['ThinkPPT-Text', 'monospace'], /* Mapping small/mono text to the new body font as requested */
-              heading: ['ThinkPPT-Title', 'sans-serif'],
+      window.tailwind = {
+        config: {
+          theme: {
+            extend: {
+              fontFamily: {
+                sans: ['ThinkPPT-Text', 'sans-serif'],
+                mono: ['ThinkPPT-Text', 'monospace'],
+                heading: ['ThinkPPT-Title', 'sans-serif'],
+              }
             }
           }
         }
       }
     </script>
+    
+    <!-- 2. Load Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
       /* 1. Define Custom Title Font */
@@ -50,7 +53,7 @@
         background-size: 20px 20px;
       }
 
-      /* Apply the "Title Font" to all Headings */
+      /* Apply the "Title Font" to all Headings globally as a fallback */
       h1, h2, h3, h4, h5, h6 {
         font-family: 'ThinkPPT-Title', sans-serif;
       }

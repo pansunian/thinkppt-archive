@@ -46,7 +46,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 
          {/* Text Info */}
          <div className="p-5 flex flex-col h-full bg-white">
-            <h3 className="font-bold text-xl leading-snug text-gray-900 line-clamp-2 font-main tracking-tight">
+            <h3 className="font-bold text-xl leading-snug text-gray-900 line-clamp-2 font-heading tracking-tight">
                 {scheme.title}
             </h3>
             
