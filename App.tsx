@@ -192,8 +192,9 @@ export default function App() {
       {/* =========================================================================
           1. Macaron Archive Bag Overlay (Loading / Sealed State)
          ========================================================================= */}
+      {/* CHANGED: Background color from #F0EBE0 to white on mobile to prevent Safari beige bar */}
       <div 
-        className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-[#F0EBE0] transition-transform duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${!isSealed ? '-translate-y-full pointer-events-none' : ''}`}
+        className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-white md:bg-[#F0EBE0] transition-transform duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${!isSealed ? '-translate-y-full pointer-events-none' : ''}`}
         style={{
             backgroundImage: 'radial-gradient(#d1ccc0 1px, transparent 1px)', 
             backgroundSize: '24px 24px'
@@ -430,9 +431,9 @@ export default function App() {
       <main className="flex-grow pl-12 md:pl-8 md:px-2 md:pb-12 z-20 md:pt-0">
         
         {/* The "Paper" Container connected to tabs 
-            UPDATED: Mobile full height, no rounded corners, no top border
+            UPDATED: Mobile full height, no rounded corners, no top border, WHITE BG on Mobile
         */}
-        <div className="max-w-7xl mx-auto min-h-screen md:min-h-[85vh] bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-none shadow-none md:shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t-0 md:border-t border-black/5">
+        <div className="max-w-7xl mx-auto min-h-screen md:min-h-[85vh] bg-white md:bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-none shadow-none md:shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t-0 md:border-t border-black/5">
             
             {/* Visual Header Inside Folder */}
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
@@ -509,7 +510,7 @@ export default function App() {
             </div>
 
             {/* Folder Footer Flap (Visual End of Folder) */}
-            <div className="relative h-16 bg-[#FDFBF7] md:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center overflow-hidden">
+            <div className="relative h-16 bg-white md:bg-[#FDFBF7] md:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center overflow-hidden">
                 {/* Texture */}
                 <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'radial-gradient(#000 0.5px, transparent 0.5px)', backgroundSize: '4px 4px' }}></div>
                 
