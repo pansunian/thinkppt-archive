@@ -265,14 +265,92 @@ export default function App() {
 
 
       {/* =========================================================================
-          2. THE FOLDER TAB NAVIGATION
+          2.0 MOBILE SIDEBAR NAVIGATION (Vertical Tabs)
+          Visible only on mobile/tablet (hidden md)
          ========================================================================= */}
-      <header className="relative w-full z-40 px-2 md:px-8 pt-4 md:pt-6 pointer-events-auto">
+      <nav className="md:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-center items-start pointer-events-none py-4 w-12">
+        <div className="flex flex-col gap-1 pointer-events-auto items-start">
+            
+            {/* LOGO TAB (Home/All) - Distinct & Larger */}
+            <button
+                onClick={() => handleCategoryChange('全部')}
+                className={`
+                    relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm
+                    flex items-center justify-center transition-all duration-300 bg-white
+                    ${activeCategory === '全部' ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}
+                `}
+            >
+                 <span className="block [writing-mode:vertical-rl] font-black text-[10px] tracking-widest text-black py-2">
+                    THINK
+                 </span>
+            </button>
+
+            {/* Categories (Skip '全部' as it's the logo) */}
+            {categories.filter(c => c !== '全部').map((category, idx) => {
+                const isActive = activeCategory === category;
+                // Use original index logic for color consistency
+                const originalIndex = categories.indexOf(category);
+                const tabColor = PALETTE[originalIndex % PALETTE.length];
+                
+                return (
+                    <button
+                        key={category}
+                        onClick={() => handleCategoryChange(category)}
+                        className={`
+                            relative h-16 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm
+                            flex items-center justify-center transition-all duration-300
+                            ${isActive ? 'translate-x-0 w-10 shadow-md z-20' : '-translate-x-1 hover:translate-x-0 opacity-90 hover:opacity-100 z-10'}
+                        `}
+                        style={{ backgroundColor: tabColor }}
+                    >
+                        <span 
+                            className={`
+                                block [writing-mode:vertical-rl] 
+                                font-mono text-[10px] font-bold tracking-widest
+                                ${isActive ? 'text-black' : 'text-black/60'}
+                            `}
+                        >
+                            {category}
+                        </span>
+                    </button>
+                );
+            })}
+            
+            {/* Divider */}
+            <div className="h-2"></div>
+
+            {/* Utility Links (Vertical) - Smallest */}
+            {NAV_LINKS.map((link) => (
+                <a 
+                    key={link.label}
+                    href={link.href}
+                    target={link.href.startsWith('http') ? "_blank" : "_self"}
+                    rel="noreferrer"
+                    className="
+                        relative h-12 w-7 rounded-r-md border-y border-r border-black/10 shadow-sm
+                        flex items-center justify-center transition-transform duration-200
+                        -translate-x-1 hover:translate-x-0 bg-white
+                    "
+                    style={{ backgroundColor: link.color }}
+                >
+                    <span className="block [writing-mode:vertical-rl] font-mono text-[9px] font-bold text-black/50 tracking-tight">
+                        {link.label}
+                    </span>
+                </a>
+             ))}
+        </div>
+      </nav>
+
+      {/* =========================================================================
+          2.1 DESKTOP NAVIGATION (Horizontal Tabs)
+          Visible only on desktop (hidden md:block)
+         ========================================================================= */}
+      <header className="hidden md:block relative w-full z-40 px-2 md:px-8 pt-4 md:pt-6 pointer-events-auto">
         <div className="max-w-7xl mx-auto relative pointer-events-auto">
             
             <div className="flex items-end overflow-x-auto w-full no-scrollbar relative" style={{ scrollbarWidth: 'none' }}>
                 
-                {/* 2.0 LOGO TAB - Large & Anchored */}
+                {/* 2.0 LOGO TAB */}
                 <button
                     onClick={() => handleCategoryChange('全部')}
                     className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[4px]"
@@ -282,16 +360,13 @@ export default function App() {
                     </div>
                 </button>
 
-                {/* 2.1 DYNAMIC CATEGORY TABS (API Driven) - Smaller Size */}
+                {/* 2.1 DYNAMIC CATEGORY TABS */}
                 {categories.map((category, idx) => {
                     const isActive = activeCategory === category;
                     const tabColor = PALETTE[idx % PALETTE.length];
-                    
-                    // Logic: Smaller height (h-11 vs h-14), Deep overlap translate (4px/8px) to prevent gaps
                     const heightClass = isActive 
                         ? 'h-11 translate-y-[4px] z-40' 
                         : 'h-11 translate-y-[8px] hover:translate-y-[4px] z-10 hover:z-20'; 
-                    
                     const opacityClass = isActive ? 'opacity-100' : 'opacity-90 hover:opacity-100';
                     
                     return (
@@ -304,12 +379,10 @@ export default function App() {
                                 ${heightClass} ${opacityClass}
                             `}
                         >
-                            {/* The Tab Shape - Smaller Width */}
                             <div 
                                 className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-4 md:px-5 min-w-[90px] md:min-w-[100px] pt-1`}
                                 style={{ backgroundColor: tabColor }}
                             >
-                                {/* The "Label" inside the tab */}
                                 <span className={`font-mono text-[10px] md:text-xs font-bold uppercase tracking-wider text-black/70 group-hover:text-black transition-colors ${isActive ? 'text-black' : ''}`}>
                                     {category}
                                 </span>
@@ -318,10 +391,9 @@ export default function App() {
                     );
                 })}
 
-                {/* Spacer */}
                 <div className="flex-grow min-w-[20px]"></div>
 
-                {/* 2.2 UTILITY TABS - Wider but narrower than category, Shorter height, No gaps */}
+                {/* 2.2 UTILITY TABS */}
                 <div className="flex items-end gap-3 pl-4 -translate-x-[5px]">
                     {NAV_LINKS.map((link) => (
                          <a 
@@ -352,11 +424,12 @@ export default function App() {
 
       {/* =========================================================================
           3. MAIN CONTENT (The Folder Body)
+          Added 'pl-10 md:pl-8' to accommodate mobile sidebar
          ========================================================================= */}
-      <main className="flex-grow px-2 md:px-8 pb-12 z-20">
+      <main className="flex-grow px-2 pl-12 md:pl-8 pb-12 z-20 md:pt-0 pt-6">
         
         {/* The "Paper" Container connected to tabs */}
-        <div className="max-w-7xl mx-auto min-h-[85vh] bg-[#FDFBF7] rounded-b-lg rounded-tr-lg shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t border-black/5">
+        <div className="max-w-7xl mx-auto min-h-[85vh] bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t border-black/5">
             
             {/* Visual Header Inside Folder */}
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
