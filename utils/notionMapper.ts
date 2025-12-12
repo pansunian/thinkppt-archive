@@ -8,7 +8,6 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     const props = page.properties;
 
     // Helper to safely get values from different Notion property types with fallback keys
-    // Example: try getting 'Title', if not found, try 'Name', then 'Page'
     const getProp = (keys: string[]) => {
         for (const key of keys) {
             if (props[key]) return props[key];
@@ -39,43 +38,47 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
         return prop?.url || '';
     }
 
-    // NEW: Handle Notion Date Property
     const getDate = (keys: string[]) => {
         const prop = getProp(keys);
         if (!prop) return '';
         if (prop.type === 'date') {
-            return prop.date?.start || ''; // Returns YYYY-MM-DD
+            return prop.date?.start || ''; 
         }
-        // Fallback if user hasn't changed the column type yet
         if (prop.type === 'rich_text' || prop.type === 'title') {
              return prop.rich_text?.[0]?.plain_text || prop.title?.[0]?.plain_text || '';
         }
         return '';
     };
 
-    // UPDATED: Priority is now Native Page Cover -> File Property -> External Link Property -> Fallback
+    // UPDATED PRIORITY: 
+    // 1. First image found in content body (injected by backend)
+    // 2. Native Page Cover
+    // 3. Database "Files" property
     const getImage = (keys: string[]) => {
-       // 1. Check Native Page Cover (The standard image at the top of a Notion page)
+       // 1. Content Image (Fetched automatically from the first 5 blocks)
+       if (page.first_content_image) {
+           return page.first_content_image;
+       }
+
+       // 2. Check Native Page Cover
        if (page.cover) {
            if (page.cover.type === 'external') return page.cover.external.url;
            if (page.cover.type === 'file') return page.cover.file.url;
        }
 
-       // 2. Check Database Properties (if user manually made an "Image" column)
+       // 3. Check Database Properties
        const prop = getProp(keys);
        if (prop?.type === 'files' && prop.files.length > 0) {
            const file = prop.files[0];
            return file.type === 'file' ? file.file.url : file.external.url;
        }
        
-       // 3. Fallback placeholder
+       // 4. Fallback placeholder
        return 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?auto=format&fit=crop&w=800&q=80'; 
     };
 
-    // Assign a default color from palette based on index if no color provided in Notion
     const defaultColor = PALETTE[index % PALETTE.length];
 
-    // Mapping with fallbacks for common Notion column names
     return {
       id: page.id,
       title: getText(['Title', 'Name', 'Page', '标题', '方案名称']) || '无标题方案',
