@@ -1,24 +1,17 @@
-export const config = {
-  runtime: 'edge',
-};
-
-export default async function handler(request) {
+export default async function handler(request, response) {
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
   const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
-  // If credentials are not set, return 401 to let frontend know to use mock data
+  // 1. Check Credentials
   if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
-    return new Response(
-      JSON.stringify({ error: 'Notion credentials missing' }),
-      {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return response.status(401).json({ 
+      error: 'Notion credentials missing in Vercel Environment Variables.' 
+    });
   }
 
   try {
-    const response = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
+    // 2. Fetch from Notion
+    const notionRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${NOTION_API_KEY}`,
@@ -27,26 +20,23 @@ export default async function handler(request) {
       },
       body: JSON.stringify({
         page_size: 100,
-        // Optional: Only show items where 'Status' is 'Published'
-        // filter: {
-        //   property: "Status",
-        //   status: { equals: "Published" }
-        // }
       }),
     });
 
-    const data = await response.json();
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=10, stale-while-revalidate=59', // Cache for speed
-      },
-    });
+    // 3. Handle Notion Errors
+    if (!notionRes.ok) {
+      const errorText = await notionRes.text();
+      console.error('Notion API Error:', errorText);
+      return response.status(notionRes.status).json({ error: 'Notion API refused connection', details: errorText });
+    }
+
+    const data = await notionRes.json();
+    
+    // 4. Success
+    return response.status(200).json(data);
+
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Failed to fetch from Notion' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error('Server Error:', error);
+    return response.status(500).json({ error: 'Internal Server Error' });
   }
 }

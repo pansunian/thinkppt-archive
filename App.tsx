@@ -25,6 +25,7 @@ export default function App() {
   const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [loading, setLoading] = useState(true);
   const [useMock, setUseMock] = useState(false);
+  const [debugMsg, setDebugMsg] = useState('');
 
   // Fetch Data on Load
   useEffect(() => {
@@ -33,20 +34,33 @@ export default function App() {
         // Attempt to fetch from our Vercel API
         const res = await fetch('/api/schemes');
         
-        if (res.status === 401 || res.status === 404) {
-             // API not configured yet, use Mock
-             console.log("Notion API not configured, using Mock Data.");
+        if (res.status === 401) {
+             console.warn("Notion API Key missing.");
+             setDebugMsg("请在 Vercel 环境变量中配置 NOTION_API_KEY");
              setSchemes(MOCK_SCHEMES);
              setUseMock(true);
-        } else if (res.ok) {
+        } else if (!res.ok) {
+             const err = await res.json();
+             console.error("API Error:", err);
+             setDebugMsg(`API Error: ${err.details || res.statusText}`);
+             setSchemes(MOCK_SCHEMES);
+             setUseMock(true);
+        } else {
              const data = await res.json();
              const mappedData = mapNotionResultToSchemes(data);
-             setSchemes(mappedData.length > 0 ? mappedData : MOCK_SCHEMES);
-        } else {
-             throw new Error('API Error');
+             if (mappedData.length === 0) {
+                 setDebugMsg("连接成功，但数据库为空");
+                 setSchemes(MOCK_SCHEMES);
+                 setUseMock(true);
+             } else {
+                 setSchemes(mappedData);
+                 setUseMock(false);
+                 setDebugMsg("");
+             }
         }
       } catch (error) {
         console.error("Failed to load archive:", error);
+        setDebugMsg("网络请求失败");
         setSchemes(MOCK_SCHEMES); // Fallback
         setUseMock(true);
       } finally {
@@ -112,8 +126,8 @@ export default function App() {
                 </div>
             </div>
 
-            <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest">
-                {loading ? 'CONNECTING TO ARCHIVE...' : 'TOUCH TO UNSEAL'}
+            <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest text-center px-4">
+                {loading ? 'CONNECTING TO ARCHIVE...' : (debugMsg || 'TOUCH TO UNSEAL')}
             </p>
         </div>
       </div>
@@ -199,6 +213,14 @@ export default function App() {
             </div>
         </div>
 
+        {/* Debug Banner if using Mock Data */}
+        {useMock && (
+             <div className="mb-8 p-4 bg-yellow-100 border-2 border-black border-dashed rounded-lg font-mono text-xs flex justify-between items-center">
+                 <span className="text-yellow-800">⚠️ 演示模式: {debugMsg || '未连接到 Notion 数据库'}</span>
+                 <a href="https://vercel.com" target="_blank" rel="noreferrer" className="underline font-bold">检查配置</a>
+             </div>
+        )}
+
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-24">
             {filteredSchemes.map(scheme => (
@@ -213,7 +235,6 @@ export default function App() {
         {filteredSchemes.length === 0 && (
              <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 text-center p-8">
                  <p className="mb-2">[ NO FOLDERS FOUND ]</p>
-                 {useMock && <p className="text-xs text-red-400">当前正在使用演示数据。<br/>请连接 Notion 数据库以显示真实内容。</p>}
              </div>
         )}
 
