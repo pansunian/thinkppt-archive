@@ -802,6 +802,7 @@ export default function App() {
         <SchemeDetail 
           scheme={selectedScheme} 
           onClose={() => setSelectedScheme(null)} 
+          isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID}
         />
       )}
 

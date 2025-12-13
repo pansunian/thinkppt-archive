@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Scheme } from '../types';
-import { CATEGORIES } from '../constants';
 
 interface SchemeDetailProps {
   scheme: Scheme;
   onClose: () => void;
+  isResourceDb?: boolean;
 }
 
 // Helper: Render Rich Text Array from Notion
@@ -155,7 +155,7 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
   }
 };
 
-export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) => {
+export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isResourceDb = false }) => {
   const [mounted, setMounted] = useState(false);
   const [content, setContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -163,11 +163,6 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
   // Logic to determine if "Action" section should be shown.
   // We hide it specifically for static pages like "About" or "Subscribe"
   const isPage = scheme.title === '关于' || scheme.title === '订阅';
-
-  // Determine if this is a Standard Scheme (from Constants) or an External Tool (e.g. AI DB)
-  // If the category is one of the standard defined PPT categories, we treat it as a "Scheme" (Download).
-  // Otherwise, we treat it as a "Resource/Tool" (Visit Website).
-  const isStandardScheme = CATEGORIES.includes(scheme.category);
 
   useEffect(() => {
     setMounted(true);
@@ -317,18 +312,18 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                         <section className="pt-4 pb-8 border-t border-dashed border-gray-200 mt-12">
                             {/* 
                                 Logic Update: 
-                                We now check if it is a Standard Scheme (PPT) or External Tool (AI).
-                                - Schemes: Show "Click to Download" + Download Icon
-                                - Tools: Show "Go to Website" + External Link Icon
+                                We now check if it is a Resource DB (e.g. AI Tools) or Standard DB.
+                                - Resource DB: Show "Go to Website" + External Link Icon
+                                - Standard DB: Show "Click to Download" + Download Icon
                             */}
                             {scheme.downloadUrl ? (
                                 <>
                                     <div className="flex flex-col items-center justify-center text-center mb-6">
                                         <h3 className="font-black text-2xl uppercase mb-2">
-                                            {isStandardScheme ? '获取方案' : '立即使用'}
+                                            {isResourceDb ? '立即使用' : '获取方案'}
                                         </h3>
                                         <p className="text-gray-500 text-sm max-w-md">
-                                            {isStandardScheme ? '获取完整 PPT 源文件' : '点击下方按钮跳转至目标网页'}
+                                            {isResourceDb ? '点击下方按钮跳转至目标网页' : '获取完整 PPT 源文件'}
                                         </p>
                                     </div>
                                     <a 
@@ -339,13 +334,13 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                                     >
                                         <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
                                         <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
-                                            <span>{isStandardScheme ? '点击下载' : '直达官网'}</span>
-                                            {isStandardScheme ? (
-                                                /* Download Icon */
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                            ) : (
+                                            <span>{isResourceDb ? '直达官网' : '点击下载'}</span>
+                                            {isResourceDb ? (
                                                 /* External Link Icon */
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                            ) : (
+                                                /* Download Icon */
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                             )}
                                         </div>
                                     </a>
