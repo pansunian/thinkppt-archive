@@ -216,8 +216,8 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
             </button>
         </div>
 
-        {/* Unified Scroll Container */}
-        <div className="w-full h-full overflow-y-auto custom-scrollbar bg-white">
+        {/* Unified Scroll Container - Removed custom-scrollbar class */}
+        <div className="w-full h-full overflow-y-auto bg-white">
             
             {/* 1. Hero Image Section */}
             <div className="w-full relative bg-gray-100 border-b-2 border-black">

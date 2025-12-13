@@ -39,7 +39,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
              {/* Text Label */}
              {/* UPDATED: pt-2 (8px) changed to pt-[6px] to move text up by 2px */}
              <div className="absolute inset-0 flex items-center justify-center pt-[6px]">
-                 <span className="font-mono text-[10px] font-bold opacity-50 tracking-widest text-black whitespace-nowrap">
+                 <span className="font-mono text-[10px] font-bold opacity-60 tracking-widest text-black whitespace-nowrap">
                     VOL.{scheme.year}
                  </span>
              </div>
@@ -103,16 +103,16 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
          {/* Top Bevel Highlight (Thickness) */}
          <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/50"></div>
 
-         {/* Content - Pushed up slightly to make room for ridges */}
-         <div className="relative z-10 flex justify-between items-start opacity-70 mix-blend-multiply mt-1">
+         {/* Content - Removed opacity-70 and mix-blend-multiply from the text container to improve clarity on colored backgrounds */}
+         <div className="relative z-10 flex justify-between items-start mt-1 text-black/70">
              <div className="flex flex-col">
-                 <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-left opacity-70">Category</span>
+                 <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-left">Category</span>
                  <span className="font-bold text-xs font-mono uppercase tracking-wide border-b-2 border-black/10 pb-0.5">
                     {scheme.category}
                  </span>
              </div>
              <div className="flex flex-col items-end">
-                <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-right opacity-70">ID Code</span>
+                <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-right">ID Code</span>
                 {/* UPDATED: Uses displayId from Notion property instead of UUID slice */}
                 <span className="font-bold text-xs font-mono tracking-tighter">{scheme.displayId}</span>
              </div>
@@ -130,7 +130,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 
          {/* Client Name Overlay on top of ridges (optional style) or above */}
          <div className="absolute bottom-4 left-5 right-5 z-10 flex justify-center">
-             <span className="font-black text-[3rem] leading-none opacity-[0.07] mix-blend-multiply truncate pointer-events-none w-full text-center tracking-tighter font-mono">
+             <span className="font-black text-[3rem] leading-none opacity-[0.08] mix-blend-multiply truncate pointer-events-none w-full text-center tracking-tighter font-mono">
                  {scheme.brand}
              </span>
          </div>

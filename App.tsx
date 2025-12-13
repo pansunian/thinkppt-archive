@@ -26,7 +26,7 @@ const RESOURCE_LINKS: ResourceLink[] = [
     label: 'AI', 
     type: 'database', 
     id: process.env.NOTION_DB_AI_ID, 
-    color: '#FFF6BD' // 黄色系
+    color: '#FFF6BD' // 黄色系 (Kept high viz for navigation)
   },
 
   // 2. [关于] - 独立 Notion 页面
@@ -137,18 +137,18 @@ export default function App() {
   const [loadingMore, setLoadingMore] = useState(false);
 
   // Background Folders Configuration for the Opening Animation
-  // Richer Macaron Palette and More Angles
+  // Updated to use the new Richer MORANDI Palette from constants
   const bgFolders = [
-    { color: '#C7CEEA', top: '10%', left: '15%', rotate: '-15deg', scale: 0.8, delay: '0s' },  // Periwinkle
-    { color: '#FFB7B2', top: '20%', left: '85%', rotate: '12deg', scale: 0.75, delay: '1s' }, // Coral Pink
-    { color: '#B5EAD7', top: '65%', left: '8%', rotate: '8deg', scale: 0.85, delay: '0.5s' }, // Mint
-    { color: '#E2C6FF', top: '75%', left: '80%', rotate: '-10deg', scale: 0.9, delay: '1.5s' }, // Lavender
-    { color: '#FFDAC1', top: '40%', left: '-5%', rotate: '35deg', scale: 0.6, delay: '2s' },  // Peach (Edge)
-    { color: '#93C5FD', top: '35%', left: '95%', rotate: '-25deg', scale: 0.65, delay: '0.2s' }, // Blue (Edge)
-    { color: '#E2F0CB', top: '5%', left: '55%', rotate: '5deg', scale: 0.5, delay: '3s' },    // Lime (Distant)
-    { color: '#FF9AA2', top: '90%', left: '40%', rotate: '-5deg', scale: 0.6, delay: '2.5s' }, // Salmon (Distant)
-    { color: '#FFC8DD', top: '15%', left: '5%', rotate: '20deg', scale: 0.55, delay: '1.8s' }, // Sakura
-    { color: '#FFF6BD', top: '85%', left: '92%', rotate: '-15deg', scale: 0.5, delay: '3.5s' }, // Lemon
+    { color: PALETTE[0], top: '10%', left: '15%', rotate: '-15deg', scale: 0.8, delay: '0s' },  
+    { color: PALETTE[1], top: '20%', left: '85%', rotate: '12deg', scale: 0.75, delay: '1s' }, 
+    { color: PALETTE[2], top: '65%', left: '8%', rotate: '8deg', scale: 0.85, delay: '0.5s' }, 
+    { color: PALETTE[3], top: '75%', left: '80%', rotate: '-10deg', scale: 0.9, delay: '1.5s' }, 
+    { color: PALETTE[4], top: '40%', left: '-5%', rotate: '35deg', scale: 0.6, delay: '2s' },  
+    { color: PALETTE[5], top: '35%', left: '95%', rotate: '-25deg', scale: 0.65, delay: '0.2s' }, 
+    { color: PALETTE[6], top: '5%', left: '55%', rotate: '5deg', scale: 0.5, delay: '3s' },    
+    { color: PALETTE[7], top: '90%', left: '40%', rotate: '-5deg', scale: 0.6, delay: '2.5s' }, 
+    { color: PALETTE[8], top: '15%', left: '5%', rotate: '20deg', scale: 0.55, delay: '1.8s' }, 
+    { color: PALETTE[9], top: '85%', left: '92%', rotate: '-15deg', scale: 0.5, delay: '3.5s' }, 
   ];
 
   // Remove Overlay from DOM after transition
@@ -436,7 +436,7 @@ export default function App() {
                 ))}
             </div>
 
-            {/* Central Teal Folder */}
+            {/* Central Rich Morandi Folder */}
             <div 
                 onClick={() => setIsSealed(false)}
                 className="relative z-50 cursor-pointer group"
@@ -445,23 +445,33 @@ export default function App() {
                 <div 
                     className="w-[320px] h-[240px] md:w-[480px] md:h-[340px] rounded-lg flex flex-col items-center justify-center transition-transform duration-300 group-hover:scale-105 relative"
                     style={{ 
-                        backgroundColor: '#5EEAD4', // Mint/Teal color
-                        // Enhanced Realistic Shadow
-                        boxShadow: '0 30px 60px -10px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(94, 234, 212, 0.4)' 
+                        backgroundColor: '#01847E', // UPDATED: Mars Green
+                        // Enhanced Realistic Shadow with matching tint
+                        boxShadow: '0 30px 60px -10px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(1, 132, 126, 0.4)'
                     }}
                 >
-                    {/* Folder Flap (Lighter Teal) */}
+                    {/* Folder Flap (Lighter) */}
                     <div className="absolute top-0 left-0 right-0 h-[35%] bg-white/10 rounded-t-lg border-b border-black/5"></div>
 
                     {/* Logo/Brand Area - Text Only */}
-                    <div className="relative z-20 flex items-center justify-center mt-8">
-                         <h1 className="font-heading font-black text-4xl md:text-6xl text-white tracking-tighter drop-shadow-sm select-none translate-y-[3px]">
+                    {/* UPDATED: Added mt-9 and translate-y-[8px] to move ThinkPPT down ~5px total relative to previous pos */}
+                    <div className="relative z-20 flex flex-col items-center justify-center mt-9">
+                         <h1 className="font-heading font-black text-4xl md:text-6xl text-white tracking-tighter drop-shadow-sm select-none translate-y-[8px]">
                              ThinkPPT
                          </h1>
+                         {/* UPDATED: Added subtitle */}
+                         <span className="text-white/80 text-xs md:text-sm font-bold tracking-widest mt-2 translate-y-[8px]">
+                            ﹝深刻PPT﹞
+                         </span>
                     </div>
 
                     {/* String Closure Mechanism */}
                     <div className="absolute top-[35%] -translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-30">
+                        {/* UPDATED: Slogan Text - White/80 for better contrast on #7299AA */}
+                        <span className="absolute -top-7 whitespace-nowrap text-[10px] text-white/80 font-mono tracking-widest font-bold">
+                            策划人的方案档案库
+                        </span>
+
                         {/* Top Button */}
                         <div className="w-5 h-5 md:w-7 md:h-7 bg-white rounded-full shadow-md flex items-center justify-center">
                             <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-300 rounded-full"></div>

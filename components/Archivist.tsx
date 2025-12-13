@@ -55,8 +55,8 @@ export const Archivist: React.FC = () => {
               </button>
             </div>
 
-            {/* Content */}
-            <div className="p-6 overflow-y-auto custom-scrollbar">
+            {/* Content - Removed custom-scrollbar class */}
+            <div className="p-6 overflow-y-auto">
               <p className="font-mono text-sm mb-4 text-gray-700">
                 // SYSTEM: 正在监听... <br/>
                 请输入您想要制作的 PPT 主题，我将为您调取相关的结构大纲。

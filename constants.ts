@@ -2,18 +2,19 @@ import { Scheme } from './types';
 
 export const CATEGORIES = ['全部', '策略方案', '创意设计', '融资路演', '工作汇报', '品牌手册'];
 
-// Macaron Palette (9 distinct colors)
-// Updated order to ensure high contrast between adjacent colors, especially 0 and 1.
+// Richer Morandi Palette (Extracted from provided image)
+// Vibrant yet low-saturation colors
 export const PALETTE = [
-  '#FF9AA2', // 0. Salmon Pink
-  '#C7CEEA', // 1. Periwinkle Blue (Moved up for contrast)
-  '#FFDAC1', // 2. Peach
-  '#E2F0CB', // 3. Lime Sorbet
-  '#FFB7B2', // 4. Soft Coral (Moved down)
-  '#B5EAD7', // 5. Minty
-  '#E2C6FF', // 6. Lavender
-  '#FFC8DD', // 7. Sakura
-  '#FFF6BD', // 8. Lemon Chiffon
+  '#7299AA', // Steel Blue (NO.04)
+  '#AA8366', // Bronze Brown (NO.02)
+  '#8DA5A8', // Teal Grey (NO.03)
+  '#ACA2CE', // Muted Purple (NO.01)
+  '#D1C079', // Mustard Gold (NO.05)
+  '#679684', // Deep Sage (NO.08)
+  '#F4AFA4', // Salmon Pink (NO.09)
+  '#ADD8D7', // Soft Cyan (NO.04)
+  '#DEBBB3', // Warm Rose (NO.03)
+  '#9E8064', // Coffee (NO.06)
 ];
 
 export const MOCK_SCHEMES: Scheme[] = [
@@ -69,7 +70,7 @@ export const MOCK_SCHEMES: Scheme[] = [
     date: 'JAN 10',
     description: '高层战略路线图模板。包含SWOT分析网格、PEST分析及未来5年增长地平线规划。',
     tags: ['#战略', '#规划'],
-    color: PALETTE[2], 
+    color: PALETTE[1], 
     imageUrl: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?auto=format&fit=crop&q=80&w=800',
     brand: 'FutureCorp',
     industry: '咨询服务',
@@ -84,7 +85,7 @@ export const MOCK_SCHEMES: Scheme[] = [
     date: 'DEC 05',
     description: 'Go-to-Market 上市策略框架。包含用户画像定义、全渠道营销日历。',
     tags: ['#发布会', '#GTM'],
-    color: PALETTE[6], 
+    color: PALETTE[4], 
     imageUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=800',
     brand: 'Nova Gear',
     industry: '3C数码',
@@ -99,7 +100,7 @@ export const MOCK_SCHEMES: Scheme[] = [
     date: 'NOV 20',
     description: '设计师求职/展示专用。以“问题-过程-方案”为逻辑，大图展示高保真原型。',
     tags: ['#UX', '#作品集'],
-    color: PALETTE[8], 
+    color: PALETTE[6], 
     imageUrl: 'https://images.unsplash.com/photo-1586717791821-3f44a5638d48?auto=format&fit=crop&q=80&w=800',
     brand: 'Personal',
     industry: '互联网',
