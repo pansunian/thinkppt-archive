@@ -8,7 +8,8 @@
     
     <!-- 0. PRELOAD FONTS: Force browser to download these immediately -->
     <link rel="preload" href="https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/8c277b02-1fee-42f2-afdb-02cecbd48cff.woff" as="font" type="font/woff" crossorigin="anonymous">
-    <link rel="preload" href="https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/5afcb017-146a-44e9-a7a2-da1475e69f59.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <!-- Local font preload (Optional but recommended if file exists) -->
+    <link rel="preload" href="/SourceHanSansCN-Regular.woff" as="font" type="font/woff" crossorigin="anonymous">
 
     <!-- 1. Configure Tailwind BEFORE loading the library -->
     <script>
@@ -52,18 +53,18 @@
         font-display: swap;
       }
 
-      /* 2. Text Font - Normal */
+      /* 2. Text Font - Normal (Updated to Local SourceHanSansCN) */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/5afcb017-146a-44e9-a7a2-da1475e69f59.woff2') format('woff2');
+        src: url('/SourceHanSansCN-Regular.woff') format('woff');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
-      /* 2. Text Font - Force Bold Mapping */
+      /* 2. Text Font - Force Bold Mapping (Using same regular font file) */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/5afcb017-146a-44e9-a7a2-da1475e69f59.woff2') format('woff2');
+        src: url('/SourceHanSansCN-Regular.woff') format('woff');
         font-weight: 700;
         font-style: normal;
         font-display: swap;
@@ -137,11 +138,6 @@
     <script>
       document.fonts.ready.then(function () {
         console.log('Fonts loaded state:', document.fonts.status);
-        const fontCheck = new FontFace('CheckTest', 'url(https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/8c277b02-1fee-42f2-afdb-02cecbd48cff.woff)');
-        fontCheck.load().catch(e => {
-            console.error('Font Load Error (Likely CORS):', e);
-            console.log('%c Please enable CORS in Aliyun OSS Console!', 'background: red; color: white; font-size: 16px; padding: 4px;');
-        });
       });
     </script>
   </body>
