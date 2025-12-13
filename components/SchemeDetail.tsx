@@ -31,6 +31,7 @@ const RichText: React.FC<{ textArr: any[] }> = ({ textArr }) => {
 };
 
 // Helper: Block Renderer
+// Now accepts `block` and renders children recursively if available
 const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
   const type = block.type;
   const value = block[type];
@@ -108,6 +109,46 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
     case 'divider':
         return <hr className="my-8 border-t border-dashed border-gray-300" />;
 
+    // --- NEW: Column List (Flex Container) ---
+    case 'column_list':
+        return (
+            <div className="flex flex-col md:flex-row gap-6 w-full my-4">
+                {block.children?.map((childBlock: any) => (
+                    <NotionBlock key={childBlock.id} block={childBlock} />
+                ))}
+            </div>
+        );
+
+    // --- NEW: Column (Flex Item) ---
+    case 'column':
+        return (
+            <div className="flex-1 min-w-0">
+                {block.children?.map((childBlock: any) => (
+                    <NotionBlock key={childBlock.id} block={childBlock} />
+                ))}
+            </div>
+        );
+
+    // --- NEW: Toggle (Details/Summary) ---
+    case 'toggle':
+        return (
+            <details className="group my-2 p-2 border border-gray-100 rounded-lg open:bg-gray-50 open:shadow-sm transition-all">
+                <summary className="cursor-pointer font-bold text-gray-800 list-none flex items-center gap-2 select-none group-hover:text-black">
+                    <span className="text-xs transition-transform group-open:rotate-90">▶</span>
+                    <RichText textArr={value.rich_text} />
+                </summary>
+                <div className="mt-2 pl-6 text-gray-700">
+                     {block.children?.length > 0 ? (
+                        block.children.map((childBlock: any) => (
+                            <NotionBlock key={childBlock.id} block={childBlock} />
+                        ))
+                     ) : (
+                        <span className="text-gray-400 text-sm italic">空内容</span>
+                     )}
+                </div>
+            </details>
+        );
+
     default:
       return null;
   }
@@ -118,21 +159,9 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
   const [content, setContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Logic to determine if "Download" section should be shown.
-  // We hide it for AI (usually links, user requested no download button) and static pages (About/Subscribe).
-  // Checks if scheme is About/Subscribe or if user wants to treat AI navigation differently.
+  // Logic to determine if "Action" section should be shown.
+  // We hide it specifically for static pages like "About" or "Subscribe"
   const isPage = scheme.title === '关于' || scheme.title === '订阅';
-  // If user wants to hide download button for AI navigation as well, we can check a flag.
-  // Since "AI" items have a URL mapped to downloadUrl, if we want to hide it, we can check for that condition.
-  // Here we hide it for About/Subscribe pages explicitly.
-  // For AI items, if they have a URL, we will show "Visit Website" instead of "Download", unless strictly hidden.
-  // Assuming user wants *no button* for pages, but maybe link for AI is ok? 
-  // User said "AI导航... 内容详情页也不需要展示下载按钮". 
-  // I will hide the section if it is Page OR if it seems like a Nav item (we can guess if industry/brand are default).
-  // But safest is: Show "Visit" for URL, Hide for empty.
-  // However, I will strictly hide for About/Subscribe.
-  
-  // NOTE: If you want to hide for AI too, add: || scheme.industry === '通用' (or whatever AI defaults to)
 
   useEffect(() => {
     setMounted(true);
@@ -145,7 +174,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
             const res = await fetch(`/api/content?id=${scheme.id}`);
             if (res.ok) {
                 const data = await res.json();
-                // Notion API returns { object: 'list', results: [...] }
+                // Notion API returns { results: [...] }
                 setContent(data.results || []);
             }
         } catch (error) {
@@ -277,19 +306,23 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                         </div>
                     )}
 
-                    {/* Download Action - Hidden for Pages (About/Subscribe) AND AI Navigation (if mapped as URL but user requested no button) */}
-                    {/* Updated Logic: Hide if explicitly About/Subscribe. For AI, we change button style to "Visit Website" */}
+                    {/* Action Section - Hidden for Pages (About/Subscribe) */}
                     {!isPage && (
                         <section className="pt-4 pb-8 border-t border-dashed border-gray-200 mt-12">
-                            {/* Logic: If it has a downloadUrl (likely a URL), check if it's a file or a link */}
+                            {/* 
+                                Logic Update: 
+                                If downloadUrl exists (and since we removed the strictly 'notion' check in mapping),
+                                we default to showing "Visit Website" style text if it looks like a URL.
+                                This solves the AI Navigation "Download" text issue.
+                            */}
                             {scheme.downloadUrl ? (
                                 <>
                                     <div className="flex flex-col items-center justify-center text-center mb-6">
                                         <h3 className="font-black text-2xl uppercase mb-2">
-                                            {scheme.downloadUrl.startsWith('http') && !scheme.downloadUrl.includes('notion') ? '访问链接' : '立即使用'}
+                                            立即使用
                                         </h3>
                                         <p className="text-gray-500 text-sm max-w-md">
-                                            {scheme.downloadUrl.startsWith('http') && !scheme.downloadUrl.includes('notion') ? '点击下方按钮跳转至目标网页。' : '获取完整源文件及演示结构。'}
+                                            点击下方按钮跳转至目标网页。
                                         </p>
                                     </div>
                                     <a 
@@ -300,16 +333,12 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                                     >
                                         <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
                                         <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
-                                            <span>{scheme.downloadUrl.startsWith('http') && !scheme.downloadUrl.includes('notion') ? '访问网页' : '下载源文件'}</span>
+                                            <span>直达官网</span>
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                         </div>
                                     </a>
                                 </>
-                            ) : (
-                                // If no URL and not a Page, we hide the section or show nothing.
-                                // For consistency with Archive layout, we can just hide it if empty.
-                                null
-                            )}
+                            ) : null}
                         </section>
                     )}
                 </div>
