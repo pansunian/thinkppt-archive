@@ -62,10 +62,17 @@ export default async function handler(request, response) {
         console.warn("Failed to fetch database metadata for categories", e);
     }
 
-    // 3. Prepare Query Body with Filter
+    // 3. Prepare Query Body with Filter AND Sorting
+    // Added 'sorts' to prioritize latest updated content
     const queryBody = {
       page_size: 48, // Load 48 items per page as requested
       start_cursor: cursor || undefined,
+      sorts: [
+        {
+            timestamp: 'last_edited_time',
+            direction: 'descending',
+        }
+      ]
     };
 
     // Apply Filter if category is selected and valid property found
