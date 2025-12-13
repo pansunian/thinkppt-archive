@@ -1,12 +1,13 @@
 export default async function handler(request, response) {
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
-  const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
+  // Default to env var, but allow override via query param
+  const NOTION_DATABASE_ID = request.query.db_id || process.env.NOTION_DATABASE_ID;
   const { cursor, category } = request.query; 
 
   // 1. Check Credentials
   if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
     return response.status(401).json({ 
-      error: 'Notion credentials missing in Vercel Environment Variables.' 
+      error: 'Notion credentials missing (API Key or Database ID).' 
     });
   }
 

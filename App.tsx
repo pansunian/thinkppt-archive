@@ -8,10 +8,42 @@ import { mapNotionResultToSchemes } from './utils/notionMapper';
 
 // --- CONFIGURATION START ---
 
-// 1. 导航链接配置
-const NAV_LINKS = [
-  { label: '官网', href: 'https://www.thinkppt.com', color: '#FFC8DD' },
-  { label: '关于', href: '#', color: '#A2D2FF' }
+interface ResourceLink {
+  label: string;
+  type: string;
+  href?: string;
+  color: string;
+  id?: string;
+}
+
+/**
+ * 资源链接/多数据库导航配置:
+ * 右上角仅展示 3 个标签：AI (数据库), 关于 (页面), 订阅 (页面)
+ */
+const RESOURCE_LINKS: ResourceLink[] = [
+  // 1. [AI] - 切换到 AI 数据库
+  { 
+    label: 'AI', 
+    type: 'database', 
+    id: process.env.NOTION_DB_AI_ID, 
+    color: '#FFF6BD' // 黄色系
+  },
+
+  // 2. [关于] - 独立 Notion 页面
+  { 
+    label: '关于', 
+    type: 'page', 
+    id: process.env.NOTION_PAGE_ABOUT_ID, 
+    color: '#e5e7eb' // 灰色系
+  },
+
+  // 3. [订阅] - 独立 Notion 页面
+  { 
+    label: '订阅', 
+    type: 'page', 
+    id: process.env.NOTION_PAGE_SUBSCRIBE_ID, 
+    color: '#A2D2FF' // 蓝色系
+  }
 ];
 
 // 2. 品牌/Logo 配置
@@ -58,6 +90,8 @@ export default function App() {
   // Navigation State
   const [activeCategory, setActiveCategory] = useState('全部');
   const [categories, setCategories] = useState<string[]>(['全部']); // Start with default, will populate from API
+  const [currentDatabaseId, setCurrentDatabaseId] = useState<string | null>(null); // Null means use default from ENV
+  const [currentDatabaseLabel, setCurrentDatabaseLabel] = useState('方案'); // Track visible label name
   
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
   
@@ -83,10 +117,12 @@ export default function App() {
   }, [isSealed]);
 
   // Fetch Data Function
-  // Added optional 'categoryOverride' to support fetching a specific category before state updates
-  const fetchSchemes = async (cursor: string | null = null, categoryOverride?: string) => {
+  // Added 'dbIdOverride' to support switching databases
+  const fetchSchemes = async (cursor: string | null = null, categoryOverride?: string, dbIdOverride?: string | null) => {
     try {
       const currentCategory = categoryOverride !== undefined ? categoryOverride : activeCategory;
+      // If dbIdOverride is passed, use it. Otherwise use state. If state is null, backend uses default ENV.
+      const targetDbId = dbIdOverride !== undefined ? dbIdOverride : currentDatabaseId;
 
       if (cursor) {
           setLoadingMore(true);
@@ -94,18 +130,17 @@ export default function App() {
           setLoading(true);
       }
 
-      // Construct URL with category parameter
-      let url = cursor 
-        ? `/api/schemes?cursor=${cursor}` 
-        : `/api/schemes`;
+      // Construct URL
+      let url = `/api/schemes`;
+      const params = new URLSearchParams();
       
-      // Append category to URL query
-      if (currentCategory && currentCategory !== '全部') {
-        const separator = url.includes('?') ? '&' : '?';
-        url += `${separator}category=${encodeURIComponent(currentCategory)}`;
-      }
+      if (cursor) params.append('cursor', cursor);
+      if (currentCategory && currentCategory !== '全部') params.append('category', currentCategory);
+      if (targetDbId) params.append('db_id', targetDbId);
 
-      const res = await fetch(url);
+      const fullUrl = `${url}?${params.toString()}`;
+
+      const res = await fetch(fullUrl);
       
       if (res.status === 401) {
            console.warn("Notion API Key missing.");
@@ -141,8 +176,14 @@ export default function App() {
            const mappedData = mapNotionResultToSchemes(data);
             
            // Update dynamic categories from API if available
-           if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
+           // Only update categories if we are loading the initial set (no cursor)
+           if (!cursor && data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
               setCategories(data.categories);
+              
+              // If the current active category doesn't exist in the new DB, reset to '全部'
+              if (activeCategory !== '全部' && !data.categories.includes(activeCategory)) {
+                  setActiveCategory('全部');
+              }
            }
 
            if (!cursor && mappedData.length === 0) {
@@ -180,6 +221,30 @@ export default function App() {
     }
   };
 
+  // Fetch a single page and open it
+  const fetchAndOpenPage = async (pageId: string) => {
+      // Show global loading if needed, or just open a loading modal
+      // For now, we'll just fetch and set selectedScheme
+      try {
+          // Optional: Show loading indicator
+          const res = await fetch(`/api/page?id=${pageId}`);
+          if (res.ok) {
+              const pageData = await res.json();
+              // mapNotionResultToSchemes expects an array with 'results' wrapper
+              // We simulate that structure for a single item
+              const mapped = mapNotionResultToSchemes({ results: [pageData] });
+              if (mapped.length > 0) {
+                  setSelectedScheme(mapped[0]);
+              }
+          } else {
+              alert('无法加载该页面，请检查页面 ID 和 Notion 连接配置。');
+          }
+      } catch (e) {
+          console.error(e);
+          alert('页面加载失败');
+      }
+  };
+
   useEffect(() => {
     fetchSchemes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,6 +257,12 @@ export default function App() {
   };
 
   const handleCategoryChange = (category: string) => {
+      // If clicking "全部" (Logo or first tab), and we are NOT on the main DB, switch back to main DB
+      if (category === '全部' && currentDatabaseId !== null) {
+          handleReturnToMainDb();
+          return;
+      }
+
       if (activeCategory === category) return;
       
       setActiveCategory(category);
@@ -204,6 +275,61 @@ export default function App() {
       
       // Trigger fetch with new category
       fetchSchemes(null, category);
+  };
+
+  // New handler to reset to default DB (Scheme Archive)
+  const handleReturnToMainDb = () => {
+     // If we are already on main (null) or explicit main ID, just reset category
+     if (currentDatabaseId === null) {
+         if (activeCategory !== '全部') {
+             setActiveCategory('全部');
+             setSchemes([]);
+             setNextCursor(null);
+             fetchSchemes(null, '全部');
+         }
+         return;
+     }
+
+     setCurrentDatabaseId(null); // null means use default ENV (Schemes)
+     setCurrentDatabaseLabel('方案');
+     setActiveCategory('全部');
+     setSchemes([]);
+     setNextCursor(null);
+     setHasMore(false);
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+     fetchSchemes(null, '全部', null);
+  }
+  
+  const handleResourceClick = (resource: ResourceLink) => {
+      if (resource.type === 'database' && resource.id) {
+          // Switch Database
+          
+          // Check if we are already on this database
+          const isDefaultDB = resource.id === process.env.NOTION_DATABASE_ID;
+          const isOnDefaultNow = currentDatabaseId === null || currentDatabaseId === process.env.NOTION_DATABASE_ID;
+
+          if (resource.id === currentDatabaseId || (isDefaultDB && isOnDefaultNow)) {
+             return; 
+          }
+          
+          setCurrentDatabaseId(resource.id);
+          setCurrentDatabaseLabel(resource.label); // Update the visual label
+          setActiveCategory('全部'); // Reset category
+          setSchemes([]);
+          setNextCursor(null);
+          setHasMore(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          
+          // Force fetch with new ID
+          fetchSchemes(null, '全部', resource.id);
+          
+      } else if (resource.type === 'page' && resource.id) {
+          // Open Single Page
+          fetchAndOpenPage(resource.id);
+      } else {
+          // Normal Link
+          // Handled by <a> tag default behavior if href is present
+      }
   };
 
   // If using Mock data, we filter client-side. 
@@ -321,7 +447,7 @@ export default function App() {
                 className={`
                     relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm
                     flex items-center justify-center transition-all duration-300 bg-white
-                    ${activeCategory === '全部' ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}
+                    ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}
                 `}
             >
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (
@@ -376,24 +502,35 @@ export default function App() {
             <div className="h-2"></div>
 
             {/* Utility Links (Vertical) - Smallest */}
-            {NAV_LINKS.map((link) => (
-                <a 
+            {RESOURCE_LINKS.map((link) => {
+                // Remove strict check so UI shows up for testing
+                // if (!link.id && link.type === 'database') return null;
+                
+                const isCurrentDB = link.type === 'database' && link.id === currentDatabaseId;
+
+                return (
+                <button 
                     key={link.label}
-                    href={link.href}
-                    target={link.href.startsWith('http') ? "_blank" : "_self"}
-                    rel="noreferrer"
-                    className="
+                    onClick={() => {
+                        if (link.type === 'link') {
+                            window.open(link.href, link.href?.startsWith('http') ? '_blank' : '_self');
+                        } else {
+                            handleResourceClick(link);
+                        }
+                    }}
+                    className={`
                         relative h-12 w-7 rounded-r-md border-y border-r border-black/10 shadow-sm
                         flex items-center justify-center transition-transform duration-200
                         -translate-x-1 hover:translate-x-0 bg-white
-                    "
+                        ${isCurrentDB ? 'translate-x-0 w-9 bg-gray-50 font-bold border-l-4 border-l-black' : ''}
+                    `}
                     style={{ backgroundColor: link.color }}
                 >
                     <span className="block [writing-mode:vertical-rl] font-mono text-[9px] font-bold text-black/50 tracking-tight">
                         {link.label}
                     </span>
-                </a>
-             ))}
+                </button>
+             )})}
         </div>
       </nav>
 
@@ -460,29 +597,44 @@ export default function App() {
 
                 <div className="flex-grow min-w-[20px]"></div>
 
-                {/* 2.2 UTILITY TABS */}
+                {/* 2.2 UTILITY TABS (Databases & Links) */}
                 <div className="flex items-end gap-3 pl-4 -translate-x-[5px]">
-                    {NAV_LINKS.map((link) => (
-                         <a 
+                    {RESOURCE_LINKS.map((link) => {
+                        // REMOVED STRICT CHECK: Ensure tabs render even if ENV vars are missing temporarily
+                        // if (!link.id && link.type === 'database') return null; 
+
+                        const isLink = link.type === 'link';
+                        const Tag = isLink ? 'a' : 'button';
+                        const props = isLink 
+                            ? { href: link.href, target: link.href?.startsWith('http') ? "_blank" : "_self", rel: "noreferrer" }
+                            : { onClick: () => handleResourceClick(link) };
+                        
+                        // Check if this DB is currently active (Visual feedback)
+                        const isCurrentDB = link.type === 'database' && (
+                            (link.id === currentDatabaseId) || 
+                            (currentDatabaseId === null && link.id === process.env.NOTION_DATABASE_ID)
+                        );
+
+                        return (
+                         <Tag 
                             key={link.label}
-                            href={link.href}
-                            target={link.href.startsWith('http') ? "_blank" : "_self"}
-                            rel="noreferrer"
-                            className="
+                            {...props}
+                            className={`
                                 relative group 
-                                h-8 w-16 md:h-9 md:w-[70px] 
+                                h-8 w-16 md:h-9 md:w-[54px] 
                                 rounded-t-lg border border-black/10 shadow-sm 
                                 flex items-center justify-center 
                                 transition-transform translate-y-[8px] hover:translate-y-[4px] 
-                                z-0 hover:z-40 pt-1
-                            "
-                            style={{ backgroundColor: link.color }}
+                                z-0 hover:z-40 pt-1 cursor-pointer
+                                ${isCurrentDB ? 'bg-white z-50 translate-y-[4px] border-b-white pb-2 shadow-none' : ''}
+                            `}
+                            style={{ backgroundColor: isCurrentDB ? '#fff' : link.color }}
                          >
-                            <span className="font-mono text-[8px] font-bold text-black/60 group-hover:text-black tracking-tight whitespace-nowrap">
+                            <span className={`font-mono text-[8px] font-bold tracking-tight whitespace-nowrap ${isCurrentDB ? 'text-black' : 'text-black/60 group-hover:text-black'}`}>
                                 {link.label}
                             </span>
-                         </a>
-                    ))}
+                         </Tag>
+                    )})}
                 </div>
             </div>
         </div>
@@ -506,10 +658,10 @@ export default function App() {
                 <div className="flex justify-between items-start">
                     <div>
                         <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">
-                            // ARCHIVE_DRAWER_01 / {activeCategory}
+                            // ARCHIVE_DRAWER_01 / {currentDatabaseLabel}
                         </span>
                         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-gray-900 mb-2">
-                            {activeCategory === '全部' ? 'Master Archive' : activeCategory}
+                            {activeCategory === '全部' ? `${currentDatabaseLabel} 库` : activeCategory}
                         </h1>
                         <p className="font-mono text-xs text-gray-500 max-w-lg">
                             {loading ? '正在检索文件...' : `已检索到 ${displayedSchemes.length} 个档案.`}
@@ -547,7 +699,7 @@ export default function App() {
                 {!loading && displayedSchemes.length === 0 && (
                     <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50 text-center p-8">
                         <p className="mb-2 uppercase tracking-widest">[ 空文件夹 ]</p>
-                        <p className="text-xs">该分类下暂无已归档方案</p>
+                        <p className="text-xs">该分类下暂无已归档档案</p>
                     </div>
                 )}
 

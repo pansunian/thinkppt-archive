@@ -9,8 +9,18 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // This injects the API_KEY from Vercel Environment Variables into the client-side code at build time.
+      // This injects the API_KEY and Database IDs from Vercel Environment Variables into the client-side code at build time.
       'process.env.API_KEY': JSON.stringify(env.API_KEY),
+      
+      // 1. Main Database (方案 - Default)
+      'process.env.NOTION_DATABASE_ID': JSON.stringify(env.NOTION_DATABASE_ID),
+      
+      // 2. Secondary Database (AI)
+      'process.env.NOTION_DB_AI_ID': JSON.stringify(env.NOTION_DB_AI_ID),
+      
+      // 3. Independent Pages (关于, 订阅)
+      'process.env.NOTION_PAGE_ABOUT_ID': JSON.stringify(env.NOTION_PAGE_ABOUT_ID),
+      'process.env.NOTION_PAGE_SUBSCRIBE_ID': JSON.stringify(env.NOTION_PAGE_SUBSCRIBE_ID),
     },
     server: {
       proxy: {
