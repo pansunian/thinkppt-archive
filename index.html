@@ -7,9 +7,10 @@
     <title>ThinkPPT | 深刻 PPT</title>
     
     <!-- 0. PRELOAD FONTS: Force browser to download these immediately -->
-    <link rel="preload" href="https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/8c277b02-1fee-42f2-afdb-02cecbd48cff.woff" as="font" type="font/woff" crossorigin="anonymous">
-    <!-- Local font preload (Optional but recommended if file exists) -->
+    <!-- Title Font: SourceHanSansCN-Regular -->
     <link rel="preload" href="/SourceHanSansCN-Regular.woff" as="font" type="font/woff" crossorigin="anonymous">
+    <!-- Body/Text Font: SourceHanSansCN-light -->
+    <link rel="preload" href="/SourceHanSansCN-light.woff" as="font" type="font/woff" crossorigin="anonymous">
 
     <!-- 1. Configure Tailwind BEFORE loading the library -->
     <script>
@@ -33,38 +34,37 @@
 
     <style>
       /* --- FONT DEFINITIONS --- */
-      /* Note: We map the SAME file to both 400 (Normal) and 700 (Bold) 
-         to ensure Desktop browsers use it even when 'font-bold' is applied. */
-
-      /* 1. Title Font - Normal */
+      
+      /* 1. Title Font - Uses SourceHanSansCN-Regular */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/8c277b02-1fee-42f2-afdb-02cecbd48cff.woff') format('woff');
+        src: url('/SourceHanSansCN-Regular.woff') format('woff');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
-      /* 1. Title Font - Force Bold Mapping */
+      /* Force Bold mapping for Title to same file (or bold file if you had one, but using Regular as requested base) */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('https://assets-v2.super.so/sites/fa483943-cb44-46ec-986d-dcbbcf1398b0/fonts/8c277b02-1fee-42f2-afdb-02cecbd48cff.woff') format('woff');
+        src: url('/SourceHanSansCN-Regular.woff') format('woff');
         font-weight: 700;
         font-style: normal;
         font-display: swap;
       }
 
-      /* 2. Text Font - Normal (Updated to Local SourceHanSansCN) */
+      /* 2. Text Font - Uses SourceHanSansCN-light */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('/SourceHanSansCN-Regular.woff') format('woff');
+        src: url('/SourceHanSansCN-light.woff') format('woff');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
-      /* 2. Text Font - Force Bold Mapping (Using same regular font file) */
+      /* Force Bold mapping for Text to same file (or you can map to Regular if you want bold text to look thicker) */
+      /* Here mapping to Light file as requested for "All text fonts" */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('/SourceHanSansCN-Regular.woff') format('woff');
+        src: url('/SourceHanSansCN-light.woff') format('woff');
         font-weight: 700;
         font-style: normal;
         font-display: swap;

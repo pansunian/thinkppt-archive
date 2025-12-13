@@ -455,7 +455,7 @@ export default function App() {
 
                     {/* Logo/Brand Area - Text Only */}
                     <div className="relative z-20 flex items-center justify-center mt-8">
-                         <h1 className="font-heading font-black text-4xl md:text-6xl text-white tracking-tighter drop-shadow-sm select-none">
+                         <h1 className="font-heading font-black text-4xl md:text-6xl text-white tracking-tighter drop-shadow-sm select-none translate-y-[3px]">
                              ThinkPPT
                          </h1>
                     </div>
