@@ -116,6 +116,17 @@ export default function App() {
     }
   }, [isSealed]);
 
+  // Dynamic Drawer Number Helper
+  const getDrawerNumber = () => {
+    // If viewing AI or other DBs, maybe use a fixed high number or calculated based on type
+    if (currentDatabaseId === process.env.NOTION_DB_AI_ID) return '02';
+    
+    // Default Scheme Database: Map category index to drawer number
+    const idx = categories.indexOf(activeCategory);
+    if (idx === -1) return '01';
+    return (idx + 1).toString().padStart(2, '0');
+  };
+
   // Fetch Data Function
   // Added 'dbIdOverride' to support switching databases
   const fetchSchemes = async (cursor: string | null = null, categoryOverride?: string, dbIdOverride?: string | null) => {
@@ -518,15 +529,16 @@ export default function App() {
                             handleResourceClick(link);
                         }
                     }}
+                    // UPDATED: Removed border-l-black, applied background color logic for active state
                     className={`
                         relative h-12 w-7 rounded-r-md border-y border-r border-black/10 shadow-sm
                         flex items-center justify-center transition-transform duration-200
                         -translate-x-1 hover:translate-x-0 bg-white
-                        ${isCurrentDB ? 'translate-x-0 w-9 bg-gray-50 font-bold border-l-4 border-l-black' : ''}
+                        ${isCurrentDB ? 'translate-x-0 w-9 font-bold shadow-md' : ''}
                     `}
-                    style={{ backgroundColor: link.color }}
+                    style={{ backgroundColor: isCurrentDB ? link.color : link.color }}
                 >
-                    <span className="block [writing-mode:vertical-rl] font-mono text-[9px] font-bold text-black/50 tracking-tight">
+                    <span className={`block [writing-mode:vertical-rl] font-mono text-[9px] font-bold text-black/50 tracking-tight ${isCurrentDB ? 'text-black opacity-100' : ''}`}>
                         {link.label}
                     </span>
                 </button>
@@ -658,7 +670,8 @@ export default function App() {
                 <div className="flex justify-between items-start">
                     <div>
                         <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">
-                            // ARCHIVE_DRAWER_01 / {currentDatabaseLabel}
+                            {/* UPDATED: Dynamic Drawer Number */}
+                            // ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}
                         </span>
                         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-gray-900 mb-2">
                             {activeCategory === '全部' ? `${currentDatabaseLabel} 库` : activeCategory}

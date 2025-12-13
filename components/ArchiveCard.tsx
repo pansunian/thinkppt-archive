@@ -21,8 +21,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
         style={{ backgroundColor: scheme.color }}
       >
         {/* The Custom Shape Tab - SVG implementation for simple rounded tab */}
-        {/* UPDATED: Shifted tab to left-[5px] (moved left 7px) and -top-[33px] (moved down to hide corner seam) */}
-        <div className="absolute -top-[33px] left-[5px] w-[100px] h-[36px] z-0">
+        {/* UPDATED: Shifted tab to left-[2px] (moved right 1px) and -top-[31px] */}
+        <div className="absolute -top-[31px] left-[2px] w-[100px] h-[36px] z-0">
              <svg viewBox="0 0 100 36" preserveAspectRatio="none" className="w-full h-full text-current" style={{ color: scheme.color }}>
                 {/* 
                     Tab Shape Path (Simple Rounded):
@@ -33,17 +33,12 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                    d="M0,36 L0,12 C0,5 5,0 12,0 L88,0 C95,0 100,5 100,12 L100,36 Z" 
                    fill="currentColor"
                 />
-                {/* Subtle stroke for definition */}
-                <path 
-                    d="M0,36 L0,12 C0,5 5,0 12,0 L88,0 C95,0 100,5 100,12 L100,36" 
-                    fill="none" 
-                    stroke="rgba(0,0,0,0.05)" 
-                    strokeWidth="2"
-                />
+                {/* REMOVED STROKE PATH as requested */}
              </svg>
              
              {/* Text Label */}
-             <div className="absolute inset-0 flex items-center justify-center pt-2">
+             {/* UPDATED: pt-2 (8px) changed to pt-[6px] to move text up by 2px */}
+             <div className="absolute inset-0 flex items-center justify-center pt-[6px]">
                  <span className="font-mono text-[10px] font-bold opacity-50 tracking-widest text-black whitespace-nowrap">
                     VOL.{scheme.year}
                  </span>
@@ -118,7 +113,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
              </div>
              <div className="flex flex-col items-end">
                 <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-right opacity-70">ID Code</span>
-                <span className="font-bold text-xs font-mono tracking-tighter">{scheme.id.slice(-4).padStart(4, '0')}</span>
+                {/* Added toUpperCase() so random IDs look like clean codes */}
+                <span className="font-bold text-xs font-mono tracking-tighter">{scheme.id.slice(-4).toUpperCase()}</span>
              </div>
          </div>
 

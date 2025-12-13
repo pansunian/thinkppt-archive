@@ -3,16 +3,17 @@ import { Scheme } from './types';
 export const CATEGORIES = ['全部', '策略方案', '创意设计', '融资路演', '工作汇报', '品牌手册'];
 
 // Macaron Palette (9 distinct colors)
+// Updated order to ensure high contrast between adjacent colors, especially 0 and 1.
 export const PALETTE = [
-  '#FF9AA2', // Salmon Pink
-  '#FFB7B2', // Soft Coral
-  '#FFDAC1', // Peach
-  '#E2F0CB', // Lime Sorbet
-  '#B5EAD7', // Minty
-  '#C7CEEA', // Periwinkle Blue
-  '#E2C6FF', // Lavender
-  '#FFC8DD', // Sakura
-  '#FFF6BD', // Lemon Chiffon
+  '#FF9AA2', // 0. Salmon Pink
+  '#C7CEEA', // 1. Periwinkle Blue (Moved up for contrast)
+  '#FFDAC1', // 2. Peach
+  '#E2F0CB', // 3. Lime Sorbet
+  '#FFB7B2', // 4. Soft Coral (Moved down)
+  '#B5EAD7', // 5. Minty
+  '#E2C6FF', // 6. Lavender
+  '#FFC8DD', // 7. Sakura
+  '#FFF6BD', // 8. Lemon Chiffon
 ];
 
 export const MOCK_SCHEMES: Scheme[] = [
