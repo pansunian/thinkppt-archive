@@ -9,8 +9,8 @@
     <!-- 0. PRELOAD FONTS: Force browser to download these immediately -->
     <!-- Title Font: FZGaoYMCTJW-R.woff -->
     <link rel="preload" href="/FZGaoYMCTJW-R.woff" as="font" type="font/woff" crossorigin="anonymous">
-    <!-- Body/Text Font: SourceHanSansCN-ExtraLight.woff -->
-    <link rel="preload" href="/SourceHanSansCN-ExtraLight.woff" as="font" type="font/woff" crossorigin="anonymous">
+    <!-- Body/Text Font: SourceHanSansCN-Light.woff (Updated from ExtraLight) -->
+    <link rel="preload" href="/SourceHanSansCN-Light.woff" as="font" type="font/woff" crossorigin="anonymous">
 
     <!-- 1. Configure Tailwind BEFORE loading the library -->
     <script>
@@ -52,10 +52,10 @@
         font-display: swap;
       }
 
-      /* 2. Text Font - Uses SourceHanSansCN-ExtraLight.woff */
+      /* 2. Text Font - Uses SourceHanSansCN-Light.woff */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('/SourceHanSansCN-ExtraLight.woff') format('woff');
+        src: url('/SourceHanSansCN-Light.woff') format('woff');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
@@ -63,7 +63,7 @@
       /* Force Bold mapping for Text to same file */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('/SourceHanSansCN-ExtraLight.woff') format('woff');
+        src: url('/SourceHanSansCN-Light.woff') format('woff');
         font-weight: 700;
         font-style: normal;
         font-display: swap;

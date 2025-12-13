@@ -454,8 +454,8 @@ export default function App() {
                     <div className="absolute top-0 left-0 right-0 h-[35%] bg-white/10 rounded-t-lg border-b border-black/5"></div>
 
                     {/* Logo/Brand Area - Text Only */}
-                    {/* UPDATED: Added mt-9 and translate-y-[8px] to move ThinkPPT down ~5px total relative to previous pos */}
-                    <div className="relative z-20 flex flex-col items-center justify-center mt-9">
+                    {/* UPDATED: Decreased margin-top from mt-24 to mt-14 to place text just below the buckle */}
+                    <div className="relative z-20 flex flex-col items-center justify-center mt-14">
                          <h1 className="font-heading font-black text-4xl md:text-6xl text-white tracking-tighter drop-shadow-sm select-none translate-y-[8px]">
                              ThinkPPT
                          </h1>
