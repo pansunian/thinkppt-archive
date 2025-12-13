@@ -29,11 +29,6 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       return '';
     };
 
-    const getSelect = (keys: string[]) => {
-        const prop = getProp(keys);
-        return prop?.select?.name || '';
-    }
-    
     // New: A robust getter that handles Select, Multi-Select (returns first item), and Text
     const getFlexibleString = (keys: string[]) => {
         const prop = getProp(keys);
@@ -61,9 +56,24 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     
     const getUrl = (keys: string[]) => {
         const prop = getProp(keys);
-        if (prop?.type === 'url') return prop.url || '';
-        if (prop?.type === 'rich_text') return prop.rich_text?.[0]?.plain_text || ''; // Handle text URLs
-        return '';
+        let url = '';
+        if (prop?.type === 'url') {
+            url = prop.url || '';
+        } else if (prop?.type === 'rich_text') {
+            url = prop.rich_text?.[0]?.plain_text || ''; // Handle text URLs
+        }
+
+        if (!url) return '';
+
+        url = url.trim();
+        
+        // Fix: If URL doesn't start with http/https, /, #, or mailto, prepend https://
+        // This prevents browsers from treating "www.example.com" as relative path "current-domain/www.example.com"
+        if (!/^(https?:\/\/|\/|#|mailto:)/i.test(url)) {
+            return `https://${url}`;
+        }
+
+        return url;
     }
 
     const getDate = (keys: string[]) => {
