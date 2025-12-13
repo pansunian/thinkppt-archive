@@ -29,7 +29,8 @@ export const MOCK_SCHEMES: Scheme[] = [
     brand: 'TechFlow',
     industry: '互联网/SaaS',
     downloadUrl: '#',
-    year: '2024'
+    year: '2024',
+    displayId: '1001'
   },
   {
     id: '2',
@@ -43,7 +44,8 @@ export const MOCK_SCHEMES: Scheme[] = [
     brand: 'EcoMarket',
     industry: '消费零售',
     downloadUrl: '#',
-    year: '2024'
+    year: '2024',
+    displayId: '1002'
   },
   {
     id: '3',
@@ -57,7 +59,8 @@ export const MOCK_SCHEMES: Scheme[] = [
     brand: 'Studio A',
     industry: '设计创意',
     downloadUrl: '#',
-    year: '2023'
+    year: '2023',
+    displayId: '1003'
   },
   {
     id: '4',
@@ -71,7 +74,8 @@ export const MOCK_SCHEMES: Scheme[] = [
     brand: 'FutureCorp',
     industry: '咨询服务',
     downloadUrl: '#',
-    year: '2025'
+    year: '2025',
+    displayId: '1004'
   },
   {
     id: '5',
@@ -85,7 +89,8 @@ export const MOCK_SCHEMES: Scheme[] = [
     brand: 'Nova Gear',
     industry: '3C数码',
     downloadUrl: '#',
-    year: '2024'
+    year: '2024',
+    displayId: '1005'
   },
   {
     id: '6',
@@ -99,5 +104,7 @@ export const MOCK_SCHEMES: Scheme[] = [
     brand: 'Personal',
     industry: '互联网',
     downloadUrl: '#'
-  , year: '2023'}
+  , year: '2023',
+    displayId: '1006'
+  }
 ];

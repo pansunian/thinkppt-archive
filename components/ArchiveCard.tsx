@@ -113,8 +113,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
              </div>
              <div className="flex flex-col items-end">
                 <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-right opacity-70">ID Code</span>
-                {/* Added toUpperCase() so random IDs look like clean codes */}
-                <span className="font-bold text-xs font-mono tracking-tighter">{scheme.id.slice(-4).toUpperCase()}</span>
+                {/* UPDATED: Uses displayId from Notion property instead of UUID slice */}
+                <span className="font-bold text-xs font-mono tracking-tighter">{scheme.displayId}</span>
              </div>
          </div>
 

@@ -79,12 +79,48 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     const getDate = (keys: string[]) => {
         const prop = getProp(keys);
         if (!prop) return '';
+        
+        let dateStr = '';
         if (prop.type === 'date') {
-            return prop.date?.start || ''; 
+            dateStr = prop.date?.start || ''; 
+        } else if (prop.type === 'created_time') {
+            dateStr = prop.created_time || '';
+        } else if (prop.type === 'rich_text' || prop.type === 'title') {
+             dateStr = prop.rich_text?.[0]?.plain_text || prop.title?.[0]?.plain_text || '';
         }
-        if (prop.type === 'rich_text' || prop.type === 'title') {
-             return prop.rich_text?.[0]?.plain_text || prop.title?.[0]?.plain_text || '';
+
+        // Format to YYYY-MM-DD if it contains time (ISO string)
+        if (dateStr && dateStr.includes('T')) {
+            return dateStr.split('T')[0];
         }
+        return dateStr;
+    };
+
+    const getDisplayId = (keys: string[]) => {
+        const prop = getProp(keys);
+        if (!prop) return '';
+
+        // Handle 'unique_id' type (Notion's auto-incrementing ID)
+        if (prop.type === 'unique_id') {
+            const { prefix, number } = prop.unique_id;
+            return prefix ? `${prefix}-${number}` : String(number);
+        }
+        
+        // Handle standard Number type
+        if (prop.type === 'number') {
+            return prop.number !== null ? String(prop.number) : '';
+        }
+        
+        // Handle Rich Text or Title
+        if (prop.type === 'rich_text') return prop.rich_text?.[0]?.plain_text || '';
+        if (prop.type === 'title') return prop.title?.[0]?.plain_text || '';
+
+        // Handle Formula (if it returns string/number)
+        if (prop.type === 'formula') {
+             if (prop.formula.type === 'string') return prop.formula.string || '';
+             if (prop.formula.type === 'number') return String(prop.formula.number);
+        }
+
         return '';
     };
 
@@ -131,7 +167,13 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       
       // Added '网址'
       downloadUrl: getUrl(['Download', 'Link', 'URL', '下载链接', '网址']),             
-      date: getDate(['Date', 'Time', 'Created', '日期', '时间']) || new Date().toISOString().split('T')[0],
+      // Updated date keys to include '创建时间' and prioritize it
+      date: getDate(['创建时间', 'Date', 'Time', 'Created', '日期', '时间']) || new Date().toISOString().split('T')[0],
+      
+      // NEW: Map specific 'ID' property to displayId. Fallback to sliced UUID if not found.
+      // Prioritize Notion's unique_id system or explicit 'ID' columns
+      displayId: getDisplayId(['ID', 'ID 属性', 'Code', '编号', 'No', 'Number']) || page.id.slice(-4).toUpperCase(),
+      
       description: getText(['Description', 'Summary', 'Intro', '描述', '简介']),
       tags: getMultiSelect(['Tags', 'Keywords', '标签']),
       color: getText(['Color', 'Hex', 'Theme', '颜色']) || defaultColor,

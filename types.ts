@@ -11,6 +11,7 @@ export interface Scheme {
   industry: string;   // 行业
   downloadUrl: string;// 下载地址
   year: string;       // New: 年份
+  displayId: string;  // New: User visible ID from Notion 'ID' property
 }
 
 export interface GeneratedOutline {
