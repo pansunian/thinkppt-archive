@@ -82,6 +82,36 @@ const SkeletonCard = () => (
   </div>
 );
 
+// --- FLOATING FOLDER COMPONENT (For Background) ---
+interface FloatingFolderProps {
+  color: string;
+  style: React.CSSProperties;
+  delay: string;
+}
+
+const FloatingFolder: React.FC<FloatingFolderProps> = ({ color, style, delay }) => (
+    <div 
+        className="absolute w-28 h-20 md:w-40 md:h-28 rounded-lg flex items-center justify-center transform transition-transform"
+        style={{ 
+            backgroundColor: color, 
+            boxShadow: '0 15px 35px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)', // Soft realistic shadow
+            ...style,
+            animation: `float 6s ease-in-out infinite ${delay}`
+        }}
+    >
+        {/* Flap Detail */}
+        <div className="absolute top-0 left-0 right-0 h-[40%] bg-white/20 rounded-t-lg border-b border-black/5"></div>
+        
+        {/* String Button */}
+        <div className="absolute top-[40%] -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm z-10 border border-black/5 flex items-center justify-center">
+             <div className="w-0.5 h-0.5 bg-gray-300 rounded-full"></div>
+        </div>
+        
+        {/* String Hanging */}
+        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 w-[1px] h-4 bg-white/60"></div>
+    </div>
+);
+
 export default function App() {
   const [isSealed, setIsSealed] = useState(true);
   const [showOverlay, setShowOverlay] = useState(true);
@@ -105,6 +135,21 @@ export default function App() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  // Background Folders Configuration for the Opening Animation
+  // Richer Macaron Palette and More Angles
+  const bgFolders = [
+    { color: '#C7CEEA', top: '10%', left: '15%', rotate: '-15deg', scale: 0.8, delay: '0s' },  // Periwinkle
+    { color: '#FFB7B2', top: '20%', left: '85%', rotate: '12deg', scale: 0.75, delay: '1s' }, // Coral Pink
+    { color: '#B5EAD7', top: '65%', left: '8%', rotate: '8deg', scale: 0.85, delay: '0.5s' }, // Mint
+    { color: '#E2C6FF', top: '75%', left: '80%', rotate: '-10deg', scale: 0.9, delay: '1.5s' }, // Lavender
+    { color: '#FFDAC1', top: '40%', left: '-5%', rotate: '35deg', scale: 0.6, delay: '2s' },  // Peach (Edge)
+    { color: '#93C5FD', top: '35%', left: '95%', rotate: '-25deg', scale: 0.65, delay: '0.2s' }, // Blue (Edge)
+    { color: '#E2F0CB', top: '5%', left: '55%', rotate: '5deg', scale: 0.5, delay: '3s' },    // Lime (Distant)
+    { color: '#FF9AA2', top: '90%', left: '40%', rotate: '-5deg', scale: 0.6, delay: '2.5s' }, // Salmon (Distant)
+    { color: '#FFC8DD', top: '15%', left: '5%', rotate: '20deg', scale: 0.55, delay: '1.8s' }, // Sakura
+    { color: '#FFF6BD', top: '85%', left: '92%', rotate: '-15deg', scale: 0.5, delay: '3.5s' }, // Lemon
+  ];
 
   // Remove Overlay from DOM after transition
   useEffect(() => {
@@ -352,94 +397,91 @@ export default function App() {
   return (
     <div className="min-h-[100dvh] bg-transparent md:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
       
+      {/* Define Keyframes for Floating Animation */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(var(--tw-rotate, 0deg)); }
+          50% { transform: translateY(-15px) rotate(calc(var(--tw-rotate, 0deg) + 2deg)); }
+        }
+        @keyframes float-central {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-15px) rotate(1deg); }
+        }
+      `}</style>
+
       {/* Background Texture (The Desk) - Hidden on Mobile */}
       <div className="hidden md:block fixed inset-0 pointer-events-none opacity-40 z-0" 
            style={{ backgroundImage: 'radial-gradient(#a39f94 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
       </div>
 
       {/* =========================================================================
-          1. Macaron Archive Bag Overlay (Loading / Sealed State)
+          1. NEW LOADING OVERLAY (3D Floating Folders)
          ========================================================================= */}
       {showOverlay && (
-        <div 
-            className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-white md:bg-[#F0EBE0] transition-transform duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${!isSealed ? '-translate-y-full pointer-events-none' : ''}`}
-            style={{
-                backgroundImage: 'radial-gradient(#d1ccc0 1px, transparent 1px)', 
-                backgroundSize: '24px 24px'
-            }}
-        >
+        <div className={`fixed inset-0 z-[10000] flex items-center justify-center bg-[#ffffff] transition-all duration-700 ease-in-out ${!isSealed ? 'opacity-0 scale-110 pointer-events-none' : 'opacity-100'}`}>
+            
+            {/* Background Container for Floating Elements (Perspective) */}
+            <div className="absolute inset-0 overflow-hidden perspective-1000">
+                {bgFolders.map((item, i) => (
+                    <FloatingFolder 
+                        key={i}
+                        color={item.color}
+                        delay={item.delay}
+                        style={{
+                            top: item.top,
+                            left: item.left,
+                            transform: `rotate(${item.rotate}) scale(${item.scale})`
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Central Teal Folder */}
             <div 
                 onClick={() => setIsSealed(false)}
-                className={`
-                    relative w-[340px] h-[480px] bg-[#FFDAC1] border-[3px] border-black rounded-xl shadow-[12px_12px_0px_0px_#d1d5db] 
-                    flex flex-col items-center select-none overflow-hidden transition-transform duration-300
-                    cursor-pointer group hover:-translate-y-2
-                `}
+                className="relative z-50 cursor-pointer group"
+                style={{ animation: 'float-central 5s ease-in-out infinite' }}
             >
-                {/* Top Flap */}
-                <div className="absolute top-0 w-full h-32 bg-[#FFC8DD] border-b-[3px] border-black z-20 rounded-t-lg flex justify-center pt-4 shadow-sm">
-                    <div className="w-full h-px bg-black/5 absolute bottom-1"></div>
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-50 flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-black/30"></div>
+                <div 
+                    className="w-[320px] h-[240px] md:w-[480px] md:h-[340px] rounded-lg flex flex-col items-center justify-center transition-transform duration-300 group-hover:scale-105 relative"
+                    style={{ 
+                        backgroundColor: '#5EEAD4', // Mint/Teal color
+                        // Enhanced Realistic Shadow
+                        boxShadow: '0 30px 60px -10px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(94, 234, 212, 0.4)' 
+                    }}
+                >
+                    {/* Folder Flap (Lighter Teal) */}
+                    <div className="absolute top-0 left-0 right-0 h-[35%] bg-white/10 rounded-t-lg border-b border-black/5"></div>
+
+                    {/* Logo/Brand Area - Text Only */}
+                    <div className="relative z-20 flex items-center justify-center mt-8">
+                         <h1 className="font-heading font-black text-4xl md:text-6xl text-white tracking-tighter drop-shadow-sm select-none">
+                             ThinkPPT
+                         </h1>
                     </div>
-                </div>
 
-                {/* String Mechanism */}
-                <svg className="absolute top-[96px] left-1/2 -translate-x-1/2 w-24 h-[200px] z-40 pointer-events-none overflow-visible">
-                    <defs>
-                        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feDropShadow dx="1" dy="1" stdDeviation="1.5" floodColor="#000" floodOpacity="0.4"/>
-                        </filter>
-                    </defs>
-                    <path 
-                        d="M 48,0 L 48,78 C 68,78 72,105 48,105 C 24,105 28,78 48,78 C 60,78 62,95 50,110 Q 40,125 52,160"
-                        fill="none" 
-                        stroke="#FDFBF7" 
-                        strokeWidth="3" 
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        filter="url(#shadow)"
-                    />
-                </svg>
-
-                <div className="absolute top-40 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#8D6E63] border-2 border-black shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] z-30 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-black/30"></div>
-                </div>
-
-                <div className="absolute top-24 right-8 z-30 w-20 h-20 bg-[#A2D2FF] border-2 border-black rounded-full flex flex-col items-center justify-center transform rotate-12 shadow-sm mix-blend-hard-light opacity-90">
-                    <span className="font-black text-lg leading-none">NEW</span>
-                    <span className="text-[10px] font-mono">2025</span>
-                </div>
-
-                <div className="mt-60 w-3/4 bg-white border-2 border-black p-4 rotate-[-2deg] shadow-[4px_4px_0px_#e5e7eb] relative z-10">
-                    <div className="border-b-2 border-dotted border-black mb-2 pb-1">
-                        <span className="font-mono text-[10px] text-gray-400 block mb-1">PROJECT NAME</span>
-                        {/* 档案袋 LOGO 显示 - 替换了原来的文字 */}
-                        {BRAND_CONFIG.mode === 'image' && !logoError ? (
-                            <img 
-                                src={BRAND_CONFIG.logoUrl}
-                                alt={BRAND_CONFIG.text}
-                                className="h-10 w-auto object-contain mb-1"
-                                onError={() => setLogoError(true)}
-                            />
-                        ) : (
-                            <h1 className="font-black text-2xl tracking-tighter">{BRAND_CONFIG.text}.COM</h1>
-                        )}
+                    {/* String Closure Mechanism */}
+                    <div className="absolute top-[35%] -translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-30">
+                        {/* Top Button */}
+                        <div className="w-5 h-5 md:w-7 md:h-7 bg-white rounded-full shadow-md flex items-center justify-center">
+                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-300 rounded-full"></div>
+                        </div>
+                        {/* String Line */}
+                        <div className="w-0.5 h-6 md:h-10 bg-white/80"></div>
+                        {/* Bottom Button */}
+                        <div className="w-5 h-5 md:w-7 md:h-7 bg-white rounded-full shadow-md flex items-center justify-center">
+                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-300 rounded-full"></div>
+                        </div>
                     </div>
-                    <div className="flex justify-between items-end">
-                        <span className="font-mono text-[10px] text-gray-400 font-bold">
-                            策划人的方案档案馆
-                        </span>
-                        <span className="font-mono font-bold text-xs bg-black text-white px-2 py-0.5 rounded-full">
-                            {loading ? '加载中' : '开启'}
-                        </span>
-                    </div>
-                </div>
 
-                <p className="absolute bottom-6 font-mono text-[10px] opacity-40 tracking-widest text-center px-4 max-w-full truncate text-red-500 font-bold">
-                    {debugMsg ? debugMsg : (loading ? '正在同步档案...' : '点击启封')}
-                </p>
+                    {/* Loading Text */}
+                    <div className="absolute bottom-6 text-white/90 font-mono text-xs uppercase tracking-widest animate-pulse font-bold">
+                        {loading ? 'Loading Archives...' : 'Click to Open'}
+                    </div>
+
+                </div>
             </div>
+
         </div>
       )}
 
