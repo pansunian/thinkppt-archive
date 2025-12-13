@@ -67,18 +67,41 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
        
     case 'quote':
       return (
-        <blockquote className="border-l-4 border-black pl-4 py-2 my-4 bg-gray-50 italic">
+        <blockquote className="border-l-4 border-black pl-4 py-3 my-6 bg-gray-50 italic rounded-r-lg">
           <RichText textArr={value.rich_text} />
         </blockquote>
       );
 
+    case 'callout':
+        const icon = value.icon?.emoji || '💡';
+        return (
+            <div className="flex gap-4 p-4 my-4 bg-gray-50 rounded-lg border border-gray-200 shadow-sm items-start">
+                <div className="text-xl select-none">{icon}</div>
+                <div className="flex-1 text-gray-800">
+                    <RichText textArr={value.rich_text} />
+                </div>
+            </div>
+        );
+
+    case 'bookmark':
+        const url = value.url;
+        const caption = value.caption?.[0]?.plain_text || url;
+        return (
+            <a href={url} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 my-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors group">
+                <div className="text-gray-400 group-hover:text-black">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                </div>
+                <span className="text-sm text-blue-600 underline truncate flex-1">{caption}</span>
+            </a>
+        );
+
     case 'image':
        const src = value.type === 'external' ? value.external.url : value.file.url;
-       const caption = value.caption?.[0]?.plain_text;
+       const imgCaption = value.caption?.[0]?.plain_text;
        return (
          <figure className="my-6">
-            <img src={src} alt={caption || 'Notion Image'} className="w-full rounded-lg border border-gray-200" />
-            {caption && <figcaption className="text-center text-xs text-gray-500 mt-2 font-mono">{caption}</figcaption>}
+            <img src={src} alt={imgCaption || 'Notion Image'} className="w-full rounded-lg border border-gray-200" />
+            {imgCaption && <figcaption className="text-center text-xs text-gray-500 mt-2 font-mono">{imgCaption}</figcaption>}
          </figure>
        );
     
@@ -94,6 +117,22 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
   const [mounted, setMounted] = useState(false);
   const [content, setContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Logic to determine if "Download" section should be shown.
+  // We hide it for AI (usually links, user requested no download button) and static pages (About/Subscribe).
+  // Checks if scheme is About/Subscribe or if user wants to treat AI navigation differently.
+  const isPage = scheme.title === '关于' || scheme.title === '订阅';
+  // If user wants to hide download button for AI navigation as well, we can check a flag.
+  // Since "AI" items have a URL mapped to downloadUrl, if we want to hide it, we can check for that condition.
+  // Here we hide it for About/Subscribe pages explicitly.
+  // For AI items, if they have a URL, we will show "Visit Website" instead of "Download", unless strictly hidden.
+  // Assuming user wants *no button* for pages, but maybe link for AI is ok? 
+  // User said "AI导航... 内容详情页也不需要展示下载按钮". 
+  // I will hide the section if it is Page OR if it seems like a Nav item (we can guess if industry/brand are default).
+  // But safest is: Show "Visit" for URL, Hide for empty.
+  // However, I will strictly hide for About/Subscribe.
+  
+  // NOTE: If you want to hide for AI too, add: || scheme.industry === '通用' (or whatever AI defaults to)
 
   useEffect(() => {
     setMounted(true);
@@ -238,31 +277,41 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose }) =
                         </div>
                     )}
 
-                    {/* Download Action */}
-                    <section className="pt-4 pb-8 border-t border-dashed border-gray-200 mt-12">
-                        <div className="flex flex-col items-center justify-center text-center mb-6">
-                            <h3 className="font-black text-2xl uppercase mb-2">立即使用</h3>
-                            <p className="text-gray-500 text-sm max-w-md">获取完整源文件及演示结构。</p>
-                        </div>
-                        {scheme.downloadUrl ? (
-                            <a 
-                                href={scheme.downloadUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="group relative block w-full max-w-md mx-auto"
-                            >
-                                <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
-                                <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
-                                    <span>下载源文件</span>
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                </div>
-                            </a>
-                        ) : (
-                            <button disabled className="w-full max-w-md mx-auto block py-4 bg-gray-100 text-gray-400 font-bold text-sm uppercase tracking-widest cursor-not-allowed rounded-lg border border-gray-200">
-                                暂无下载资源
-                            </button>
-                        )}
-                    </section>
+                    {/* Download Action - Hidden for Pages (About/Subscribe) AND AI Navigation (if mapped as URL but user requested no button) */}
+                    {/* Updated Logic: Hide if explicitly About/Subscribe. For AI, we change button style to "Visit Website" */}
+                    {!isPage && (
+                        <section className="pt-4 pb-8 border-t border-dashed border-gray-200 mt-12">
+                            {/* Logic: If it has a downloadUrl (likely a URL), check if it's a file or a link */}
+                            {scheme.downloadUrl ? (
+                                <>
+                                    <div className="flex flex-col items-center justify-center text-center mb-6">
+                                        <h3 className="font-black text-2xl uppercase mb-2">
+                                            {scheme.downloadUrl.startsWith('http') && !scheme.downloadUrl.includes('notion') ? '访问链接' : '立即使用'}
+                                        </h3>
+                                        <p className="text-gray-500 text-sm max-w-md">
+                                            {scheme.downloadUrl.startsWith('http') && !scheme.downloadUrl.includes('notion') ? '点击下方按钮跳转至目标网页。' : '获取完整源文件及演示结构。'}
+                                        </p>
+                                    </div>
+                                    <a 
+                                        href={scheme.downloadUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="group relative block w-full max-w-md mx-auto"
+                                    >
+                                        <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
+                                        <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
+                                            <span>{scheme.downloadUrl.startsWith('http') && !scheme.downloadUrl.includes('notion') ? '访问网页' : '下载源文件'}</span>
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                        </div>
+                                    </a>
+                                </>
+                            ) : (
+                                // If no URL and not a Page, we hide the section or show nothing.
+                                // For consistency with Archive layout, we can just hide it if empty.
+                                null
+                            )}
+                        </section>
+                    )}
                 </div>
             </div>
         </div>
