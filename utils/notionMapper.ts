@@ -45,6 +45,9 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
         // 3. Rich Text / Title
         if (prop.type === 'rich_text') return prop.rich_text?.[0]?.plain_text || '';
         if (prop.type === 'title') return prop.title?.[0]?.plain_text || '';
+
+        // 4. Number (Added support for numeric Year columns)
+        if (prop.type === 'number') return prop.number !== null ? String(prop.number) : '';
         
         return '';
     };
@@ -152,6 +155,19 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     };
 
     const defaultColor = PALETTE[index % PALETTE.length];
+    
+    // Resolve Date first so we can use it for Year fallback
+    const dateStr = getDate(['创建时间', 'Date', 'Time', 'Created', '日期', '时间']) || new Date().toISOString().split('T')[0];
+    
+    // Resolve Year: 
+    // 1. Explicit 'Year'/'年份' property (Text/Select/Number)
+    // 2. If missing, extract from dateStr (YYYY)
+    // 3. Fallback to '2025'
+    let yearStr = getFlexibleString(['Year', '年份']);
+    if (!yearStr && dateStr) {
+        yearStr = dateStr.split('-')[0];
+    }
+    if (!yearStr) yearStr = '2025';
 
     // UPDATED: key lookups to include User provided names like "网站标题", "网址"
     return {
@@ -163,12 +179,11 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       // Updated to use getFlexibleString to handle Multi-select/Text column types
       brand: getFlexibleString(['Brand', 'Client', '品牌', '客户']) || 'ThinkPPT',    
       industry: getFlexibleString(['Industry', 'Sector', '行业']) || '通用',   
-      year: getFlexibleString(['Year', 'Date', '年份']) || '2025',           
+      year: yearStr,           
       
       // Added '网址'
       downloadUrl: getUrl(['Download', 'Link', 'URL', '下载链接', '网址']),             
-      // Updated date keys to include '创建时间' and prioritize it
-      date: getDate(['创建时间', 'Date', 'Time', 'Created', '日期', '时间']) || new Date().toISOString().split('T')[0],
+      date: dateStr,
       
       // NEW: Map specific 'ID' property to displayId. Fallback to sliced UUID if not found.
       // Prioritize Notion's unique_id system or explicit 'ID' columns

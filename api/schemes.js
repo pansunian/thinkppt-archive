@@ -1,4 +1,9 @@
 export default async function handler(request, response) {
+  // --- PERFORMANCE OPTIMIZATION ---
+  // Cache for 60 seconds (fresh), serve stale for 10 minutes (600s) while revalidating in background.
+  // This prevents hitting Notion API on every single page load.
+  response.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
+
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
   // Default to env var, but allow override via query param
   const NOTION_DATABASE_ID = request.query.db_id || process.env.NOTION_DATABASE_ID;
@@ -105,6 +110,7 @@ export default async function handler(request, response) {
     const rawPages = data.results;
     
     // 5. ENRICHMENT STEP: Fetch first content block for each page to find an image
+    // Note: This operation is expensive (N+1 requests). Caching helps significantly here.
     const enrichedResults = await Promise.all(rawPages.map(async (page) => {
         try {
             const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=5`, {

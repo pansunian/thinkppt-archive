@@ -1,4 +1,9 @@
 export default async function handler(request, response) {
+  // --- PERFORMANCE OPTIMIZATION ---
+  // Cache content for 5 minutes (300s), stale for 1 hour.
+  // Detail pages change less frequently than the main list.
+  response.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=3600');
+
   const { id } = request.query;
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
 

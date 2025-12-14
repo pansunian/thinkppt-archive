@@ -1,4 +1,8 @@
 export default async function handler(request, response) {
+  // --- PERFORMANCE OPTIMIZATION ---
+  // Cache single pages (like About/Subscribe) for 60 seconds.
+  response.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
+
   const { id } = request.query;
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
 
