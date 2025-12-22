@@ -60,9 +60,35 @@ export async function onRequest(context) {
     }
 
     const data = await notionRes.json();
+    const rawPages = data.results;
+
+    // 3. 图片富化逻辑：获取每个页面正文中的第一张图片
+    const enrichedResults = await Promise.all(rawPages.map(async (page) => {
+      try {
+        const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=20`, {
+          method: 'GET',
+          headers,
+        });
+
+        if (blocksRes.ok) {
+          const blocksData = await blocksRes.json();
+          const imageBlock = blocksData.results.find(b => b.type === 'image');
+          
+          if (imageBlock) {
+            const imageUrl = imageBlock.image.type === 'file' 
+              ? imageBlock.image.file.url 
+              : imageBlock.image.external.url;
+            return { ...page, first_content_image: imageUrl };
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to fetch blocks for page ${page.id}`, error);
+      }
+      return page; 
+    }));
     
     return new Response(JSON.stringify({
-      results: data.results,
+      results: enrichedResults,
       next_cursor: data.next_cursor,
       has_more: data.has_more,
       categories: ['全部', ...categoryOptions]
