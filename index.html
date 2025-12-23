@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <!-- Removed theme-color to allow transparent/glass effect in Safari -->
     <title>ThinkPPT | 深刻 PPT</title>
     
-    <!-- 0. PRELOAD FONTS: Force browser to download these immediately -->
-    <!-- Title Font: FZGaoYMCTJW-R.woff -->
-    <link rel="preload" href="/FZGaoYMCTJW-R.woff" as="font" type="font/woff" crossorigin="anonymous">
-    <!-- Body/Text Font: SourceHanSansCN-Light.woff (Updated from ExtraLight) -->
-    <link rel="preload" href="/SourceHanSansCN-Light.woff" as="font" type="font/woff" crossorigin="anonymous">
+    <!-- 性能优化：提前连接外部域名 -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://images.unsplash.com">
+    
+    <!-- 0. PRELOAD FONTS: fetchpriority="high" 确保字体最先加载 -->
+    <link rel="preload" href="/FZGaoYMCTJW-R.woff" as="font" type="font/woff" crossorigin="anonymous" fetchpriority="high">
+    <link rel="preload" href="/SourceHanSansCN-Light.woff" as="font" type="font/woff" crossorigin="anonymous" fetchpriority="high">
 
-    <!-- 1. Configure Tailwind BEFORE loading the library -->
     <script>
       window.tailwind = {
         config: {
@@ -29,13 +29,9 @@
       }
     </script>
     
-    <!-- 2. Load Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-      /* --- FONT DEFINITIONS --- */
-      
-      /* 1. Title Font - Uses FZGaoYMCTJW-R.woff */
       @font-face {
         font-family: 'ThinkPPT-Title';
         src: url('/FZGaoYMCTJW-R.woff') format('woff');
@@ -43,16 +39,6 @@
         font-style: normal;
         font-display: swap;
       }
-      /* Force Bold mapping for Title to same file */
-      @font-face {
-        font-family: 'ThinkPPT-Title';
-        src: url('/FZGaoYMCTJW-R.woff') format('woff');
-        font-weight: 700;
-        font-style: normal;
-        font-display: swap;
-      }
-
-      /* 2. Text Font - Uses SourceHanSansCN-Light.woff */
       @font-face {
         font-family: 'ThinkPPT-Text';
         src: url('/SourceHanSansCN-Light.woff') format('woff');
@@ -60,47 +46,16 @@
         font-style: normal;
         font-display: swap;
       }
-      /* Force Bold mapping for Text to same file */
-      @font-face {
-        font-family: 'ThinkPPT-Text';
-        src: url('/SourceHanSansCN-Light.woff') format('woff');
-        font-weight: 700;
-        font-style: normal;
-        font-display: swap;
-      }
 
-      html {
-        background-color: #ffffff; /* Ensure Root is white for Safari Transparency */
-      }
-
+      html { background-color: #ffffff; }
       body {
-        /* Apply the "Small Font" (Text font) globally */
         font-family: 'ThinkPPT-Text', sans-serif;
-        /* Default white background to support transparency in Safari if needed */
         background-color: #ffffff;
-        -webkit-font-smoothing: antialiased; /* Make fonts look thinner/cleaner on Mac */
-        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
       }
-
-      /* On Desktop, revert body background to Desk Color (#e8e4da) just in case */
-      @media (min-width: 768px) {
-        body {
-            background-color: #e8e4da;
-        }
-      }
-
-      /* Apply the "Title Font" to all Headings globally as a fallback */
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'ThinkPPT-Title', sans-serif;
-      }
-      
-      /* Override .font-mono to use the "Small Font" instead of system monospace */
-      .font-mono {
-        font-family: 'ThinkPPT-Text', monospace !important;
-        letter-spacing: 0.05em; /* Add slight tracking for a cleaner "small text" look */
-      }
-      
-      /* Removed Custom Scrollbar Styles to use Default Browser Styles */
+      @media (min-width: 768px) { body { background-color: #e8e4da; } }
+      h1, h2, h3, h4, h5, h6 { font-family: 'ThinkPPT-Title', sans-serif; }
+      .font-mono { font-family: 'ThinkPPT-Text', monospace !important; letter-spacing: 0.05em; }
     </style>
   <script type="importmap">
 {
@@ -118,12 +73,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-    
-    <!-- Debug Script for CORS: Check console if fonts fail -->
-    <script>
-      document.fonts.ready.then(function () {
-        console.log('Fonts loaded state:', document.fonts.status);
-      });
-    </script>
   </body>
 </html>
