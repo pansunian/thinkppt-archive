@@ -21,7 +21,7 @@ export async function onRequest(context) {
       'Content-Type': 'application/json',
     };
 
-    // 1. Fetch Categories
+    // 1. 获取分类选项
     let categoryOptions = [];
     let categoryPropName = '';
     const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, { headers });
@@ -38,7 +38,7 @@ export async function onRequest(context) {
       }
     }
 
-    // 2. Query Data
+    // 2. 查询页面
     const queryBody = {
       page_size: 48,
       start_cursor: cursor || undefined,
@@ -62,7 +62,7 @@ export async function onRequest(context) {
     const data = await notionRes.json();
     const rawPages = data.results;
 
-    // 3. 图片富化逻辑：获取每个页面正文中的第一张图片
+    // 3. 图片富化逻辑
     const enrichedResults = await Promise.all(rawPages.map(async (page) => {
       try {
         const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=20`, {
@@ -73,7 +73,6 @@ export async function onRequest(context) {
         if (blocksRes.ok) {
           const blocksData = await blocksRes.json();
           const imageBlock = blocksData.results.find(b => b.type === 'image');
-          
           if (imageBlock) {
             const imageUrl = imageBlock.image.type === 'file' 
               ? imageBlock.image.file.url 

@@ -19,7 +19,6 @@ export async function onRequest(context) {
     
     const pageData = await pageRes.json();
     
-    // Optional: Fetch first block for image
     const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${id}/children?page_size=5`, { headers });
     if (blocksRes.ok) {
       const blocksData = await blocksRes.json();

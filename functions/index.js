@@ -4,20 +4,28 @@ import { onRequest as pageHandler } from './api/page.js';
 
 /**
  * 阿里云 ESA 边缘函数统一入口
- * 处理逻辑：根据 URL 路径分发到对应的 API 处理函数，并支持静态资源与 SPA 路由。
+ * 处理逻辑：
+ * 1. 匹配 /api/ 路径并分发到对应模块。
+ * 2. 其它路径通过 env.ASSETS 尝试读取静态资源。
+ * 3. 如果资源未找到（404）且非文件请求，则返回 index.html 以支持单页应用路由。
  */
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // 1. API 路由分发
+    // 1. API 路由处理
     if (path.startsWith('/api/')) {
-      const cfContext = { request, env, next: () => {} };
+      const apiContext = { request, env, next: () => {} };
       try {
-        if (path === '/api/schemes') return await schemesHandler(cfContext);
-        if (path === '/api/content') return await contentHandler(cfContext);
-        if (path === '/api/page') return await pageHandler(cfContext);
+        if (path === '/api/schemes') return await schemesHandler(apiContext);
+        if (path === '/api/content') return await contentHandler(apiContext);
+        if (path === '/api/page') return await pageHandler(apiContext);
+        
+        return new Response(JSON.stringify({ error: 'API route not found' }), { 
+          status: 404,
+          headers: { 'content-type': 'application/json' }
+        });
       } catch (e) {
         return new Response(JSON.stringify({ error: e.message }), { 
           status: 500,
@@ -26,13 +34,12 @@ export default {
       }
     }
 
-    // 2. 静态资源兜底与 SPA 路由处理
-    // 在 Aliyun ESA 环境中，env.ASSETS 允许从绑定的 Assets 目录中获取文件
+    // 2. 静态资源与 SPA 路由兜底
     try {
+      // 这里的 env.ASSETS 是在 esa.jsonc 中定义的 binding
       let response = await env.ASSETS.fetch(request);
       
-      // 如果资源未找到（404）且不像是请求一个具体的静态文件（通过判断路径最后一部分是否包含点号）
-      // 则返回 index.html 以支持 SPA 客户端路由
+      // 如果 404 且路径末尾不包含扩展名（如 .js, .css, .png），说明可能是前端路由
       if (response.status === 404 && !path.split('/').pop().includes('.')) {
         const indexRequest = new Request(new URL('/index.html', url.origin), request);
         response = await env.ASSETS.fetch(indexRequest);
@@ -40,8 +47,7 @@ export default {
       
       return response;
     } catch (e) {
-      // 出现异常或完全无法找到资源
-      return new Response('Not Found', { status: 404 });
+      return new Response('Asset Fetch Error', { status: 500 });
     }
   }
 };
