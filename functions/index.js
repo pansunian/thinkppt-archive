@@ -3,7 +3,8 @@ import { onRequest as contentHandler } from './api/content.js';
 import { onRequest as pageHandler } from './api/page.js';
 
 /**
- * 阿里云 ESA 边缘函数统一入口 (v1.0.1)
+ * 阿里云 ESA 边缘函数统一入口
+ * Build Version: 1.0.5 (Reverting to standard esa.json)
  * 处理逻辑：
  * 1. 匹配 /api/ 路径并分发到对应模块。
  * 2. 其它路径通过 env.ASSETS 尝试读取静态资源。
@@ -36,7 +37,7 @@ export default {
 
     // 2. 静态资源与 SPA 路由兜底
     try {
-      // 这里的 env.ASSETS 对应 esa.jsonc 中的 assets.binding
+      // 这里的 env.ASSETS 对应 esa.json 中的 assets.binding
       let response = await env.ASSETS.fetch(request);
       
       // SPA 路由支持：如果 404 且不是请求特定文件格式，则返回 index.html
