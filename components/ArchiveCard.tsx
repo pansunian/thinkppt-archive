@@ -11,9 +11,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      // Mobile: w-[94%] max-w-[380px] h-[440px]
-      // Desktop: md:w-full md:max-w-[290px] md:h-[400px]
-      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[290px] mx-auto h-[440px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none"
+      // 添加 overflow-hidden 确保内部所有组件（背板、抽纸）在悬停位移时都不会超出卡片物理底线
+      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[290px] mx-auto h-[440px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none overflow-hidden rounded-xl"
     >
       
       {/* 2. Folder Back (The visual background) */}
@@ -84,19 +83,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
         className="absolute bottom-0 left-0 right-0 h-[110px] rounded-b-xl rounded-t-2xl z-20 pointer-events-none flex flex-col justify-start p-5 border-t border-white/40 shadow-[0_-2px_4px_rgba(0,0,0,0.02)] overflow-hidden"
         style={{ backgroundColor: scheme.color }}
       >
-         {/* LIGHTENING OVERLAY: Added to create contrast with the back folder */}
          <div className="absolute inset-0 bg-white/20 pointer-events-none"></div>
-
-         {/* Texture Overlay */}
          <div 
             className="absolute inset-0 opacity-10 mix-blend-multiply pointer-events-none"
             style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '4px 4px' }}
          ></div>
-
-         {/* Top Bevel Highlight */}
          <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/50"></div>
 
-         {/* Content Container */}
          <div className="relative z-10 flex justify-between items-start mt-1 text-black/70">
              <div className="flex flex-col">
                  <span className="font-mono text-[9px] uppercase tracking-wider mb-0.5 scale-75 origin-top-left">Category</span>
@@ -110,16 +103,14 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
              </div>
          </div>
 
-         {/* DECORATIVE: Embossed Ridges */}
          <div className="absolute bottom-0 left-0 right-0 flex flex-col z-0">
             <div className="h-[3px] w-full bg-black/5 border-b border-white/20 mb-[3px]"></div>
             <div className="h-[3px] w-full bg-black/5 border-b border-white/20 mb-[3px]"></div>
             <div className="h-[3px] w-full bg-black/5 border-b border-white/20 mb-[12px]"></div>
          </div>
 
-         {/* Client Name Overlay */}
-         <div className="absolute bottom-4 left-5 right-5 z-10 flex justify-center">
-             <span className="font-black text-[3rem] leading-none opacity-[0.08] mix-blend-multiply truncate pointer-events-none w-full text-center tracking-tighter font-mono">
+         <div className="absolute bottom-4 left-5 right-5 z-10 flex justify-center text-center">
+             <span className="font-black text-[3rem] leading-none opacity-[0.08] mix-blend-multiply truncate pointer-events-none w-full tracking-tighter font-mono">
                  {scheme.brand}
              </span>
          </div>

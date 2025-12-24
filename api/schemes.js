@@ -83,7 +83,7 @@ export default async function handler(request) {
       return page;
     }));
 
-    // 如果强制刷新，设置 Cache-Control 为 no-cache，否则设置为长效缓存
+    // 设置极高缓存时间 (30天)，提升大陆访问速度。通过 refresh=true 强制刷新。
     const cacheHeader = forceRefresh 
       ? 'no-store, max-age=0' 
       : 'public, s-maxage=2592000, stale-while-revalidate=86400';

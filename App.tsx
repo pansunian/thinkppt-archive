@@ -84,7 +84,7 @@ export default function App() {
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  // 初始化时检查本地缓存
+  // 初始化时检查本地缓存实现秒开
   useEffect(() => {
     const cachedData = localStorage.getItem('thinkppt_schemes_cache');
     const cachedCats = localStorage.getItem('thinkppt_categories_cache');
@@ -124,7 +124,6 @@ export default function App() {
       const currentCategory = categoryOverride !== undefined ? categoryOverride : activeCategory;
       const targetDbId = dbIdOverride !== undefined ? dbIdOverride : currentDatabaseId;
       
-      // 只有在没有缓存或者手动刷新时才显示 Loading
       if (!cursor && schemes.length === 0) setLoading(true);
       if (cursor) setLoadingMore(true);
 
@@ -151,7 +150,6 @@ export default function App() {
            
            if (!cursor && data.categories) {
              setCategories(data.categories);
-             // 存入分类缓存
              if (!targetDbId) localStorage.setItem('thinkppt_categories_cache', JSON.stringify(data.categories));
            }
 
@@ -160,7 +158,7 @@ export default function App() {
            } else {
              setSchemes(mappedData);
              setUseMock(false);
-             // 存入方案缓存 (仅限主数据库)
+             // 仅缓存主页“全部”内容，避免缓存过大
              if (!targetDbId && currentCategory === '全部') {
                localStorage.setItem('thinkppt_schemes_cache', JSON.stringify(mappedData));
              }
@@ -197,7 +195,6 @@ export default function App() {
       if (category === '全部' && currentDatabaseId !== null) { handleReturnToMainDb(); return; }
       if (activeCategory === category) return;
       setActiveCategory(category);
-      // 分类切换不清除 schemes，保持视觉连续性（除非没数据）
       setNextCursor(null); setHasMore(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       fetchSchemes(null, category);
@@ -353,7 +350,9 @@ export default function App() {
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
                 <div>
                     <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
-                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-gray-900 mb-2">{activeCategory === '全部' ? `${currentDatabaseLabel} 库` : activeCategory}</h1>
+                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-gray-900 mb-2">
+                        {activeCategory === '全部' ? (currentDatabaseId === null ? '策划人的方案档案库' : `${currentDatabaseLabel} 库`) : activeCategory}
+                    </h1>
                 </div>
             </div>
 
