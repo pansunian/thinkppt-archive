@@ -11,13 +11,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      // 添加 overflow-hidden 确保内部所有组件（背板、抽纸）在悬停位移时都不会超出卡片物理底线
-      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[290px] mx-auto h-[440px] md:h-[400px] mt-8 perspective-1000 cursor-pointer font-sans select-none overflow-hidden rounded-xl"
+      // 移除 overflow-hidden，允许内容向上弹出。增加 mt-12 为上方弹出留出空间。
+      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[290px] mx-auto h-[400px] mt-12 perspective-1000 cursor-pointer font-sans select-none"
     >
       
       {/* 2. Folder Back (The visual background) */}
       <div 
-        className="absolute inset-x-0 bottom-0 top-8 rounded-b-xl rounded-t-xl z-0 transition-all duration-300 shadow-sm"
+        className="absolute inset-x-0 bottom-0 top-0 rounded-b-xl rounded-t-xl z-0 transition-all duration-300 shadow-sm"
         style={{ backgroundColor: scheme.color }}
       >
         {/* The Custom Shape Tab - SVG implementation for simple rounded tab */}
@@ -39,7 +39,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       </div>
 
       {/* 1. The Paper Content (Main Card) - Lifts up on hover */}
-      <div className="absolute left-3 right-3 top-8 bottom-3 bg-white rounded-lg z-10 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-20 group-hover:shadow-xl group-hover:rotate-1 flex flex-col overflow-hidden">
+      {/* 去掉 bottom-3 改为固定高度，确保升起时底部边缘被 Front Pocket 完美遮盖 */}
+      <div className="absolute left-3 right-3 top-2 h-[380px] bg-white rounded-lg z-10 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-24 group-hover:shadow-2xl group-hover:rotate-1 flex flex-col overflow-hidden">
          
          {/* Image Area - 16:9 Aspect Ratio */}
          <div className="w-full aspect-video relative overflow-hidden bg-gray-100 shrink-0">
@@ -80,7 +81,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 
       {/* 3. Folder Front Pocket (The cover section that stays at the bottom) */}
       <div 
-        className="absolute bottom-0 left-0 right-0 h-[110px] rounded-b-xl rounded-t-2xl z-20 pointer-events-none flex flex-col justify-start p-5 border-t border-white/40 shadow-[0_-2px_4px_rgba(0,0,0,0.02)] overflow-hidden"
+        className="absolute bottom-0 left-0 right-0 h-[120px] rounded-b-xl rounded-t-2xl z-20 pointer-events-none flex flex-col justify-start p-5 border-t border-white/40 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] overflow-hidden"
         style={{ backgroundColor: scheme.color }}
       >
          <div className="absolute inset-0 bg-white/20 pointer-events-none"></div>
