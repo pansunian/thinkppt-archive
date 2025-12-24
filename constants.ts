@@ -1,21 +1,21 @@
+
 import { Scheme } from './types';
 
 export const CATEGORIES = ['全部', '策略方案', '创意设计', '融资路演', '工作汇报', '品牌手册'];
 
-// Richer Morandi Palette (Extracted from provided image)
-// Vibrant yet low-saturation colors
-// REORDERED: Moved the original first 3 colors (Blue, Brown, Grey) to the end.
+// Lighter & Softer Morandi Palette
+// Optimized for black text legibility
 export const PALETTE = [
-  '#ACA2CE', // Muted Purple (NO.01)
-  '#D1C079', // Mustard Gold (NO.05)
-  '#679684', // Deep Sage (NO.08)
-  '#F4AFA4', // Salmon Pink (NO.09)
-  '#ADD8D7', // Soft Cyan (NO.04)
-  '#DEBBB3', // Warm Rose (NO.03)
-  '#9E8064', // Coffee (NO.06)
-  '#7299AA', // Steel Blue (NO.04 - Moved to end)
-  '#AA8366', // Bronze Brown (NO.02 - Moved to end)
-  '#8DA5A8', // Teal Grey (NO.03 - Moved to end)
+  '#E8E4F3', // Pale Purple
+  '#F4EED1', // Pale Gold
+  '#E2EDEA', // Pale Sage
+  '#FDE8E5', // Pale Salmon
+  '#E7F4F3', // Pale Cyan
+  '#F6ECE9', // Pale Rose
+  '#EDE6E0', // Pale Coffee
+  '#E3EDF2', // Pale Blue
+  '#F1E9E2', // Pale Brown
+  '#E9EEF0', // Pale Teal
 ];
 
 export const MOCK_SCHEMES: Scheme[] = [

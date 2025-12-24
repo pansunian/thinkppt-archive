@@ -1,18 +1,19 @@
-export default async function handler(request, response) {
-  // --- PERFORMANCE OPTIMIZATION ---
-  // Cache for 60 seconds (fresh), serve stale for 10 minutes (600s) while revalidating in background.
-  // This prevents hitting Notion API on every single page load.
-  response.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
 
+export const config = {
+  runtime: 'edge',
+};
+
+export default async function handler(request) {
+  const { searchParams } = new URL(request.url);
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
-  // Default to env var, but allow override via query param
-  const NOTION_DATABASE_ID = request.query.db_id || process.env.NOTION_DATABASE_ID;
-  const { cursor, category } = request.query; 
+  const NOTION_DATABASE_ID = searchParams.get('db_id') || process.env.NOTION_DATABASE_ID;
+  const cursor = searchParams.get('cursor');
+  const category = searchParams.get('category');
 
-  // 1. Check Credentials
   if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
-    return response.status(401).json({ 
-      error: 'Notion credentials missing (API Key or Database ID).' 
+    return new Response(JSON.stringify({ error: 'Credentials missing' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -23,132 +24,78 @@ export default async function handler(request, response) {
       'Content-Type': 'application/json',
     };
 
-    // 2. Fetch Database Metadata to get Category Options
-    // We do this to ensure tabs match Notion's configuration exactly
+    // 1. 获取数据库元数据（获取分类）
     let categoryOptions = [];
     let categoryPropName = '';
-
-    try {
-        const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${NOTION_API_KEY}`,
-                'Notion-Version': '2022-06-28',
-            }
-        });
-        if (dbRes.ok) {
-            const dbData = await dbRes.json();
-            const properties = dbData.properties || {};
-            
-            // Try to find the Category property (checking common names)
-            const candidateNames = ['Category', 'Class', 'Type', '分类', '类别'];
-            
-            // First pass: look for exact name match in candidates
-            for (const key in properties) {
-                if (properties[key].type === 'select' && candidateNames.includes(key)) {
-                    categoryPropName = key;
-                    categoryOptions = properties[key].select.options.map(o => o.name);
-                    break;
-                }
-            }
-
-            // Second pass: if not found, look for partial match
-            if (!categoryPropName) {
-                for (const key in properties) {
-                    if (properties[key].type === 'select' && candidateNames.some(n => key.includes(n))) {
-                        categoryPropName = key;
-                        categoryOptions = properties[key].select.options.map(o => o.name);
-                        break;
-                    }
-                }
-            }
+    const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${NOTION_API_KEY}`, 'Notion-Version': '2022-06-28' }
+    });
+    
+    if (dbRes.ok) {
+      const dbData = await dbRes.json();
+      const properties = dbData.properties || {};
+      const candidateNames = ['Category', 'Class', 'Type', '分类', '类别'];
+      for (const key in properties) {
+        if (properties[key].type === 'select' && (candidateNames.includes(key) || candidateNames.some(n => key.includes(n)))) {
+          categoryPropName = key;
+          categoryOptions = properties[key].select.options.map(o => o.name);
+          break;
         }
-    } catch (e) {
-        console.warn("Failed to fetch database metadata for categories", e);
+      }
     }
 
-    // 3. Prepare Query Body with Filter AND Sorting
-    // Added 'sorts' to prioritize latest updated content
+    // 2. 查询内容
     const queryBody = {
-      page_size: 48, // Load 48 items per page as requested
+      page_size: 48,
       start_cursor: cursor || undefined,
-      sorts: [
-        {
-            timestamp: 'last_edited_time',
-            direction: 'descending',
-        }
-      ]
+      sorts: [{ timestamp: 'last_edited_time', direction: 'descending' }]
     };
 
-    // Apply Filter if category is selected and valid property found
     if (category && category !== '全部' && categoryPropName) {
-        queryBody.filter = {
-            property: categoryPropName,
-            select: {
-                equals: category
-            }
-        };
+      queryBody.filter = { property: categoryPropName, select: { equals: category } };
     }
 
-    // 4. Fetch Database Pages
     const notionRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(queryBody),
     });
 
-    if (!notionRes.ok) {
-      const errorDetails = await notionRes.text();
-      console.error('Notion API Error:', errorDetails);
-      return response.status(notionRes.status).json({ 
-        error: 'Notion API Error', 
-        details: errorDetails 
-      });
-    }
-
     const data = await notionRes.json();
-    const rawPages = data.results;
-    
-    // 5. ENRICHMENT STEP: Fetch first content block for each page to find an image
-    // Note: This operation is expensive (N+1 requests). Caching helps significantly here.
+    const rawPages = data.results || [];
+
+    // 3. 并行获取首图（限制并发以提升速度）
     const enrichedResults = await Promise.all(rawPages.map(async (page) => {
-        try {
-            const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=5`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${NOTION_API_KEY}`,
-                    'Notion-Version': '2022-06-28',
-                },
-            });
-
-            if (blocksRes.ok) {
-                const blocksData = await blocksRes.json();
-                const imageBlock = blocksData.results.find(b => b.type === 'image');
-                
-                if (imageBlock) {
-                    const imageUrl = imageBlock.image.type === 'file' 
-                        ? imageBlock.image.file.url 
-                        : imageBlock.image.external.url;
-                    return { ...page, first_content_image: imageUrl };
-                }
-            }
-        } catch (error) {
-            console.error(`Failed to fetch blocks for page ${page.id}`, error);
+      try {
+        const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=5`, {
+          method: 'GET', headers: { 'Authorization': `Bearer ${NOTION_API_KEY}`, 'Notion-Version': '2022-06-28' }
+        });
+        if (blocksRes.ok) {
+          const blocksData = await blocksRes.json();
+          const imageBlock = blocksData.results.find(b => b.type === 'image');
+          if (imageBlock) {
+            const imageUrl = imageBlock.image.type === 'file' ? imageBlock.image.file.url : imageBlock.image.external.url;
+            return { ...page, first_content_image: imageUrl };
+          }
         }
-        return page; 
+      } catch (e) {}
+      return page;
     }));
-    
-    // 6. Return results + Dynamic Categories
-    return response.status(200).json({ 
-        results: enrichedResults,
-        next_cursor: data.next_cursor,
-        has_more: data.has_more,
-        // Always include '全部' at the start
-        categories: ['全部', ...categoryOptions]
-    });
 
+    return new Response(JSON.stringify({
+      results: enrichedResults,
+      next_cursor: data.next_cursor,
+      has_more: data.has_more,
+      categories: ['全部', ...categoryOptions]
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 's-maxage=300, stale-while-revalidate=3600', // 增加缓存时间
+      },
+    });
   } catch (error) {
-    console.error('Server Error:', error);
-    return response.status(500).json({ error: 'Internal Server Error' });
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
   }
 }
