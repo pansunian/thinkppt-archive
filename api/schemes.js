@@ -9,6 +9,7 @@ export default async function handler(request) {
   const NOTION_DATABASE_ID = searchParams.get('db_id') || process.env.NOTION_DATABASE_ID;
   const cursor = searchParams.get('cursor');
   const category = searchParams.get('category');
+  const forceRefresh = searchParams.get('refresh') === 'true';
 
   if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
     return new Response(JSON.stringify({ error: 'Credentials missing' }), {
@@ -24,7 +25,7 @@ export default async function handler(request) {
       'Content-Type': 'application/json',
     };
 
-    // 1. 获取数据库元数据（获取分类）
+    // 1. 获取数据库元数据
     let categoryOptions = [];
     let categoryPropName = '';
     const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
@@ -65,7 +66,6 @@ export default async function handler(request) {
     const data = await notionRes.json();
     const rawPages = data.results || [];
 
-    // 3. 并行获取首图（限制并发以提升速度）
     const enrichedResults = await Promise.all(rawPages.map(async (page) => {
       try {
         const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=5`, {
@@ -83,6 +83,11 @@ export default async function handler(request) {
       return page;
     }));
 
+    // 如果强制刷新，设置 Cache-Control 为 no-cache，否则设置为长效缓存
+    const cacheHeader = forceRefresh 
+      ? 'no-store, max-age=0' 
+      : 'public, s-maxage=2592000, stale-while-revalidate=86400';
+
     return new Response(JSON.stringify({
       results: enrichedResults,
       next_cursor: data.next_cursor,
@@ -92,7 +97,7 @@ export default async function handler(request) {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=300, stale-while-revalidate=3600', // 增加缓存时间
+        'Cache-Control': cacheHeader,
       },
     });
   } catch (error) {

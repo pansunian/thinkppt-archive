@@ -6,6 +6,7 @@ export const config = {
 export default async function handler(request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');
+  const forceRefresh = searchParams.get('refresh') === 'true';
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
 
   if (!NOTION_API_KEY || !id) {
@@ -37,11 +38,15 @@ export default async function handler(request) {
 
   try {
     const results = await fetchChildrenRecursively(id);
+    const cacheHeader = forceRefresh 
+      ? 'no-store, max-age=0' 
+      : 'public, s-maxage=2592000, stale-while-revalidate=86400';
+
     return new Response(JSON.stringify({ results }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=600, stale-while-revalidate=86400', // 详情内容缓存更久
+        'Cache-Control': cacheHeader,
       },
     });
   } catch (error) {
