@@ -71,6 +71,7 @@ export default function App() {
   const [isSealed, setIsSealed] = useState(true);
   const [showOverlay, setShowOverlay] = useState(true);
   const [logoError, setLogoError] = useState(false);
+  const [overlayLogoError, setOverlayLogoError] = useState(false);
   
   const [activeCategory, setActiveCategory] = useState('全部');
   const [categories, setCategories] = useState<string[]>(['全部']);
@@ -196,7 +197,7 @@ export default function App() {
             <div className={`relative w-[340px] h-[250px] md:w-[480px] md:h-[350px] bg-[#007064] rounded-[8px] archive-bag-shadow flex flex-col items-center transition-transform duration-500 cursor-pointer`}>
                 
                 {/* 倒梯形封盖 (Flap) */}
-                <div className="absolute top-0 left-0 right-0 h-[32%] z-30 archive-flap-shadow">
+                <div className="absolute top-0 left-0 right-0 h-[32%] z-30 archive-flap-shadow pointer-events-none">
                     <svg viewBox="0 0 480 112" preserveAspectRatio="none" className="w-full h-full fill-[#008375]">
                         <path d="
                             M0,0 
@@ -211,34 +212,55 @@ export default function App() {
                     </svg>
                 </div>
 
-                {/* 封口圆扣与绳线逻辑 */}
-                <div className="relative w-full h-full z-40 flex flex-col items-center pointer-events-none">
-                    
-                    {/* 顶部标题 */}
-                    <span className="mt-8 md:mt-12 text-[10px] md:text-xs text-white/50 font-medium tracking-[0.2em] uppercase">策划人的方案档案库</span>
-                    
+                {/* 背景装饰：顶部的文案 */}
+                <div className="absolute top-8 md:top-12 z-40 pointer-events-none w-full text-center px-4">
+                    <span className="text-[10px] md:text-xs text-white/50 font-medium tracking-[0.2em] uppercase">策划人的方案档案库</span>
+                </div>
+
+                {/* 封口圆扣与绳线逻辑 - 调整位置避免遮挡标题 */}
+                <div className="absolute top-[22%] md:top-[25%] left-0 right-0 flex flex-col items-center z-40 pointer-events-none">
                     {/* 上圆扣 */}
-                    <div className="mt-4 md:mt-6 w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md">
+                    <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md">
                         <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
                     </div>
-                    
                     {/* 连接线 */}
-                    <div className="w-[1.5px] h-10 md:h-16 bg-white/60"></div>
-                    
+                    <div className="w-[1.5px] h-10 md:h-14 bg-white/60"></div>
                     {/* 下圆扣 */}
                     <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md -mt-1">
                         <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
                     </div>
+                </div>
 
-                    {/* 主体标题区域 */}
-                    <div className="mt-4 md:mt-8 flex flex-col items-center text-white">
-                        <h1 className="text-5xl md:text-7xl font-heading font-black tracking-tighter">ThinkPPT</h1>
-                        <span className="mt-2 text-xs md:text-sm font-medium tracking-[0.4em] text-white/80">〔 深刻PPT 〕</span>
+                {/* 中央主标题区：整合了 Logo、副标题和翻阅提示，确保垂直不重叠 */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-50 pt-16 md:pt-24 pointer-events-none px-6">
+                    {/* Logo 或 标题 */}
+                    <div className="flex flex-col items-center mb-1">
+                        {BRAND_CONFIG.mode === 'image' && !overlayLogoError ? (
+                            <img 
+                                src={BRAND_CONFIG.logoUrl} 
+                                alt={BRAND_CONFIG.text} 
+                                className="h-10 md:h-16 w-auto object-contain brightness-0 invert" 
+                                onError={() => setOverlayLogoError(true)}
+                            />
+                        ) : (
+                            <h1 className="text-5xl md:text-7xl font-heading font-black tracking-tighter text-white">
+                                {BRAND_CONFIG.text}
+                            </h1>
+                        )}
+                    </div>
+                    
+                    {/* 翻阅档案 (中间指引) */}
+                    <div className="mb-2">
+                        <span className="text-[11px] md:text-[13px] font-bold tracking-[0.6em] text-white/40 uppercase">
+                            翻阅档案
+                        </span>
                     </div>
 
-                    {/* 底部引导文案 - 修改为中文 */}
-                    <div className="absolute bottom-6 md:bottom-10 flex flex-col items-center">
-                        <span className="text-[12px] md:text-sm font-bold tracking-[0.5em] text-white/40 uppercase">翻阅档案</span>
+                    {/* 〔 深刻PPT 〕 */}
+                    <div>
+                        <span className="text-xs md:text-sm font-medium tracking-[0.4em] text-white/80">
+                            〔 深刻PPT 〕
+                        </span>
                     </div>
                 </div>
                 
@@ -246,7 +268,7 @@ export default function App() {
                 <div className="absolute inset-0 border border-white/5 rounded-[8px] pointer-events-none"></div>
             </div>
             
-            {/* 背景提示文字 - 修改为中文 */}
+            {/* 背景底部加载文字 */}
             <div className={`absolute bottom-10 font-mono text-[10px] text-black/5 tracking-[2.5em] uppercase transition-opacity pointer-events-none ${!isSealed ? 'opacity-0' : 'opacity-100'}`}>
                 加载档案中...
             </div>
