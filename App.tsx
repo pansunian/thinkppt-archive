@@ -17,9 +17,6 @@ interface ResourceLink {
   id?: string;
 }
 
-/**
- * 资源链接/多数据库导航配置
- */
 const RESOURCE_LINKS: ResourceLink[] = [
   { 
     label: 'AI', 
@@ -109,6 +106,7 @@ export default function App() {
       const targetDbId = dbIdOverride !== undefined ? dbIdOverride : currentDatabaseId;
       if (cursor) setLoadingMore(true); else setLoading(true);
 
+      // EdgeOne API endpoint - ensures relative calls
       let url = `/api/schemes`;
       const params = new URLSearchParams();
       if (cursor) params.append('cursor', cursor);
@@ -117,6 +115,7 @@ export default function App() {
 
       const res = await fetch(`${url}?${params.toString()}`);
       if (!res.ok) {
+           console.warn(`[API] 无法从服务器获取数据 (${res.status})。可能是边缘函数未配置或路径错误。使用演示数据。`);
            setSchemes(MOCK_SCHEMES); setCategories(DEFAULT_CATEGORIES); setUseMock(true);
       } else {
            const data = await res.json();
@@ -128,6 +127,7 @@ export default function App() {
            setHasMore(data.has_more);
       }
     } catch (error) {
+      console.error("[API Error]", error);
       setSchemes(MOCK_SCHEMES); setCategories(DEFAULT_CATEGORIES); setUseMock(true);
     } finally { setLoading(false); setLoadingMore(false); }
   };
@@ -194,47 +194,36 @@ export default function App() {
             className={`fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[#f7f7f7] transition-opacity duration-500 ${!isSealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
             {/* 档案袋容器 */}
-            <div className={`relative w-[340px] h-[250px] md:w-[480px] md:h-[350px] bg-[#007064] rounded-[8px] archive-bag-shadow flex flex-col items-center transition-transform duration-500 cursor-pointer`}>
+            <div className={`relative w-[340px] h-[260px] md:w-[480px] md:h-[360px] bg-[#007064] rounded-[8px] archive-bag-shadow flex flex-col items-center transition-transform duration-500 cursor-pointer`}>
                 
                 {/* 倒梯形封盖 (Flap) */}
                 <div className="absolute top-0 left-0 right-0 h-[32%] z-30 archive-flap-shadow pointer-events-none">
                     <svg viewBox="0 0 480 112" preserveAspectRatio="none" className="w-full h-full fill-[#008375]">
-                        <path d="
-                            M0,0 
-                            L480,0 
-                            L480,0 
-                            L455,95 
-                            Q450,112 430,112 
-                            L50,112 
-                            Q30,112 25,95 
-                            L0,0 Z" 
-                        />
+                        <path d="M0,0 L480,0 L480,0 L455,95 Q450,112 430,112 L50,112 Q30,112 25,95 L0,0 Z" />
                     </svg>
                 </div>
 
                 {/* 背景装饰：顶部的文案 */}
                 <div className="absolute top-8 md:top-12 z-40 pointer-events-none w-full text-center px-4">
-                    <span className="text-[10px] md:text-xs text-white/50 font-medium tracking-[0.2em] uppercase">策划人的方案档案库</span>
+                    <span className="text-[10px] md:text-xs text-white/50 font-medium tracking-[0.2em] uppercase italic">Curator's Archive / 策划人的方案库</span>
                 </div>
 
-                {/* 封口圆扣与绳线逻辑 - 调整位置避免遮挡标题 */}
-                <div className="absolute top-[22%] md:top-[25%] left-0 right-0 flex flex-col items-center z-40 pointer-events-none">
-                    {/* 上圆扣 */}
+                {/* 封口圆扣 (稍微上移，避免遮挡 Logo) */}
+                <div className="absolute top-[18%] md:top-[20%] left-0 right-0 flex flex-col items-center z-40 pointer-events-none">
                     <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md">
                         <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
                     </div>
-                    {/* 连接线 */}
-                    <div className="w-[1.5px] h-10 md:h-14 bg-white/60"></div>
-                    {/* 下圆扣 */}
+                    <div className="w-[1.5px] h-8 md:h-12 bg-white/60"></div>
                     <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md -mt-1">
                         <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
                     </div>
                 </div>
 
-                {/* 中央主标题区：整合了 Logo、副标题和翻阅提示，确保垂直不重叠 */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-50 pt-16 md:pt-24 pointer-events-none px-6">
-                    {/* Logo 或 标题 */}
-                    <div className="flex flex-col items-center mb-1">
+                {/* 中央主内容：垂直排列，彻底解决错乱 */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center z-50 pt-20 md:pt-28 pointer-events-none">
+                    
+                    {/* Logo 区域 */}
+                    <div className="flex flex-col items-center mb-6">
                         {BRAND_CONFIG.mode === 'image' && !overlayLogoError ? (
                             <img 
                                 src={BRAND_CONFIG.logoUrl} 
@@ -243,22 +232,22 @@ export default function App() {
                                 onError={() => setOverlayLogoError(true)}
                             />
                         ) : (
-                            <h1 className="text-5xl md:text-7xl font-heading font-black tracking-tighter text-white">
+                            <h1 className="text-4xl md:text-6xl font-heading font-black tracking-tighter text-white">
                                 {BRAND_CONFIG.text}
                             </h1>
                         )}
                     </div>
-                    
-                    {/* 翻阅档案 (中间指引) */}
-                    <div className="mb-2">
-                        <span className="text-[11px] md:text-[13px] font-bold tracking-[0.6em] text-white/40 uppercase">
+
+                    {/* 翻阅指引 (核心交互文案) */}
+                    <div className="mb-4">
+                        <span className="text-[12px] md:text-sm font-bold tracking-[1.2em] text-white/50 uppercase ml-[1.2em]">
                             翻阅档案
                         </span>
                     </div>
 
-                    {/* 〔 深刻PPT 〕 */}
+                    {/* 副标题 */}
                     <div>
-                        <span className="text-xs md:text-sm font-medium tracking-[0.4em] text-white/80">
+                        <span className="text-[10px] md:text-xs font-medium tracking-[0.6em] text-white/80 uppercase ml-[0.6em]">
                             〔 深刻PPT 〕
                         </span>
                     </div>
@@ -268,32 +257,23 @@ export default function App() {
                 <div className="absolute inset-0 border border-white/5 rounded-[8px] pointer-events-none"></div>
             </div>
             
-            {/* 背景底部加载文字 */}
+            {/* 背景底层提示文字 */}
             <div className={`absolute bottom-10 font-mono text-[10px] text-black/5 tracking-[2.5em] uppercase transition-opacity pointer-events-none ${!isSealed ? 'opacity-0' : 'opacity-100'}`}>
-                加载档案中...
+                Archiving_In_Progress
             </div>
         </div>
       )}
 
-
-      {/* =========================================================================
-          2.0 MOBILE SIDEBAR NAVIGATION
-         ========================================================================= */}
+      {/* --- 剩余内容保持原逻辑 --- */}
       <nav className="md:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-none pb-4 pt-0 w-12">
         <div className="flex flex-col gap-1 pointer-events-auto items-start">
-            <button
-                onClick={() => handleCategoryChange('全部')}
-                className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-white ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}
-            >
+            <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-white ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (
-                     <div className="w-8 h-20 flex items-center justify-center overflow-hidden">
-                         <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-4 w-auto max-w-[64px] object-contain rotate-90" onError={() => setLogoError(true)} />
-                     </div>
+                     <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-4 w-auto max-w-[64px] object-contain rotate-90" onError={() => setLogoError(true)} />
                  ) : (
                     <span className="block [writing-mode:vertical-rl] font-black text-[10px] tracking-widest text-black py-2 uppercase">{BRAND_CONFIG.text}</span>
                  )}
             </button>
-
             {categories.filter(c => c !== '全部').map((category, idx) => {
                 const isActive = activeCategory === category;
                 const originalIndex = categories.indexOf(category);
@@ -304,9 +284,7 @@ export default function App() {
                     </button>
                 );
             })}
-            
             <div className="h-2"></div>
-
             {RESOURCE_LINKS.map((link) => {
                 const isCurrentDB = link.type === 'database' && link.id === currentDatabaseId;
                 return (
@@ -317,9 +295,6 @@ export default function App() {
         </div>
       </nav>
 
-      {/* =========================================================================
-          2.1 DESKTOP NAVIGATION (Horizontal Tabs)
-         ========================================================================= */}
       <header className="hidden md:block relative w-full z-40 px-2 md:px-8 pt-4 md:pt-6 pointer-events-auto">
         <div className="max-w-7xl mx-auto relative pointer-events-auto">
             <div className="flex items-end overflow-x-auto w-full no-scrollbar relative" style={{ scrollbarWidth: 'none' }}>
@@ -332,29 +307,25 @@ export default function App() {
                         )}
                     </div>
                 </button>
-
                 {categories.map((category, idx) => {
                     const isActive = activeCategory === category;
                     const tabColor = PALETTE[idx % PALETTE.length];
                     const heightClass = isActive ? 'h-11 translate-y-[4px] z-40' : 'h-11 translate-y-[8px] hover:translate-y-[4px] z-10 hover:z-20'; 
-                    const opacityClass = isActive ? 'opacity-100' : 'opacity-90 hover:opacity-100';
                     return (
-                        <button key={category} onClick={() => handleCategoryChange(category)} className={`relative group flex-shrink-0 mr-[-8px] px-0 transition-all duration-200 ease-out ${heightClass} ${opacityClass}`}>
+                        <button key={category} onClick={() => handleCategoryChange(category)} className={`relative group flex-shrink-0 mr-[-8px] px-0 transition-all duration-200 ease-out ${heightClass}`}>
                             <div className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-4 md:px-5 min-w-[90px] md:min-w-[100px] pt-1`} style={{ backgroundColor: tabColor }}>
                                 <span className={`font-mono text-[10px] md:text-xs font-bold uppercase tracking-wider text-black/70 group-hover:text-black transition-colors ${isActive ? 'text-black' : ''}`}>{category}</span>
                             </div>
                         </button>
                     );
                 })}
-
-                <div className="flex-grow min-w-[20px]"></div>
-
+                <div className="flex-grow"></div>
                 <div className="flex items-end gap-3 pl-4 -translate-x-[5px]">
                     {RESOURCE_LINKS.map((link) => {
                         const isCurrentDB = link.type === 'database' && ((link.id === currentDatabaseId) || (currentDatabaseId === null && link.id === process.env.NOTION_DATABASE_ID));
                         return (
                          <button key={link.label} onClick={() => handleResourceClick(link)} className={`relative group h-8 w-16 md:h-9 md:w-[54px] rounded-t-lg border border-black/10 shadow-sm flex items-center justify-center transition-transform translate-y-[8px] hover:translate-y-[4px] z-0 hover:z-40 pt-1 cursor-pointer ${isCurrentDB ? 'bg-white z-50 translate-y-[4px] border-b-white pb-2 shadow-none' : ''}`} style={{ backgroundColor: isCurrentDB ? '#fff' : link.color }}>
-                            <span className={`font-mono text-[8px] font-bold tracking-tight whitespace-nowrap ${isCurrentDB ? 'text-black' : 'text-black/60 group-hover:text-black'}`}>{link.label}</span>
+                            <span className={`font-mono text-[8px] font-bold tracking-tight whitespace-nowrap ${isCurrentDB ? 'text-black' : 'text-black/60'}`}>{link.label}</span>
                          </button>
                     )})}
                 </div>
@@ -362,9 +333,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* =========================================================================
-          3. MAIN CONTENT
-         ========================================================================= */}
       <main className="flex-grow pl-12 md:px-8 md:pb-12 z-20 md:pt-0">
         <div className="max-w-7xl mx-auto min-h-[100dvh] md:min-h-[85vh] bg-white md:bg-[#FDFBF7] md:rounded-b-lg md:rounded-tr-lg rounded-none shadow-none md:shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_0_rgba(0,0,0,0.1)] relative border-t-0 md:border-t border-black/5">
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
@@ -373,7 +341,6 @@ export default function App() {
                     <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-gray-900 mb-2">{activeCategory === '全部' ? `${currentDatabaseLabel} 库` : activeCategory}</h1>
                 </div>
             </div>
-
             <div className="px-6 md:px-12 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
                     {loading && !useMock ? (
@@ -384,13 +351,7 @@ export default function App() {
                         ))
                     )}
                 </div>
-                {!loading && displayedSchemes.length === 0 && (
-                    <div className="h-64 flex flex-col items-center justify-center font-mono text-gray-400 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50 text-center p-8">
-                        <p className="mb-2 uppercase tracking-widest">[ 空文件夹 ]</p>
-                    </div>
-                )}
             </div>
-
             <div className="relative h-16 bg-white md:bg-[#FDFBF7] md:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
                 <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest">ThinkPPT Archive System © 2025</span>
             </div>
