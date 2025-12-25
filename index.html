@@ -5,14 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>ThinkPPT | 深刻 PPT</title>
     
-    <!-- 正文字体 Preload -->
+    <!-- 正文字体 Preload (XiXianTingMingTi.woff2) -->
     <link rel="preload" href="/XiXianTingMingTi.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-    
-    <!-- 
-      DEBUG: 暂时移除 jinghualaosongti 的 preload，
-      因为我们将统一使用 XiXianTingMingTi.woff2 进行测试 
-    -->
-    <!-- <link rel="preload" href="/jinghualaosongti.woff?v=20250226" as="font" crossorigin="anonymous"> -->
 
     <script>
       window.tailwind = {
@@ -20,9 +14,10 @@
           theme: {
             extend: {
               fontFamily: {
+                // 将所有字体配置都统一指向 'ThinkPPT-Text'，这是目前唯一确认可用的字体家族名
                 sans: ['ThinkPPT-Text', 'sans-serif'],
                 mono: ['ThinkPPT-Text', 'monospace'],
-                heading: ['ThinkPPT-Title', 'serif'], 
+                heading: ['ThinkPPT-Text', 'serif'], 
               }
             }
           }
@@ -34,44 +29,28 @@
 
     <style>
       /* 
-         ThinkPPT-Title (Heading) 
-         DEBUG MODE: 临时将标题字体的源文件指向 '/XiXianTingMingTi.woff2'。
-         如果这能显示，说明代码逻辑没问题，是之前的 .woff 文件本身或路径有问题。
+         ThinkPPT-Text (统一使用该名称)
+         确保所有字重 (400, 700, 900) 都映射到该文件，
+         这样 Tailwind 的 font-bold 和 font-black 才能生效（通过浏览器伪粗体渲染）。
       */
       @font-face {
-        font-family: 'ThinkPPT-Title';
+        font-family: 'ThinkPPT-Text';
         src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
-        font-family: 'ThinkPPT-Title';
+        font-family: 'ThinkPPT-Text';
         src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 700; /* Bold */
         font-style: normal;
         font-display: swap;
       }
       @font-face {
-        font-family: 'ThinkPPT-Title';
+        font-family: 'ThinkPPT-Text';
         src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 900; /* Black */
-        font-style: normal;
-        font-display: swap;
-      }
-
-      /* ThinkPPT-Text (Body) */
-      @font-face {
-        font-family: 'ThinkPPT-Text';
-        src: url('/XiXianTingMingTi.woff2') format('woff2');
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
-      }
-      @font-face {
-        font-family: 'ThinkPPT-Text';
-        src: url('/XiXianTingMingTi.woff2') format('woff2');
-        font-weight: 700;
         font-style: normal;
         font-display: swap;
       }
@@ -99,6 +78,7 @@
         filter: url(#ink-bleed);
       }
       
+      /* 强制覆盖 font-mono */
       .font-mono {
         font-family: 'ThinkPPT-Text', monospace !important;
       }
