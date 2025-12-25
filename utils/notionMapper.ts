@@ -1,4 +1,3 @@
-
 import { Scheme } from '../types';
 import { PALETTE } from '../constants';
 
@@ -9,8 +8,15 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     const props = page.properties;
 
     const getProp = (keys: string[]) => {
+        // 先尝试精准匹配
         for (const key of keys) {
             if (props[key]) return props[key];
+        }
+        // 再尝试模糊匹配（不区分大小写和空格）
+        const allKeys = Object.keys(props);
+        for (const key of keys) {
+            const found = allKeys.find(k => k.toLowerCase().replace(/\s/g, '') === key.toLowerCase().replace(/\s/g, ''));
+            if (found) return props[found];
         }
         if (keys.includes('Title')) {
             const titleKey = Object.keys(props).find(k => props[k].type === 'title');
@@ -35,6 +41,10 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
         if (prop.type === 'rich_text') return prop.rich_text?.[0]?.plain_text || '';
         if (prop.type === 'title') return prop.title?.[0]?.plain_text || '';
         if (prop.type === 'number') return prop.number !== null ? String(prop.number) : '';
+        if (prop.type === 'formula') {
+            if (prop.formula.type === 'string') return prop.formula.string || '';
+            if (prop.formula.type === 'number') return prop.formula.number !== null ? String(prop.formula.number) : '';
+        }
         return '';
     };
     
@@ -126,9 +136,9 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       tags: getMultiSelect(['Tags', 'Keywords', '标签']),
       color: getText(['Color', 'Hex', 'Theme', '颜色']) || defaultColor,
       imageUrl: getImage(['Image', 'Cover', 'Photo', '图片', '封面']),
-      // Mapping new size and page fields
-      fileSize: getFlexibleString(['Size', '大小', '文件大小', 'FileSize']) || 'N/A',
-      pageCount: getFlexibleString(['Pages', '页数', '方案页数', 'PageCount']) || 'N/A',
+      // 扩展了文件大小和页数的属性匹配名
+      fileSize: getFlexibleString(['Size', '大小', '文件大小', 'FileSize', '文件容量']) || '',
+      pageCount: getFlexibleString(['Pages', '页数', '方案页数', 'PageCount', '文件页数', '页码']) || '',
     };
   });
 };

@@ -13,9 +13,11 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   const innerColor = PALETTE.KRAFT_INNER;
 
   // 格式化页数显示，确保带有“页”字
-  const displayPageCount = scheme.pageCount && scheme.pageCount !== 'N/A' 
+  const displayPageCount = scheme.pageCount && scheme.pageCount !== 'N/A' && scheme.pageCount !== ''
     ? (scheme.pageCount.includes('页') ? scheme.pageCount : `${scheme.pageCount} 页`)
     : 'N/A';
+
+  const displayFileSize = scheme.fileSize && scheme.fileSize !== '' ? scheme.fileSize : 'N/A';
 
   return (
     <div 
@@ -28,16 +30,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
         className="absolute inset-0 rounded-lg shadow-lg z-0"
         style={{ backgroundColor: innerColor }}
       >
-        {/* Sub-container for textures to allow the tab to stick out */}
         <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
             {/* Paper Grain Overlays */}
-            <div className="absolute inset-0 opacity-[0.4] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
-            <div className="absolute inset-0 opacity-[0.1] bg-[url('https://www.transparenttextures.com/patterns/p6-polyester.png')]"></div>
-            {/* Subtle Edge Burn Shadow */}
-            <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.08)]"></div>
+            <div className="absolute inset-0 opacity-[0.3] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+            <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.05)]"></div>
         </div>
 
-        {/* Tab Ear (标签耳) - Top Left, outside the overflow area */}
+        {/* Tab Ear */}
         <div className="absolute -top-[30px] left-0 w-[110px] h-[34px] z-[-1]">
              <svg viewBox="0 0 110 34" preserveAspectRatio="none" className="w-full h-full drop-shadow-sm" style={{ color: innerColor }}>
                 <path 
@@ -45,26 +44,17 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                    fill="currentColor"
                 />
              </svg>
-             {/* Tab Content */}
              <div className="absolute inset-0 flex items-center justify-center pt-2 pr-6">
-                 <span className="font-mono text-[9px] font-black opacity-30 uppercase tracking-[0.2em] text-black">
+                 <span className="font-mono text-[9px] font-black opacity-20 uppercase tracking-[0.2em] text-black">
                     VOL.{scheme.year}
                  </span>
              </div>
         </div>
-
-        {/* Left Side Stamps (Top Left Corner of the back) */}
-        <div className="absolute top-12 left-6 w-16 h-16 opacity-[0.15] rotate-[-12deg] ink-stamp flex items-center justify-center pointer-events-none">
-            <div className="w-full h-full border-[1.5px] border-black rounded-full flex flex-col items-center justify-center p-1 text-center">
-                <span className="text-[6px] font-bold leading-none uppercase tracking-tighter">Classified</span>
-                <span className="text-[14px] font-black leading-none my-0.5 tracking-tighter">TOP</span>
-                <span className="text-[5px] font-bold leading-none uppercase">ARCHIVE UNIT</span>
-            </div>
-        </div>
       </div>
 
       {/* 2. Slide-out Content (The "White" Paper) */}
-      <div className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-sm transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] group-hover:-translate-y-48 group-hover:rotate-1 z-10 flex flex-col overflow-hidden border border-gray-100">
+      {/* 修改点：高度调整（-translate-y-32），移除 border */}
+      <div className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] group-hover:-translate-y-32 group-hover:rotate-1 z-10 flex flex-col overflow-hidden">
          <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100">
             <img 
                 src={scheme.imageUrl} 
@@ -73,7 +63,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
             />
          </div>
          <div className="p-5 flex-1 relative flex flex-col">
-            <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
             <h3 className="font-bold text-lg leading-tight text-gray-900 mb-2 relative z-10">{scheme.title}</h3>
             <p className="text-[11px] text-gray-500 line-clamp-3 leading-relaxed relative z-10">{scheme.description}</p>
             <div className="mt-auto flex justify-between items-center relative z-10 pt-2">
@@ -85,54 +75,48 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 
       {/* 3. Front Pocket (口袋部分) */}
       <div 
-        className="absolute bottom-0 left-0 right-0 h-[165px] rounded-b-lg rounded-t-[24px] z-20 pointer-events-none border-t border-black/10 shadow-[0_-15px_40px_rgba(0,0,0,0.18)] overflow-hidden"
+        className="absolute bottom-0 left-0 right-0 h-[165px] rounded-b-lg rounded-t-[24px] z-20 pointer-events-none border-t border-black/5 shadow-[0_-15px_40px_rgba(0,0,0,0.12)] overflow-hidden"
         style={{ backgroundColor: outerColor }}
       >
-         {/* Texture Layers */}
-         <div className="absolute inset-0 opacity-[0.3] pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/p6-polyester.png')]"></div>
-         <div className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+         {/* Texture Layers for Manila/Light Kraft Paper */}
+         <div className="absolute inset-0 opacity-[0.2] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/p6-polyester.png')]"></div>
          
-         {/* Top Lip Lip (Simulating Thickness) */}
-         <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/40"></div>
-         <div className="absolute top-[1px] left-0 right-0 h-[4px] bg-black/5"></div>
-
          {/* Pocket Form Layout */}
          <div className="relative z-10 p-4 md:p-5 flex flex-col h-full">
             
             {/* Pocket Header */}
-            <div className="flex justify-between items-start mb-3 border-b border-black/20 pb-1">
+            <div className="flex justify-between items-start mb-3 border-b border-black/10 pb-1">
                 <div className="flex flex-col">
-                    <span className="font-mono text-[7px] uppercase font-bold text-black/40">Category</span>
-                    <span className="font-bold text-[10px] font-mono uppercase text-black/70">{scheme.category}</span>
+                    <span className="font-mono text-[7px] uppercase font-bold text-black/30">Category</span>
+                    <span className="font-bold text-[11px] font-mono uppercase text-black/60 tracking-tight">{scheme.category}</span>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="font-mono text-[7px] uppercase font-bold text-black/40">Archive Code</span>
-                    <span className="font-bold text-[10px] font-mono text-black/70">REF.{scheme.displayId}</span>
+                    <span className="font-mono text-[7px] uppercase font-bold text-black/30">Archive Code</span>
+                    <span className="font-bold text-[10px] font-mono text-black/60">REF.{scheme.displayId}</span>
                 </div>
             </div>
 
-            {/* The Table Grid - Showing Page Count (with unit) and File Size */}
-            <div className="w-full border border-black/20 flex flex-col font-mono text-[7px] text-black/60 mb-2">
-                <div className="flex border-b border-black/20">
-                    <div className="w-1/2 border-r border-black/20 p-1">方案页数: <span className="text-black/80 font-bold">{displayPageCount}</span></div>
-                    <div className="w-1/2 p-1">文件大小: <span className="text-black/80 font-bold">{scheme.fileSize}</span></div>
+            {/* The Table Grid */}
+            <div className="w-full border border-black/10 flex flex-col font-mono text-[7px] text-black/50 mb-2">
+                <div className="flex border-b border-black/10">
+                    <div className="w-1/2 border-r border-black/10 p-1.5">方案页数: <span className="text-black/70 font-bold">{displayPageCount}</span></div>
+                    <div className="w-1/2 p-1.5">文件大小: <span className="text-black/70 font-bold">{displayFileSize}</span></div>
                 </div>
                 <div className="flex">
-                    <div className="w-1/2 border-r border-black/20 p-1">存封日期: {scheme.date}</div>
-                    <div className="w-1/2 p-1">档案编号: #{scheme.displayId}</div>
+                    <div className="w-1/2 border-r border-black/10 p-1.5">存封日期: {scheme.date}</div>
+                    <div className="w-1/2 p-1.5">档案编号: #{scheme.displayId}</div>
                 </div>
             </div>
 
-            {/* Large Brand Text - Flush with bottom edge */}
+            {/* Large Brand Text */}
             <div className="mt-auto relative w-full h-20 flex items-end justify-center overflow-hidden">
-                <span className="font-serif text-[5rem] font-medium tracking-[0.12em] uppercase whitespace-nowrap select-none text-white/90 leading-[0.75] translate-y-[8px]">
+                <span className="font-serif text-[5.5rem] font-medium tracking-[0.15em] uppercase whitespace-nowrap select-none text-white/70 leading-[0.75] translate-y-[12px]">
                     {scheme.brand}
                 </span>
             </div>
          </div>
-
-         {/* Fold Line Detail */}
-         <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black/5"></div>
+         
+         <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/20"></div>
       </div>
 
     </div>

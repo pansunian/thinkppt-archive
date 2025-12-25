@@ -1,15 +1,14 @@
-
 import { Scheme } from './types';
 
 export const CATEGORIES = ['全部', '策略方案', '创意设计', '融资路演', '工作汇报', '品牌手册'];
 
 /**
  * Enhanced Kraft & Manila Palette
- * 用于模拟真实的档案袋内外色差
+ * 用于模拟真实的档案袋内外色差 - 调整为浅米色系
  */
 export const PALETTE = {
-  KRAFT_OUTER: '#C09B73', // 外部口袋色
-  KRAFT_INNER: '#DBC5A4', // 内部背板色
+  KRAFT_OUTER: '#D8CBB7', // 外部口袋色 - 浅米色
+  KRAFT_INNER: '#EBE3D5', // 内部背板色 - 极浅米色
   VINTAGE_STAMP: '#2A2A2A', // 复古印章色
 };
 
@@ -28,7 +27,6 @@ export const MOCK_SCHEMES: Scheme[] = [
     downloadUrl: '#',
     year: '2024',
     displayId: '1001',
-    // Added missing properties for Scheme interface compatibility
     fileSize: '6.8M',
     pageCount: '22'
   },
@@ -46,7 +44,6 @@ export const MOCK_SCHEMES: Scheme[] = [
     downloadUrl: '#',
     year: '2024',
     displayId: '1002',
-    // Added missing properties for Scheme interface compatibility
     fileSize: '4.5M',
     pageCount: '15'
   },
@@ -64,7 +61,6 @@ export const MOCK_SCHEMES: Scheme[] = [
     downloadUrl: '#',
     year: '2023',
     displayId: '1003',
-    // Added missing properties for Scheme interface compatibility
     fileSize: '12.0M',
     pageCount: '38'
   }
