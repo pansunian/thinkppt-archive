@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedOutline } from "../types";
 
@@ -16,8 +15,8 @@ export const generateSchemeOutline = async (topic: string): Promise<GeneratedOut
   }
 
   try {
-    // Use gemini-3-pro-preview for complex reasoning tasks like generating PPT outlines.
-    const model = 'gemini-3-pro-preview';
+    // Use gemini-3-flash-preview for better quota limits and speed.
+    const model = 'gemini-3-flash-preview';
     const prompt = `你是一个专业的PPT方案策划师。请为主题：“${topic}” 创建一个PPT演示大纲。
     返回一个吸引人的标题（Title）和一个包含 4-6 个关键部分的列表（Sections）。
     请使用中文回答，语气专业、富有逻辑性。`;
