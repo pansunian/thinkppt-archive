@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>ThinkPPT | 深刻 PPT</title>
     
+    <!-- 确保 preload 的 href 与下方 CSS 中的 url 完全一致，否则浏览器会报警告并可能导致加载失败 -->
     <link rel="preload" href="/jinghualaosongti.woff" as="font" type="font/woff" crossorigin="anonymous">
     <link rel="preload" href="/XiXianTingMingTi.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
@@ -15,9 +16,10 @@
           theme: {
             extend: {
               fontFamily: {
-                sans: ['ThinkPPT-Text', 'sans-serif'],
-                mono: ['ThinkPPT-Text', 'monospace'],
-                heading: ['ThinkPPT-Title', 'serif'], 
+                // 使用引号包裹字体名称以防止解析错误
+                sans: ['"ThinkPPT-Text"', 'sans-serif'],
+                mono: ['"ThinkPPT-Text"', 'monospace'],
+                heading: ['"ThinkPPT-Title"', 'serif'], 
               }
             }
           }
@@ -28,58 +30,56 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-      /* 定义标题字体：jinghualaosongti */
-      /* 强制映射同一个文件到不同的字重，确保 font-bold 和 font-black 生效 */
-      
-      /* Regular (400) */
+      /* 
+         修复：移除 URL 中的版本号参数 (?v=2)，使其与 preload 的 href 完全一致。
+         这样浏览器才能正确匹配预加载的资源。
+      */
+
+      /* ThinkPPT-Title (Heading) - JingHuaLaoSongTi */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff?v=2') format('woff');
+        src: url('/jinghualaosongti.woff') format('woff');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
-      /* Bold (700) - 对应 Tailwind font-bold */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff?v=2') format('woff');
+        src: url('/jinghualaosongti.woff') format('woff');
         font-weight: 700;
         font-style: normal;
         font-display: swap;
       }
-      /* Black (900) - 对应 Tailwind font-black */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff?v=2') format('woff');
+        src: url('/jinghualaosongti.woff') format('woff');
         font-weight: 900;
         font-style: normal;
         font-display: swap;
       }
 
-      /* 定义正文字体：XiXianTingMingTi */
+      /* ThinkPPT-Text (Body) - XiXianTingMingTi */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('/XiXianTingMingTi.woff2?v=2') format('woff2');
+        src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
-      /* 同样为正文映射粗体，防止正文加粗时丢失字体 */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('/XiXianTingMingTi.woff2?v=2') format('woff2');
+        src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 700;
         font-style: normal;
         font-display: swap;
       }
 
       body {
-        font-family: 'ThinkPPT-Text', sans-serif;
-        background-color: #d1cbc2; /* 模拟实木桌面或深色背景 */
+        font-family: "ThinkPPT-Text", sans-serif;
+        background-color: #d1cbc2;
         -webkit-font-smoothing: antialiased;
       }
 
-      /* 纸张纹理叠加层 */
       .paper-texture {
         position: relative;
       }
@@ -93,17 +93,16 @@
         mix-blend-mode: multiply;
       }
 
-      /* 油墨压印滤镜 */
       .ink-stamp {
         filter: url(#ink-bleed);
       }
-
+      
+      /* 强制覆盖 mono 字体 */
       .font-mono {
-        font-family: 'ThinkPPT-Text', monospace !important;
+        font-family: "ThinkPPT-Text", monospace !important;
       }
     </style>
 
-    <!-- SVG 纹理生成器 -->
     <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
       <filter id="paper-grain">
         <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
