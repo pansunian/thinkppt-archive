@@ -261,7 +261,7 @@ export default function App() {
                         {BRAND_CONFIG.mode === 'image' && !overlayLogoError ? (
                             <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-10 md:h-16 w-auto object-contain brightness-0 opacity-90" onError={() => setOverlayLogoError(true)} />
                         ) : (
-                            <h1 className="text-5xl md:text-7xl font-heading font-black tracking-tighter text-[#2A2A2A]">{BRAND_CONFIG.text}</h1>
+                            <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tighter text-[#2A2A2A]">{BRAND_CONFIG.text}</h1>
                         )}
                     </div>
                     <div className="mt-2">
@@ -316,7 +316,7 @@ export default function App() {
                         {BRAND_CONFIG.mode === 'image' && !logoError ? (
                             <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className={`${BRAND_CONFIG.heightClass} w-auto object-contain select-none pointer-events-none`} onError={() => setLogoError(true)} />
                         ) : (
-                            <span className="font-black text-2xl tracking-tighter text-black uppercase">{BRAND_CONFIG.text}</span>
+                            <span className="font-black text-lg tracking-tighter text-black uppercase">{BRAND_CONFIG.text}</span>
                         )}
                     </div>
                 </button>
@@ -353,7 +353,7 @@ export default function App() {
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
                 <div>
                     <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
-                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-gray-900 mb-2">
+                    <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-gray-900 mb-2">
                         {activeCategory === '全部' ? (currentDatabaseId === null ? '策划人的方案档案库' : `${currentDatabaseLabel} 库`) : activeCategory}
                     </h1>
                 </div>

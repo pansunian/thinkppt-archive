@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Scheme } from '../types';
 
@@ -43,13 +44,13 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
       return <p className="text-base md:text-lg leading-relaxed text-gray-800 mb-4"><RichText textArr={value.rich_text} /></p>;
     
     case 'heading_1':
-      return <h1 className="text-3xl font-black uppercase mt-8 mb-4"><RichText textArr={value.rich_text} /></h1>;
+      return <h1 className="text-xl font-black uppercase mt-8 mb-4"><RichText textArr={value.rich_text} /></h1>;
     
     case 'heading_2':
-      return <h2 className="text-2xl font-bold mt-6 mb-3"><RichText textArr={value.rich_text} /></h2>;
+      return <h2 className="text-lg font-bold mt-6 mb-3"><RichText textArr={value.rich_text} /></h2>;
     
     case 'heading_3':
-      return <h3 className="text-xl font-bold mt-4 mb-2"><RichText textArr={value.rich_text} /></h3>;
+      return <h3 className="text-base font-bold mt-4 mb-2"><RichText textArr={value.rich_text} /></h3>;
     
     case 'bulleted_list_item':
       return (
@@ -248,7 +249,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                         <span className="font-mono text-xs text-gray-400">{scheme.date}</span>
                     </div>
                     
-                    <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-6 leading-tight text-gray-900">
+                    <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight mb-6 leading-tight text-gray-900">
                     {scheme.title}
                     </h1>
 

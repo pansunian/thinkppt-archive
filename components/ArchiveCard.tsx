@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Scheme } from '../types';
 import { PALETTE } from '../constants';
 
@@ -84,7 +85,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
          </div>
          <div className="p-5 pb-16 flex-1 relative flex flex-col">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
-            <h3 className="font-bold text-lg leading-tight text-gray-900 mb-2 relative z-10">{scheme.title}</h3>
+            <h3 className="font-bold text-base leading-tight text-gray-900 mb-2 relative z-10">{scheme.title}</h3>
             <p className="text-[11px] text-gray-500 line-clamp-3 leading-relaxed relative z-10">{scheme.description}</p>
             <div className="mt-auto flex justify-between items-center relative z-10 pt-2 border-t border-gray-50">
                 <span className="text-[9px] font-mono text-gray-400 uppercase tracking-tighter truncate max-w-[150px]">{displayTags}</span>
