@@ -8,8 +8,11 @@
     <!-- 正文字体 Preload -->
     <link rel="preload" href="/XiXianTingMingTi.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     
-    <!-- 标题字体 Preload: 添加时间戳防止缓存，移除 type 属性让浏览器自动检测格式 -->
-    <link rel="preload" href="/jinghualaosongti.woff?v=20250226" as="font" crossorigin="anonymous">
+    <!-- 
+      DEBUG: 暂时移除 jinghualaosongti 的 preload，
+      因为我们将统一使用 XiXianTingMingTi.woff2 进行测试 
+    -->
+    <!-- <link rel="preload" href="/jinghualaosongti.woff?v=20250226" as="font" crossorigin="anonymous"> -->
 
     <script>
       window.tailwind = {
@@ -32,27 +35,26 @@
     <style>
       /* 
          ThinkPPT-Title (Heading) 
-         文件名: jinghualaosongti.woff (全小写)
-         使用 ?v=20250226 强制刷新缓存
-         移除 format('woff') 限制，防止因文件头信息不匹配导致的加载失败
+         DEBUG MODE: 临时将标题字体的源文件指向 '/XiXianTingMingTi.woff2'。
+         如果这能显示，说明代码逻辑没问题，是之前的 .woff 文件本身或路径有问题。
       */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff?v=20250226');
+        src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff?v=20250226');
+        src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 700; /* Bold */
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff?v=20250226');
+        src: url('/XiXianTingMingTi.woff2') format('woff2');
         font-weight: 900; /* Black */
         font-style: normal;
         font-display: swap;
