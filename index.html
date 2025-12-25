@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>ThinkPPT | 深刻 PPT</title>
     
-    <!-- 确保 preload 的 href 与下方 CSS 中的 url 完全一致，否则浏览器会报警告并可能导致加载失败 -->
-    <link rel="preload" href="/jinghualaosongti.woff" as="font" type="font/woff" crossorigin="anonymous">
+    <!-- 正文字体 Preload -->
     <link rel="preload" href="/XiXianTingMingTi.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    
+    <!-- 标题字体 Preload: 添加时间戳防止缓存，移除 type 属性让浏览器自动检测格式 -->
+    <link rel="preload" href="/jinghualaosongti.woff?v=20250226" as="font" crossorigin="anonymous">
 
     <script>
       window.tailwind = {
@@ -16,10 +17,9 @@
           theme: {
             extend: {
               fontFamily: {
-                // 使用引号包裹字体名称以防止解析错误
-                sans: ['"ThinkPPT-Text"', 'sans-serif'],
-                mono: ['"ThinkPPT-Text"', 'monospace'],
-                heading: ['"ThinkPPT-Title"', 'serif'], 
+                sans: ['ThinkPPT-Text', 'sans-serif'],
+                mono: ['ThinkPPT-Text', 'monospace'],
+                heading: ['ThinkPPT-Title', 'serif'], 
               }
             }
           }
@@ -31,34 +31,34 @@
 
     <style>
       /* 
-         修复：移除 URL 中的版本号参数 (?v=2)，使其与 preload 的 href 完全一致。
-         这样浏览器才能正确匹配预加载的资源。
+         ThinkPPT-Title (Heading) 
+         文件名: jinghualaosongti.woff (全小写)
+         使用 ?v=20250226 强制刷新缓存
+         移除 format('woff') 限制，防止因文件头信息不匹配导致的加载失败
       */
-
-      /* ThinkPPT-Title (Heading) - JingHuaLaoSongTi */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff') format('woff');
+        src: url('/jinghualaosongti.woff?v=20250226');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff') format('woff');
-        font-weight: 700;
+        src: url('/jinghualaosongti.woff?v=20250226');
+        font-weight: 700; /* Bold */
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff') format('woff');
-        font-weight: 900;
+        src: url('/jinghualaosongti.woff?v=20250226');
+        font-weight: 900; /* Black */
         font-style: normal;
         font-display: swap;
       }
 
-      /* ThinkPPT-Text (Body) - XiXianTingMingTi */
+      /* ThinkPPT-Text (Body) */
       @font-face {
         font-family: 'ThinkPPT-Text';
         src: url('/XiXianTingMingTi.woff2') format('woff2');
@@ -75,7 +75,7 @@
       }
 
       body {
-        font-family: "ThinkPPT-Text", sans-serif;
+        font-family: 'ThinkPPT-Text', sans-serif;
         background-color: #d1cbc2;
         -webkit-font-smoothing: antialiased;
       }
@@ -97,9 +97,8 @@
         filter: url(#ink-bleed);
       }
       
-      /* 强制覆盖 mono 字体 */
       .font-mono {
-        font-family: "ThinkPPT-Text", monospace !important;
+        font-family: 'ThinkPPT-Text', monospace !important;
       }
     </style>
 
