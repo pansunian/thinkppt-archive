@@ -30,14 +30,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[320px] mx-auto h-[440px] mt-20 perspective-1000 cursor-pointer select-none overflow-visible"
-      style={{ transformStyle: 'preserve-3d' }}
+      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[320px] mx-auto h-[440px] mt-20 perspective-1000 cursor-pointer select-none"
     >
       
-      {/* 1. Back Folder (The Inner Plate) - 基础层 */}
+      {/* 1. Back Folder (The Inner Plate) */}
       <div 
         className="absolute inset-0 rounded-lg shadow-lg z-0"
-        style={{ backgroundColor: innerColor, transform: 'translateZ(0px)' }}
+        style={{ backgroundColor: innerColor }}
       >
         <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
             {/* Paper Grain Overlays */}
@@ -61,11 +60,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
         </div>
       </div>
 
-      {/* 2. Slide-out Content (The "White" Paper) - 中间层 */}
-      <div 
-        className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] group-hover:-translate-y-32 group-hover:rotate-1 z-10 flex flex-col overflow-hidden"
-        style={{ transform: 'translateZ(1px)' }}
-      >
+      {/* 2. Slide-out Content (The "White" Paper) */}
+      <div className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] group-hover:-translate-y-32 group-hover:rotate-1 z-10 flex flex-col overflow-hidden">
          <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100">
             <img 
                 src={scheme.imageUrl} 
@@ -84,22 +80,22 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
          </div>
       </div>
 
-      {/* 3. Front Pocket (口袋部分) - 最上层 */}
+      {/* 3. Front Pocket (口袋部分) */}
       <div 
         className="absolute bottom-0 left-0 right-0 h-[165px] rounded-b-lg rounded-t-[24px] z-20 pointer-events-none border-t border-black/5 shadow-[0_-15px_40px_rgba(0,0,0,0.12)] overflow-hidden"
-        style={{ backgroundColor: outerColor, transform: 'translateZ(2px)' }}
+        style={{ backgroundColor: outerColor }}
       >
          {/* Texture Layers */}
          <div className="absolute inset-0 opacity-[0.2] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/p6-polyester.png')]"></div>
          
-         {/* Brand Watermark */}
+         {/* Brand Watermark - 使用宋体 (font-serif)、字号进一步放大、左右居中、调用 Brand 属性 */}
          <div className="absolute inset-x-0 bottom-0 flex justify-center z-0 pointer-events-none overflow-hidden pb-0">
             <span className="font-serif text-7xl md:text-8xl font-medium tracking-[0.2em] select-none text-white opacity-[0.25] whitespace-nowrap leading-none transform translate-y-[15%] pl-[0.2em]">
                 {brandDisplay}
             </span>
          </div>
 
-         {/* Pocket Form Layout */}
+         {/* Pocket Form Layout - 置于 z-10 确保不被底纹遮挡 */}
          <div className="relative z-10 p-4 md:p-5 flex flex-col h-full">
             
             {/* Pocket Header */}

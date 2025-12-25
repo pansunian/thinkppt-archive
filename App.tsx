@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ArchiveCard } from './components/ArchiveCard';
 import { Archivist } from './components/Archivist';
@@ -222,7 +223,7 @@ export default function App() {
     : schemes;
 
   return (
-    <div className="min-h-[100dvh] bg-white lg:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
+    <div className="min-h-[100dvh] bg-transparent lg:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
       
       <style>{`
         ::-webkit-scrollbar { display: none; }
