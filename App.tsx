@@ -273,8 +273,8 @@ export default function App() {
         </div>
       )}
 
-      {/* 侧边导航 (移动端) */}
-      <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-none pb-4 pt-0 w-12">
+      {/* 侧边导航 (移动端) - 增加 bg-white 和 border-r 消除割裂感 */}
+      <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-white border-r border-black/5">
         <div className="flex flex-col gap-1 pointer-events-auto items-start">
             <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-white ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (

@@ -17,7 +17,10 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
     ? (scheme.pageCount.includes('页') ? scheme.pageCount : `${scheme.pageCount} 页`)
     : 'N/A';
 
-  const displayFileSize = scheme.fileSize && scheme.fileSize !== '' ? scheme.fileSize : 'N/A';
+  // 格式化文件大小，确保带有 "M"
+  const displayFileSize = scheme.fileSize && scheme.fileSize !== '' 
+    ? (scheme.fileSize.toUpperCase().includes('M') ? scheme.fileSize : `${scheme.fileSize}M`)
+    : 'N/A';
 
   // 格式化标签显示，取前两个标签以防过长
   const displayTags = scheme.tags && scheme.tags.length > 0 
