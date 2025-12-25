@@ -3,110 +3,69 @@ import { Scheme } from './types';
 
 export const CATEGORIES = ['全部', '策略方案', '创意设计', '融资路演', '工作汇报', '品牌手册'];
 
-// Lighter & Softer Morandi Palette
-// Optimized for black text legibility
-export const PALETTE = [
-  '#E8E4F3', // Pale Purple
-  '#F4EED1', // Pale Gold
-  '#E2EDEA', // Pale Sage
-  '#FDE8E5', // Pale Salmon
-  '#E7F4F3', // Pale Cyan
-  '#F6ECE9', // Pale Rose
-  '#EDE6E0', // Pale Coffee
-  '#E3EDF2', // Pale Blue
-  '#F1E9E2', // Pale Brown
-  '#E9EEF0', // Pale Teal
-];
+/**
+ * Enhanced Kraft & Manila Palette
+ * 用于模拟真实的档案袋内外色差
+ */
+export const PALETTE = {
+  KRAFT_OUTER: '#C09B73', // 外部口袋色
+  KRAFT_INNER: '#DBC5A4', // 内部背板色
+  VINTAGE_STAMP: '#2A2A2A', // 复古印章色
+};
 
 export const MOCK_SCHEMES: Scheme[] = [
   {
     id: '1',
     title: '科技融资_Series_A',
     category: '融资路演',
-    date: 'OCT 24',
+    date: '2024-10-24',
     description: '针对A轮融资的完整路演架构。重点展示市场规模(TAM/SAM/SOM)和早期牵引力指标。',
     tags: ['#融资', '#SaaS'],
-    color: PALETTE[0], 
+    color: PALETTE.KRAFT_OUTER, 
     imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=800',
     brand: 'TechFlow',
     industry: '互联网/SaaS',
     downloadUrl: '#',
     year: '2024',
-    displayId: '1001'
+    displayId: '1001',
+    // Added missing properties for Scheme interface compatibility
+    fileSize: '6.8M',
+    pageCount: '22'
   },
   {
     id: '2',
     title: 'Q3_市场营销复盘',
     category: '工作汇报',
-    date: 'NOV 02',
+    date: '2024-11-02',
     description: '季度营销复盘模板，强调KPI可视化和各渠道转化率漏斗分析。',
     tags: ['#数据', '#营销'],
-    color: PALETTE[3], 
+    color: PALETTE.KRAFT_OUTER, 
     imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800',
     brand: 'EcoMarket',
     industry: '消费零售',
     downloadUrl: '#',
     year: '2024',
-    displayId: '1002'
+    displayId: '1002',
+    // Added missing properties for Scheme interface compatibility
+    fileSize: '4.5M',
+    pageCount: '15'
   },
   {
     id: '3',
     title: '极简品牌VI手册',
     category: '品牌手册',
-    date: 'SEP 15',
-    description: '瑞士风格排版，用于规范品牌标识、色彩系统和排版层级。',
+    date: '2023-09-15',
+    description: '瑞士风格排版，用于规范品牌标识、色彩系统 and 排版层级。',
     tags: ['#品牌', '#极简'],
-    color: PALETTE[5], 
+    color: PALETTE.KRAFT_OUTER, 
     imageUrl: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&q=80&w=800',
     brand: 'Studio A',
     industry: '设计创意',
     downloadUrl: '#',
     year: '2023',
-    displayId: '1003'
-  },
-  {
-    id: '4',
-    title: '2025_企业战略规划',
-    category: '策略方案',
-    date: 'JAN 10',
-    description: '高层战略路线图模板。包含SWOT分析网格、PEST分析及未来5年增长地平线规划。',
-    tags: ['#战略', '#规划'],
-    color: PALETTE[1], 
-    imageUrl: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?auto=format&fit=crop&q=80&w=800',
-    brand: 'FutureCorp',
-    industry: '咨询服务',
-    downloadUrl: '#',
-    year: '2025',
-    displayId: '1004'
-  },
-  {
-    id: '5',
-    title: '新品上市GTM策略',
-    category: '策略方案',
-    date: 'DEC 05',
-    description: 'Go-to-Market 上市策略框架。包含用户画像定义、全渠道营销日历。',
-    tags: ['#发布会', '#GTM'],
-    color: PALETTE[4], 
-    imageUrl: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=800',
-    brand: 'Nova Gear',
-    industry: '3C数码',
-    downloadUrl: '#',
-    year: '2024',
-    displayId: '1005'
-  },
-  {
-    id: '6',
-    title: 'UX设计作品集_V3',
-    category: '创意设计',
-    date: 'NOV 20',
-    description: '设计师求职/展示专用。以“问题-过程-方案”为逻辑，大图展示高保真原型。',
-    tags: ['#UX', '#作品集'],
-    color: PALETTE[6], 
-    imageUrl: 'https://images.unsplash.com/photo-1586717791821-3f44a5638d48?auto=format&fit=crop&q=80&w=800',
-    brand: 'Personal',
-    industry: '互联网',
-    downloadUrl: '#'
-  , year: '2023',
-    displayId: '1006'
+    displayId: '1003',
+    // Added missing properties for Scheme interface compatibility
+    fileSize: '12.0M',
+    pageCount: '38'
   }
 ];

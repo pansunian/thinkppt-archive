@@ -1,18 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <!-- Removed theme-color to allow transparent/glass effect in Safari -->
     <title>ThinkPPT | 深刻 PPT</title>
     
-    <!-- 0. PRELOAD FONTS: Force browser to download these immediately -->
-    <!-- Title Font: FZGaoYMCTJW-R.woff -->
     <link rel="preload" href="/FZGaoYMCTJW-R.woff" as="font" type="font/woff" crossorigin="anonymous">
-    <!-- Body/Text Font: SourceHanSansCN-Light.woff (Updated from ExtraLight) -->
     <link rel="preload" href="/SourceHanSansCN-Light.woff" as="font" type="font/woff" crossorigin="anonymous">
 
-    <!-- 1. Configure Tailwind BEFORE loading the library -->
     <script>
       window.tailwind = {
         config: {
@@ -29,13 +25,9 @@
       }
     </script>
     
-    <!-- 2. Load Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-      /* --- FONT DEFINITIONS --- */
-      
-      /* 1. Title Font - Uses FZGaoYMCTJW-R.woff */
       @font-face {
         font-family: 'ThinkPPT-Title';
         src: url('/FZGaoYMCTJW-R.woff') format('woff');
@@ -43,65 +35,57 @@
         font-style: normal;
         font-display: swap;
       }
-      /* Force Bold mapping for Title to same file */
-      @font-face {
-        font-family: 'ThinkPPT-Title';
-        src: url('/FZGaoYMCTJW-R.woff') format('woff');
-        font-weight: 700;
-        font-style: normal;
-        font-display: swap;
-      }
-
-      /* 2. Text Font - Uses SourceHanSansCN-Light.woff */
       @font-face {
         font-family: 'ThinkPPT-Text';
         src: url('/SourceHanSansCN-Light.woff') format('woff');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
-      }
-      /* Force Bold mapping for Text to same file */
-      @font-face {
-        font-family: 'ThinkPPT-Text';
-        src: url('/SourceHanSansCN-Light.woff') format('woff');
-        font-weight: 700;
-        font-style: normal;
-        font-display: swap;
-      }
-
-      html {
-        background-color: #ffffff; /* Ensure Root is white for Safari Transparency */
       }
 
       body {
-        /* Apply the "Small Font" (Text font) globally */
         font-family: 'ThinkPPT-Text', sans-serif;
-        /* Default white background to support transparency in Safari if needed */
-        background-color: #ffffff;
-        -webkit-font-smoothing: antialiased; /* Make fonts look thinner/cleaner on Mac */
-        -moz-osx-font-smoothing: grayscale;
+        background-color: #d1cbc2; /* 模拟实木桌面或深色背景 */
+        -webkit-font-smoothing: antialiased;
       }
 
-      /* On Desktop, revert body background to Desk Color (#e8e4da) just in case */
-      @media (min-width: 768px) {
-        body {
-            background-color: #e8e4da;
-        }
+      /* 纸张纹理叠加层 */
+      .paper-texture {
+        position: relative;
+      }
+      .paper-texture::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.4;
+        pointer-events: none;
+        background-image: url("https://www.transparenttextures.com/patterns/p6-polyester.png");
+        mix-blend-mode: multiply;
       }
 
-      /* Apply the "Title Font" to all Headings globally as a fallback */
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'ThinkPPT-Title', sans-serif;
+      /* 油墨压印滤镜 */
+      .ink-stamp {
+        filter: url(#ink-bleed);
       }
-      
-      /* Override .font-mono to use the "Small Font" instead of system monospace */
+
       .font-mono {
         font-family: 'ThinkPPT-Text', monospace !important;
-        letter-spacing: 0.05em; /* Add slight tracking for a cleaner "small text" look */
       }
-      
-      /* Removed Custom Scrollbar Styles to use Default Browser Styles */
     </style>
+
+    <!-- SVG 纹理生成器 -->
+    <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+      <filter id="paper-grain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch" />
+        <feColorMatrix type="saturate" values="0" />
+        <feBlend mode="multiply" in2="SourceGraphic" />
+      </filter>
+      <filter id="ink-bleed">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0.4" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </svg>
+
   <script type="importmap">
 {
   "imports": {
@@ -118,12 +102,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-    
-    <!-- Debug Script for CORS: Check console if fonts fail -->
-    <script>
-      document.fonts.ready.then(function () {
-        console.log('Fonts loaded state:', document.fonts.status);
-      });
-    </script>
   </body>
 </html>

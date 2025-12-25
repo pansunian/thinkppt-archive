@@ -287,7 +287,8 @@ export default function App() {
             </button>
             {categories.filter(c => c !== '全部').map((category, idx) => {
                 const isActive = activeCategory === category;
-                const tabColor = PALETTE[categories.indexOf(category) % PALETTE.length];
+                const paletteColors = [PALETTE.KRAFT_INNER, PALETTE.KRAFT_OUTER, '#D4B595', '#CEB28E'];
+                const tabColor = paletteColors[categories.indexOf(category) % paletteColors.length];
                 return (
                     <button key={category} onClick={() => handleCategoryChange(category)} className={`relative h-16 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 ${isActive ? 'translate-x-0 w-10 shadow-md z-20' : '-translate-x-1 hover:translate-x-0 opacity-90 z-10'}`} style={{ backgroundColor: tabColor }}>
                         <span className={`block [writing-mode:vertical-rl] font-mono text-[10px] font-bold tracking-widest ${isActive ? 'text-black' : 'text-black/80'}`}>{category}</span>
@@ -320,7 +321,8 @@ export default function App() {
                 </button>
                 {categories.map((category, idx) => {
                     const isActive = activeCategory === category;
-                    const tabColor = PALETTE[idx % PALETTE.length];
+                    const paletteColors = [PALETTE.KRAFT_INNER, PALETTE.KRAFT_OUTER, '#D4B595', '#CEB28E'];
+                    const tabColor = paletteColors[idx % paletteColors.length];
                     const heightClass = isActive ? 'h-11 translate-y-[4px] z-40' : 'h-11 translate-y-[8px] hover:translate-y-[4px] z-10 hover:z-20'; 
                     return (
                         <button key={category} onClick={() => handleCategoryChange(category)} className={`relative group flex-shrink-0 mr-[-8px] px-0 transition-all duration-200 ease-out ${heightClass}`}>
