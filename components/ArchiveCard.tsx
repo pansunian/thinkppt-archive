@@ -19,6 +19,14 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 
   const displayFileSize = scheme.fileSize && scheme.fileSize !== '' ? scheme.fileSize : 'N/A';
 
+  // 格式化标签显示，取前两个标签以防过长
+  const displayTags = scheme.tags && scheme.tags.length > 0 
+    ? scheme.tags.slice(0, 2).join(' ') 
+    : (scheme.industry || 'General');
+
+  // 模拟品牌文字：使用 4 个汉字“深刻策划”作为底纹示意
+  const brandDisplay = "深刻策划";
+
   return (
     <div 
       onClick={onClick}
@@ -53,7 +61,6 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       </div>
 
       {/* 2. Slide-out Content (The "White" Paper) */}
-      {/* 修改点：高度调整（-translate-y-32），移除 border */}
       <div className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] group-hover:-translate-y-32 group-hover:rotate-1 z-10 flex flex-col overflow-hidden">
          <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100">
             <img 
@@ -62,13 +69,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
             />
          </div>
-         <div className="p-5 flex-1 relative flex flex-col">
+         <div className="p-5 pb-16 flex-1 relative flex flex-col">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
             <h3 className="font-bold text-lg leading-tight text-gray-900 mb-2 relative z-10">{scheme.title}</h3>
             <p className="text-[11px] text-gray-500 line-clamp-3 leading-relaxed relative z-10">{scheme.description}</p>
-            <div className="mt-auto flex justify-between items-center relative z-10 pt-2">
-                <span className="text-[9px] font-mono text-gray-300 uppercase tracking-tighter">DocRef_{scheme.displayId}</span>
-                <span className="text-[10px] font-bold text-black group-hover:underline">VIEW FULL →</span>
+            <div className="mt-auto flex justify-between items-center relative z-10 pt-2 border-t border-gray-50">
+                <span className="text-[9px] font-mono text-gray-400 uppercase tracking-tighter truncate max-w-[150px]">{displayTags}</span>
+                <span className="text-[10px] font-bold text-black group-hover:underline">查阅档案 →</span>
             </div>
          </div>
       </div>
@@ -78,10 +85,17 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
         className="absolute bottom-0 left-0 right-0 h-[165px] rounded-b-lg rounded-t-[24px] z-20 pointer-events-none border-t border-black/5 shadow-[0_-15px_40px_rgba(0,0,0,0.12)] overflow-hidden"
         style={{ backgroundColor: outerColor }}
       >
-         {/* Texture Layers for Manila/Light Kraft Paper */}
+         {/* Texture Layers */}
          <div className="absolute inset-0 opacity-[0.2] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/p6-polyester.png')]"></div>
          
-         {/* Pocket Form Layout */}
+         {/* Brand Watermark - 宋体风格、字号放大、左右居中、贴合底部 */}
+         <div className="absolute inset-x-0 bottom-0 flex justify-center z-0 pointer-events-none overflow-hidden pb-0 md:pb-1">
+            <span className="font-heading text-6xl md:text-7xl font-medium tracking-[0.4em] select-none text-white opacity-[0.28] whitespace-nowrap leading-none transform translate-y-[15%] pl-[0.4em]">
+                {brandDisplay}
+            </span>
+         </div>
+
+         {/* Pocket Form Layout - 置于 z-10 确保不被底纹遮挡 */}
          <div className="relative z-10 p-4 md:p-5 flex flex-col h-full">
             
             {/* Pocket Header */}
@@ -97,23 +111,19 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
             </div>
 
             {/* The Table Grid */}
-            <div className="w-full border border-black/10 flex flex-col font-mono text-[7px] text-black/50 mb-2">
+            <div className="w-full border border-black/10 flex flex-col font-mono text-[7px] text-black/50 mb-2 bg-black/5 backdrop-blur-[1px]">
                 <div className="flex border-b border-black/10">
                     <div className="w-1/2 border-r border-black/10 p-1.5">方案页数: <span className="text-black/70 font-bold">{displayPageCount}</span></div>
                     <div className="w-1/2 p-1.5">文件大小: <span className="text-black/70 font-bold">{displayFileSize}</span></div>
                 </div>
                 <div className="flex">
                     <div className="w-1/2 border-r border-black/10 p-1.5">存封日期: {scheme.date}</div>
-                    <div className="w-1/2 p-1.5">档案编号: #{scheme.displayId}</div>
+                    <div className="w-1/2 p-1.5">所属行业: <span className="text-black/70 font-bold">{scheme.industry || 'General'}</span></div>
                 </div>
             </div>
 
-            {/* Large Brand Text */}
-            <div className="mt-auto relative w-full h-20 flex items-end justify-center overflow-hidden">
-                <span className="font-serif text-[5.5rem] font-medium tracking-[0.15em] uppercase whitespace-nowrap select-none text-white/70 leading-[0.75] translate-y-[12px]">
-                    {scheme.brand}
-                </span>
-            </div>
+            {/* Empty space for the watermark to breathe */}
+            <div className="mt-auto h-12"></div>
          </div>
          
          <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/20"></div>
