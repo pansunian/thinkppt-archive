@@ -237,20 +237,21 @@ export default function App() {
             onClick={() => setIsSealed(false)} 
             className={`fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[#f7f7f7] transition-opacity duration-500 cursor-pointer ${!isSealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
-            <div className={`relative w-[340px] h-[250px] md:w-[480px] md:h-[350px] bg-[#007064] rounded-[8px] archive-bag-shadow flex flex-col items-center transition-transform duration-500`}>
+            {/* Kraft Bag Style Update - Removed archive-bag-shadow */}
+            <div className={`relative w-[340px] h-[250px] md:w-[480px] md:h-[350px] bg-[#D8CBB7] rounded-[8px] flex flex-col items-center transition-transform duration-500`}>
                 <div className="absolute top-0 left-0 right-0 h-[32%] z-30 archive-flap-shadow pointer-events-none">
-                    <svg viewBox="0 0 480 112" preserveAspectRatio="none" className="w-full h-full fill-[#008375]">
+                    <svg viewBox="0 0 480 112" preserveAspectRatio="none" className="w-full h-full fill-[#E6DCC9]">
                         <path d="M0,0 L480,0 L480,0 L455,95 Q450,112 430,112 L50,112 Q30,112 25,95 L0,0 Z" />
                     </svg>
                 </div>
                 <div className="absolute top-8 md:top-12 z-40 pointer-events-none w-full text-center px-4">
-                    <span className="text-[10px] md:text-xs text-white/50 font-medium tracking-[0.2em] uppercase">策划人的方案档案库</span>
+                    <span className="text-[10px] md:text-xs text-black/40 font-medium tracking-[0.2em] uppercase">策划人的方案档案库</span>
                 </div>
                 <div className="absolute top-[22%] md:top-[25%] left-0 right-0 flex flex-col items-center z-40 pointer-events-none">
                     <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md">
                         <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
                     </div>
-                    <div className="w-[1.5px] h-10 md:h-14 bg-white/60"></div>
+                    <div className="w-[1.5px] h-10 md:h-14 bg-black/10"></div>
                     <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md -mt-1">
                         <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
                     </div>
@@ -258,18 +259,18 @@ export default function App() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center z-50 pt-16 md:pt-24 pointer-events-none px-6">
                     <div className="flex flex-col items-center mb-1">
                         {BRAND_CONFIG.mode === 'image' && !overlayLogoError ? (
-                            <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-10 md:h-16 w-auto object-contain brightness-0 invert" onError={() => setOverlayLogoError(true)} />
+                            <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-10 md:h-16 w-auto object-contain brightness-0 opacity-90" onError={() => setOverlayLogoError(true)} />
                         ) : (
-                            <h1 className="text-5xl md:text-7xl font-heading font-black tracking-tighter text-white">{BRAND_CONFIG.text}</h1>
+                            <h1 className="text-5xl md:text-7xl font-heading font-black tracking-tighter text-[#2A2A2A]">{BRAND_CONFIG.text}</h1>
                         )}
                     </div>
                     <div className="mt-2">
-                        <span className="text-xs md:text-sm font-medium tracking-[0.4em] text-white/80">〔 深刻PPT 〕</span>
+                        <span className="text-xs md:text-sm font-medium tracking-[0.4em] text-[#2A2A2A]/70">〔 深刻PPT 〕</span>
                     </div>
                 </div>
-                <div className="absolute inset-0 border border-white/5 rounded-[8px] pointer-events-none"></div>
+                <div className="absolute inset-0 border border-black/5 rounded-[8px] pointer-events-none"></div>
             </div>
-            <div className={`absolute bottom-10 font-mono text-[10px] text-black/5 tracking-[2.5em] uppercase transition-opacity pointer-events-none ${!isSealed ? 'opacity-0' : 'opacity-100'}`}>点击开启</div>
+            <div className={`absolute bottom-10 w-full text-center indent-[2.5em] font-mono text-[10px] text-black/10 tracking-[2.5em] uppercase transition-opacity pointer-events-none ${!isSealed ? 'opacity-0' : 'opacity-100'}`}>点击开启</div>
         </div>
       )}
 
