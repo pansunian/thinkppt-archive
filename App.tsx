@@ -353,7 +353,7 @@ export default function App() {
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
                 <div>
                     <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
-                    <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-gray-900 mb-2">
+                    <h1 className="text-2xl md:text-4xl font-heading font-black uppercase tracking-tight text-gray-900 mb-2">
                         {activeCategory === '全部' ? (currentDatabaseId === null ? '策划人的方案档案库' : `${currentDatabaseLabel} 库`) : activeCategory}
                     </h1>
                 </div>

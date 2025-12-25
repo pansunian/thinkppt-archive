@@ -249,7 +249,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                         <span className="font-mono text-xs text-gray-400">{scheme.date}</span>
                     </div>
                     
-                    <h1 className="text-lg md:text-2xl font-black uppercase tracking-tight mb-6 leading-tight text-gray-900">
+                    <h1 className="text-lg md:text-2xl font-heading font-black uppercase tracking-tight mb-6 leading-tight text-gray-900">
                     {scheme.title}
                     </h1>
 
