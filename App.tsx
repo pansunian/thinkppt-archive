@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArchiveCard } from './components/ArchiveCard';
 import { Archivist } from './components/Archivist';
@@ -274,10 +273,10 @@ export default function App() {
         </div>
       )}
 
-      {/* 侧边导航 (移动端) - 增加 bg-white 和 border-r 消除割裂感 */}
-      <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-white border-r border-black/5">
+      {/* 侧边导航 (移动端) - 更新背景色为 #FDFBF7 */}
+      <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-[#FDFBF7] border-r border-black/5">
         <div className="flex flex-col gap-1 pointer-events-auto items-start">
-            <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-white ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
+            <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-[#FDFBF7] ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (
                      <div className="w-8 h-20 flex items-center justify-center overflow-hidden">
                          <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-4 w-auto max-w-[64px] object-contain rotate-90" onError={() => setLogoError(true)} />
@@ -300,7 +299,7 @@ export default function App() {
             {RESOURCE_LINKS.map((link) => {
                 const isCurrentDB = link.type === 'database' && link.id === currentDatabaseId;
                 return (
-                <button key={link.label} onClick={() => handleResourceClick(link)} className={`relative h-12 w-7 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-transform duration-200 -translate-x-1 hover:translate-x-0 bg-white ${isCurrentDB ? 'translate-x-0 w-9 font-bold shadow-md' : ''}`} style={{ backgroundColor: link.color }}>
+                <button key={link.label} onClick={() => handleResourceClick(link)} className={`relative h-12 w-7 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-transform duration-200 -translate-x-1 hover:translate-x-0 bg-[#FDFBF7] ${isCurrentDB ? 'translate-x-0 w-9 font-bold shadow-md' : ''}`} style={{ backgroundColor: link.color }}>
                     <span className={`block [writing-mode:vertical-rl] font-mono text-[9px] font-bold text-black/60 tracking-tight ${isCurrentDB ? 'text-black' : ''}`}>{link.label}</span>
                 </button>
              )})}
@@ -347,9 +346,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* 主内容区 */}
+      {/* 主内容区 - 移动端背景色改为 #FDFBF7 */}
       <main className="flex-grow pl-12 lg:px-8 lg:pb-12 z-20 pt-0">
-        <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-white lg:bg-[#FDFBF7] lg:rounded-b-lg lg:rounded-tr-lg rounded-none shadow-none lg:shadow-[0_4px_20px_rgba(0,0,0,0.08)] relative border-t-0 lg:border-t border-black/5">
+        <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg lg:rounded-tr-lg rounded-none shadow-none lg:shadow-[0_4px_20px_rgba(0,0,0,0.08)] relative border-t-0 lg:border-t border-black/5">
             <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
                 <div>
                     <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
@@ -380,7 +379,7 @@ export default function App() {
                 )}
             </div>
 
-            <div className="relative h-16 bg-white lg:bg-[#FDFBF7] lg:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
+            <div className="relative h-16 bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
                 <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest">ThinkPPT Archive System © 2025</span>
             </div>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Scheme } from '../types';
 
@@ -202,9 +201,9 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
       <div className="absolute inset-0" onClick={onClose}></div>
 
       {/* Main Modal Wrapper */}
-      {/* UPDATED: Background white on mobile to prevent Safari beige top bar */}
+      {/* UPDATED: Background #FDFBF7 on mobile to match main app */}
       <div 
-        className={`relative w-full max-w-4xl bg-white md:bg-[#FDFBF7] h-[90vh] shadow-2xl rounded-2xl overflow-hidden flex flex-col transition-all duration-500 transform ${mounted ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95'}`}
+        className={`relative w-full max-w-4xl bg-[#FDFBF7] md:bg-[#FDFBF7] h-[90vh] shadow-2xl rounded-2xl overflow-hidden flex flex-col transition-all duration-500 transform ${mounted ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95'}`}
       >
         
         {/* Floating Close Button */}
@@ -217,8 +216,8 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
             </button>
         </div>
 
-        {/* Unified Scroll Container - Removed custom-scrollbar class */}
-        <div className="w-full h-full overflow-y-auto bg-white">
+        {/* Unified Scroll Container - Updated bg color */}
+        <div className="w-full h-full overflow-y-auto bg-[#FDFBF7]">
             
             {/* 1. Hero Image Section */}
             <div className="w-full relative bg-gray-100 border-b-2 border-black">
