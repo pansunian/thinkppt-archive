@@ -24,8 +24,8 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
     ? scheme.tags.slice(0, 2).join(' ') 
     : (scheme.industry || 'General');
 
-  // 模拟品牌文字：使用 4 个汉字“深刻策划”作为底纹示意
-  const brandDisplay = "深刻策划";
+  // 动态调用 Brand 属性，如果没有则显示默认值
+  const brandDisplay = scheme.brand || "深刻策划";
 
   return (
     <div 
@@ -88,9 +88,9 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
          {/* Texture Layers */}
          <div className="absolute inset-0 opacity-[0.2] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/p6-polyester.png')]"></div>
          
-         {/* Brand Watermark - 宋体风格、字号放大、左右居中、贴合底部 */}
-         <div className="absolute inset-x-0 bottom-0 flex justify-center z-0 pointer-events-none overflow-hidden pb-0 md:pb-1">
-            <span className="font-heading text-6xl md:text-7xl font-medium tracking-[0.4em] select-none text-white opacity-[0.28] whitespace-nowrap leading-none transform translate-y-[15%] pl-[0.4em]">
+         {/* Brand Watermark - 使用宋体 (font-serif)、字号进一步放大、左右居中、调用 Brand 属性 */}
+         <div className="absolute inset-x-0 bottom-0 flex justify-center z-0 pointer-events-none overflow-hidden pb-0">
+            <span className="font-serif text-7xl md:text-8xl font-medium tracking-[0.2em] select-none text-white opacity-[0.25] whitespace-nowrap leading-none transform translate-y-[15%] pl-[0.2em]">
                 {brandDisplay}
             </span>
          </div>
