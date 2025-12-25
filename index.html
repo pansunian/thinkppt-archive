@@ -17,7 +17,7 @@
               fontFamily: {
                 sans: ['ThinkPPT-Text', 'sans-serif'],
                 mono: ['ThinkPPT-Text', 'monospace'],
-                heading: ['ThinkPPT-Title', 'sans-serif'],
+                heading: ['ThinkPPT-Title', 'serif'], 
               }
             }
           }
@@ -28,17 +28,47 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+      /* 定义标题字体：jinghualaosongti */
+      /* 强制映射同一个文件到不同的字重，确保 font-bold 和 font-black 生效 */
+      
+      /* Regular (400) */
       @font-face {
         font-family: 'ThinkPPT-Title';
-        src: url('/jinghualaosongti.woff') format('woff');
+        src: url('/jinghualaosongti.woff?v=2') format('woff');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
+      /* Bold (700) - 对应 Tailwind font-bold */
+      @font-face {
+        font-family: 'ThinkPPT-Title';
+        src: url('/jinghualaosongti.woff?v=2') format('woff');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      /* Black (900) - 对应 Tailwind font-black */
+      @font-face {
+        font-family: 'ThinkPPT-Title';
+        src: url('/jinghualaosongti.woff?v=2') format('woff');
+        font-weight: 900;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      /* 定义正文字体：XiXianTingMingTi */
       @font-face {
         font-family: 'ThinkPPT-Text';
-        src: url('/XiXianTingMingTi.woff2') format('woff2');
+        src: url('/XiXianTingMingTi.woff2?v=2') format('woff2');
         font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      /* 同样为正文映射粗体，防止正文加粗时丢失字体 */
+      @font-face {
+        font-family: 'ThinkPPT-Text';
+        src: url('/XiXianTingMingTi.woff2?v=2') format('woff2');
+        font-weight: 700;
         font-style: normal;
         font-display: swap;
       }
