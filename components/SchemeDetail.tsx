@@ -41,22 +41,22 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
   switch (type) {
     case 'paragraph':
       if (!value.rich_text.length) return <br />; // Empty paragraph
-      return <p className="text-base md:text-lg leading-relaxed text-gray-800 mb-4"><RichText textArr={value.rich_text} /></p>;
+      return <p className="text-sm md:text-base leading-relaxed text-gray-800 mb-4"><RichText textArr={value.rich_text} /></p>;
     
     case 'heading_1':
-      return <h1 className="text-xl font-black uppercase mt-8 mb-4"><RichText textArr={value.rich_text} /></h1>;
+      return <h1 className="text-lg font-black uppercase mt-8 mb-4"><RichText textArr={value.rich_text} /></h1>;
     
     case 'heading_2':
-      return <h2 className="text-lg font-bold mt-6 mb-3"><RichText textArr={value.rich_text} /></h2>;
+      return <h2 className="text-base font-bold mt-6 mb-3"><RichText textArr={value.rich_text} /></h2>;
     
     case 'heading_3':
-      return <h3 className="text-base font-bold mt-4 mb-2"><RichText textArr={value.rich_text} /></h3>;
+      return <h3 className="text-sm font-bold mt-4 mb-2"><RichText textArr={value.rich_text} /></h3>;
     
     case 'bulleted_list_item':
       return (
         <li className="flex gap-2 mb-2 items-start">
            <span className="mt-2 w-1.5 h-1.5 bg-black rounded-full flex-shrink-0"></span>
-           <span className="text-base leading-relaxed"><RichText textArr={value.rich_text} /></span>
+           <span className="text-sm md:text-base leading-relaxed"><RichText textArr={value.rich_text} /></span>
         </li>
       );
       
@@ -64,7 +64,7 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
        return (
         <li className="flex gap-2 mb-2 items-start">
            <span className="font-mono text-gray-500 font-bold mt-0.5">1.</span>
-           <span className="text-base leading-relaxed"><RichText textArr={value.rich_text} /></span>
+           <span className="text-sm md:text-base leading-relaxed"><RichText textArr={value.rich_text} /></span>
         </li>
        );
        
@@ -249,7 +249,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                         <span className="font-mono text-xs text-gray-400">{scheme.date}</span>
                     </div>
                     
-                    <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight mb-6 leading-tight text-gray-900">
+                    <h1 className="text-lg md:text-2xl font-black uppercase tracking-tight mb-6 leading-tight text-gray-900">
                     {scheme.title}
                     </h1>
 
@@ -284,7 +284,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                 <div className="p-8 space-y-2 pb-16 min-h-[300px]">
                     
                     {/* Database Description Fallback */}
-                    <p className="text-base md:text-lg leading-relaxed text-gray-600 font-sans italic mb-8 border-l-2 border-gray-300 pl-4">
+                    <p className="text-sm md:text-base leading-relaxed text-gray-600 font-sans italic mb-8 border-l-2 border-gray-300 pl-4">
                         {scheme.description}
                     </p>
 
