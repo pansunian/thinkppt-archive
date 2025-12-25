@@ -30,11 +30,12 @@ export default async function handler(request) {
       }
     }
 
+    // FIX: Reduced cache time to avoid expired Notion file URLs
     return new Response(JSON.stringify(enrichedPage), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 's-maxage=600, stale-while-revalidate=3600',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=30',
       },
     });
   } catch (e) {

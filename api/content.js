@@ -38,9 +38,11 @@ export default async function handler(request) {
 
   try {
     const results = await fetchChildrenRecursively(id);
+    
+    // FIX: Reduced cache time to avoid expired Notion file URLs
     const cacheHeader = forceRefresh 
       ? 'no-store, max-age=0' 
-      : 'public, s-maxage=2592000, stale-while-revalidate=86400';
+      : 'public, s-maxage=300, stale-while-revalidate=30';
 
     return new Response(JSON.stringify({ results }), {
       status: 200,

@@ -83,10 +83,12 @@ export default async function handler(request) {
       return page;
     }));
 
-    // 设置极高缓存时间 (30天)，提升大陆访问速度。通过 refresh=true 强制刷新。
+    // CRITICAL FIX: Notion image URLs expire in 1 hour. 
+    // We reduce cache to 5 minutes (300s) to ensure URLs are always fresh.
+    // Removed stale-while-revalidate for long periods to prevent serving expired links.
     const cacheHeader = forceRefresh 
       ? 'no-store, max-age=0' 
-      : 'public, s-maxage=2592000, stale-while-revalidate=86400';
+      : 'public, s-maxage=300, stale-while-revalidate=30';
 
     return new Response(JSON.stringify({
       results: enrichedResults,
