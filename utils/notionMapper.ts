@@ -113,6 +113,12 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
        return 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?auto=format&fit=crop&w=800&q=80'; 
     };
 
+    // Helper to get checkbox value
+    const getCheckbox = (keys: string[]) => {
+        const prop = getProp(keys);
+        return prop?.type === 'checkbox' ? prop.checkbox : false;
+    };
+
     const paletteColors = Object.values(PALETTE);
     const defaultColor = paletteColors[index % paletteColors.length];
     
@@ -136,9 +142,10 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       tags: getMultiSelect(['Tags', 'Keywords', '标签']),
       color: getText(['Color', 'Hex', 'Theme', '颜色']) || defaultColor,
       imageUrl: getImage(['Image', 'Cover', 'Photo', '图片', '封面']),
-      // 扩展了文件大小和页数的属性匹配名
       fileSize: getFlexibleString(['Size', '大小', '文件大小', 'FileSize', '文件容量']) || '',
       pageCount: getFlexibleString(['Pages', '页数', '方案页数', 'PageCount', '文件页数', '页码']) || '',
+      // Map '编辑推荐' checkbox
+      isFeatured: getCheckbox(['编辑推荐', 'Featured', 'Editor Pick', '推荐', '精选']),
     };
   });
 };

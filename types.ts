@@ -15,6 +15,7 @@ export interface Scheme {
   displayId: string;  // New: User visible ID from Notion 'ID' property
   fileSize: string;   // New: 文件大小 (例如 6.8M)
   pageCount: string;  // New: 方案页数 (例如 22 页)
+  isFeatured?: boolean; // New: 是否为编辑推荐/精选
 }
 
 export interface GeneratedOutline {

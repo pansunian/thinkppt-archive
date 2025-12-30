@@ -28,7 +28,8 @@ export const MOCK_SCHEMES: Scheme[] = [
     year: '2024',
     displayId: '1001',
     fileSize: '6.8M',
-    pageCount: '22'
+    pageCount: '22',
+    isFeatured: true // Featured Mock
   },
   {
     id: '2',

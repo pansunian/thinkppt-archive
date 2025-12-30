@@ -75,7 +75,16 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       <div 
         className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] z-10 flex flex-col overflow-hidden [transform:translate3d(0,0,10px)] group-hover:[transform:translate3d(0,-8rem,10px)_rotate(1deg)]"
       >
-         <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100">
+         <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100 relative">
+            {/* Featured Badge */}
+            {scheme.isFeatured && (
+                <div className="absolute top-0 right-0 z-20">
+                     <div className="bg-[#D32F2F] text-white text-[10px] font-bold px-3 py-1.5 shadow-sm rounded-bl-lg tracking-widest uppercase flex items-center gap-1">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                         精选
+                     </div>
+                </div>
+            )}
             <img 
                 src={scheme.imageUrl} 
                 alt={scheme.title} 
