@@ -8,7 +8,12 @@ export default async function handler(request) {
   const NOTION_DB_COLLECTIONS_ID = process.env.NOTION_DB_COLLECTIONS_ID;
 
   if (!NOTION_API_KEY || !NOTION_DB_COLLECTIONS_ID) {
-    // Return empty array if not configured, so frontend falls back to mock or empty state gracefully
+    // Log to Vercel Function Logs for debugging
+    console.warn("Missing Environment Variables for Collections API:");
+    if (!NOTION_API_KEY) console.warn("- NOTION_API_KEY is missing");
+    if (!NOTION_DB_COLLECTIONS_ID) console.warn("- NOTION_DB_COLLECTIONS_ID is missing");
+
+    // Return empty array gracefully so the frontend doesn't crash
     return new Response(JSON.stringify({ results: [] }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -31,6 +36,7 @@ export default async function handler(request) {
     });
 
     if (!response.ok) {
+        console.error(`Notion API Error: ${response.status} ${response.statusText}`);
         throw new Error('Notion API error');
     }
 
@@ -90,7 +96,7 @@ export default async function handler(request) {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Collection API Fatal Error:", error);
     return new Response(JSON.stringify({ results: [], error: 'Failed to fetch collections' }), { status: 500 });
   }
 }
