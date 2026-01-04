@@ -339,7 +339,7 @@ export default function App() {
         </div>
       </main>
 
-      <Archivist />
+      <Archivist schemes={schemes} onOpenScheme={setSelectedScheme} />
       {selectedScheme && <SchemeDetail scheme={selectedScheme} onClose={() => setSelectedScheme(null)} isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID} />}
     </div>
   );
