@@ -1,4 +1,4 @@
-import { Scheme, Collection } from './types';
+import { Scheme } from './types';
 
 export const CATEGORIES = ['全部', '策略方案', '创意设计', '融资路演', '工作汇报', '品牌手册'];
 
@@ -29,7 +29,7 @@ export const MOCK_SCHEMES: Scheme[] = [
     displayId: '1001',
     fileSize: '6.8M',
     pageCount: '22',
-    isFeatured: true 
+    isFeatured: true // Featured Mock
   },
   {
     id: '2',
@@ -63,29 +63,6 @@ export const MOCK_SCHEMES: Scheme[] = [
     year: '2023',
     displayId: '1003',
     fileSize: '12.0M',
-    pageCount: '38',
-    isFeatured: true
-  }
-];
-
-// 模拟策展合辑数据
-export const MOCK_COLLECTIONS: Collection[] = [
-  {
-    id: 'c1',
-    title: '初创公司融资实战',
-    subtitle: 'The Startup Fundraising Kit',
-    description: '从种子轮到 A 轮，我们精选了 3 套不同阶段的融资路演方案。这些方案不仅设计精良，更重要的是逻辑结构经过了实战验证，帮助创始人讲好商业故事。',
-    coverImage: 'https://images.unsplash.com/photo-1553877607-3ea980560deb?auto=format&fit=crop&w=1200&q=80',
-    schemeIds: ['1', '1001'], // 关联 MOCK_SCHEMES 中的 ID
-    themeColor: '#1A1A1A'
-  },
-  {
-    id: 'c2',
-    title: '极简主义排版美学',
-    subtitle: 'Minimalist Typography',
-    description: '少即是多。本期展览聚焦于那些“留白”艺术运用得当的方案。即使没有复杂的图表，仅靠文字排版和网格系统，也能传递出高级的品牌质感。',
-    coverImage: 'https://images.unsplash.com/photo-1496115965489-21be7e6e59a0?auto=format&fit=crop&w=1200&q=80',
-    schemeIds: ['3', '1003'],
-    themeColor: '#D32F2F'
+    pageCount: '38'
   }
 ];

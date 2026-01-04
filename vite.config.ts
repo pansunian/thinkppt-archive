@@ -17,11 +17,8 @@ export default defineConfig(({ mode }) => {
       
       // 2. Secondary Database (AI)
       'process.env.NOTION_DB_AI_ID': JSON.stringify(env.NOTION_DB_AI_ID),
-
-      // 3. Collections Database (策展合辑) - NEW
-      'process.env.NOTION_DB_COLLECTIONS_ID': JSON.stringify(env.NOTION_DB_COLLECTIONS_ID),
       
-      // 4. Independent Pages (关于, 订阅)
+      // 3. Independent Pages (关于, 订阅)
       'process.env.NOTION_PAGE_ABOUT_ID': JSON.stringify(env.NOTION_PAGE_ABOUT_ID),
       'process.env.NOTION_PAGE_SUBSCRIBE_ID': JSON.stringify(env.NOTION_PAGE_SUBSCRIBE_ID),
     },

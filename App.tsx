@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ArchiveCard } from './components/ArchiveCard';
 import { Archivist } from './components/Archivist';
 import { SchemeDetail } from './components/SchemeDetail';
-import { CuratedExhibition } from './components/CuratedExhibition';
-import { CATEGORIES as DEFAULT_CATEGORIES, MOCK_SCHEMES, MOCK_COLLECTIONS, PALETTE } from './constants';
-import { Scheme, Collection } from './types';
+import { CATEGORIES as DEFAULT_CATEGORIES, MOCK_SCHEMES, PALETTE } from './constants';
+import { Scheme } from './types';
 import { mapNotionResultToSchemes } from './utils/notionMapper';
 
 // --- CONFIGURATION START ---
@@ -80,10 +79,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [useMock, setUseMock] = useState(false);
 
-  // New: Collection States
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [activeCollection, setActiveCollection] = useState<Collection | null>(null);
-
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -92,7 +87,6 @@ export default function App() {
   useEffect(() => {
     const cachedData = localStorage.getItem('thinkppt_schemes_cache');
     const cachedCats = localStorage.getItem('thinkppt_categories_cache');
-    const cachedCollections = localStorage.getItem('thinkppt_collections_cache');
     
     if (cachedData && !currentDatabaseId) {
       try {
@@ -106,12 +100,6 @@ export default function App() {
         console.warn("Failed to load local cache");
       }
     }
-
-    if (cachedCollections) {
-        try {
-            setCollections(JSON.parse(cachedCollections));
-        } catch(e) {}
-    }
   }, []);
 
   useEffect(() => {
@@ -124,41 +112,11 @@ export default function App() {
   }, [isSealed]);
 
   const getDrawerNumber = () => {
-    if (activeCollection) return 'EX'; // Exhibition Mode
     if (currentDatabaseId === process.env.NOTION_DB_AI_ID) return '02';
     const idx = categories.indexOf(activeCategory);
     if (idx === -1) return '01';
     return (idx + 1).toString().padStart(2, '0');
   };
-
-  // Fetch Collections
-  useEffect(() => {
-      const fetchCollections = async () => {
-          try {
-              const res = await fetch('/api/collections');
-              if (res.ok) {
-                  const data = await res.json();
-                  // PRODUCTION MODE: Trust the API completely.
-                  // If data.results is [], we show [], effectively hiding the section.
-                  // We do NOT fallback to MOCK_COLLECTIONS here anymore, to avoid showing fake data on the live site.
-                  if (Array.isArray(data.results)) {
-                      setCollections(data.results);
-                      localStorage.setItem('thinkppt_collections_cache', JSON.stringify(data.results));
-                  }
-              } else {
-                  console.warn("API Error fetching collections.");
-                  // Optionally set to [] if you want to be safe, or leave as is (which might be cached data)
-                  // setCollections([]); 
-              }
-          } catch (e) {
-              console.warn("Network error fetching collections.");
-          }
-      };
-      
-      // Execute fetch
-      fetchCollections();
-  }, [schemes.length, useMock]);
-
 
   const fetchSchemes = async (cursor: string | null = null, categoryOverride?: string, dbIdOverride?: string | null) => {
     try {
@@ -234,11 +192,8 @@ export default function App() {
 
   const handleCategoryChange = (category: string) => {
       if (category === '全部' && currentDatabaseId !== null) { handleReturnToMainDb(); return; }
-      if (activeCategory === category && !activeCollection) return;
-      
+      if (activeCategory === category) return;
       setActiveCategory(category);
-      setActiveCollection(null); // Clear collection filter
-      
       setNextCursor(null); setHasMore(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       fetchSchemes(null, category);
@@ -246,8 +201,7 @@ export default function App() {
 
   const handleReturnToMainDb = () => {
      setCurrentDatabaseId(null); setCurrentDatabaseLabel('方案');
-     setActiveCategory('全部'); setActiveCollection(null);
-     setNextCursor(null); setHasMore(false);
+     setActiveCategory('全部'); setNextCursor(null); setHasMore(false);
      window.scrollTo({ top: 0, behavior: 'smooth' });
      fetchSchemes(null, '全部', null);
   };
@@ -255,7 +209,7 @@ export default function App() {
   const handleResourceClick = (resource: ResourceLink) => {
       if (resource.type === 'database' && resource.id) {
           setCurrentDatabaseId(resource.id); setCurrentDatabaseLabel(resource.label); 
-          setActiveCategory('全部'); setActiveCollection(null); setSchemes([]); setNextCursor(null);
+          setActiveCategory('全部'); setSchemes([]); setNextCursor(null);
           window.scrollTo({ top: 0, behavior: 'smooth' });
           fetchSchemes(null, '全部', resource.id);
       } else if (resource.type === 'page' && resource.id) {
@@ -263,34 +217,20 @@ export default function App() {
       }
   };
 
-  // Logic for displaying schemes: 
-  // 1. If Active Collection is set -> Filter by Collection IDs
-  // 2. Else -> Show standard list (filtered by category if mock)
-  let displayedSchemes = schemes;
-  if (activeCollection) {
-      // NOTE: If using Mock Collections, the IDs (e.g. 'c1', '1001') might not match real schemes.
-      // In that case, displayedSchemes might be empty, showing "No Archives" which is expected.
-      displayedSchemes = schemes.filter(s => activeCollection.schemeIds.includes(s.id));
-      
-      // If we are in full Mock mode, match mock IDs
-      if (useMock) {
-          displayedSchemes = MOCK_SCHEMES.filter(s => activeCollection.schemeIds.includes(s.id));
-      }
-  } else if (useMock) {
-      displayedSchemes = activeCategory === '全部' ? schemes : schemes.filter(s => s.category === activeCategory);
-  }
+  // Base list of schemes
+  const baseSchemes = useMock 
+    ? (activeCategory === '全部' ? schemes : schemes.filter(s => s.category === activeCategory))
+    : schemes;
 
-  // Handle Collection Selection
-  const handleCollectionSelect = (col: Collection) => {
-      setActiveCollection(col);
-      // Optional: Scroll to list
-      const grid = document.getElementById('archive-grid');
-      if(grid) grid.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const clearCollectionFilter = () => {
-      setActiveCollection(null);
-  };
+  // Sort: Featured items first
+  const displayedSchemes = [...baseSchemes].sort((a, b) => {
+    // Treat undefined/null as false
+    const aFeatured = !!a.isFeatured;
+    const bFeatured = !!b.isFeatured;
+    if (aFeatured && !bFeatured) return -1;
+    if (!aFeatured && bFeatured) return 1;
+    return 0; 
+  });
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] lg:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
@@ -347,7 +287,7 @@ export default function App() {
       {/* 侧边导航 (移动端) - 更新背景色为 #FDFBF7 */}
       <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-[#FDFBF7] border-r border-black/5">
         <div className="flex flex-col gap-1 pointer-events-auto items-start">
-            <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-[#FDFBF7] ${activeCategory === '全部' && currentDatabaseId === null && !activeCollection ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
+            <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-[#FDFBF7] ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (
                      <div className="w-8 h-20 flex items-center justify-center overflow-hidden">
                          <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-4 w-auto max-w-[64px] object-contain rotate-90" onError={() => setLogoError(true)} />
@@ -357,7 +297,7 @@ export default function App() {
                  )}
             </button>
             {categories.filter(c => c !== '全部').map((category, idx) => {
-                const isActive = activeCategory === category && !activeCollection;
+                const isActive = activeCategory === category;
                 const paletteColors = [PALETTE.KRAFT_INNER, PALETTE.KRAFT_OUTER, '#D4B595', '#CEB28E'];
                 const tabColor = paletteColors[categories.indexOf(category) % paletteColors.length];
                 return (
@@ -391,7 +331,7 @@ export default function App() {
                     </div>
                 </button>
                 {categories.map((category, idx) => {
-                    const isActive = activeCategory === category && !activeCollection;
+                    const isActive = activeCategory === category;
                     const paletteColors = [PALETTE.KRAFT_INNER, PALETTE.KRAFT_OUTER, '#D4B595', '#CEB28E'];
                     const tabColor = paletteColors[idx % paletteColors.length];
                     const heightClass = isActive ? 'h-11 translate-y-[4px] z-40' : 'h-11 translate-y-[8px] hover:translate-y-[4px] z-10 hover:z-20'; 
@@ -424,59 +364,24 @@ export default function App() {
                 <div>
                     <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
                     <h1 className="text-2xl md:text-4xl font-heading font-black uppercase tracking-tight text-gray-900 mb-2">
-                        {activeCollection ? (
-                            <span className="flex items-center gap-3">
-                                <span className="text-gray-400 font-serif italic text-2xl lowercase">exhibition:</span>
-                                {activeCollection.title}
-                            </span>
-                        ) : (
-                            activeCategory === '全部' ? (currentDatabaseId === null ? '策划人的方案档案库' : `${currentDatabaseLabel} 库`) : activeCategory
-                        )}
+                        {activeCategory === '全部' ? (currentDatabaseId === null ? '策划人的方案档案库' : `${currentDatabaseLabel} 库`) : activeCategory}
                     </h1>
-                    {activeCollection && (
-                        <div className="flex items-center gap-2 mt-4">
-                            <button 
-                                onClick={clearCollectionFilter}
-                                className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
-                            >
-                                <span>✕</span>
-                                退出展览模式
-                            </button>
-                            <span className="text-xs text-gray-500 font-serif italic">
-                                当前显示 {displayedSchemes.length} 个相关档案
-                            </span>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Curated Exhibition Section (Carousel) */}
-            {activeCategory === '全部' && !currentDatabaseId && !loading && !activeCollection && (
-               <div className="mt-12">
-                   {/* Using fetched collections, falling back to mock if empty is handled in useEffect */}
-                   <CuratedExhibition collections={collections} onSelectCollection={handleCollectionSelect} />
-               </div>
-            )}
-
-            <div id="archive-grid" className="px-6 md:px-12 py-12">
+            <div className="px-6 md:px-12 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
                     {loading ? (
                         Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
                     ) : (
-                        displayedSchemes.length > 0 ? (
-                            displayedSchemes.map(scheme => (
-                                <ArchiveCard key={scheme.id} scheme={scheme} onClick={() => setSelectedScheme(scheme)} />
-                            ))
-                        ) : (
-                            <div className="col-span-full text-center py-20 text-gray-400 font-mono text-sm">
-                                [ 此展览/分类下暂无档案 ]
-                            </div>
-                        )
+                        displayedSchemes.map(scheme => (
+                            <ArchiveCard key={scheme.id} scheme={scheme} onClick={() => setSelectedScheme(scheme)} />
+                        ))
                     )}
                 </div>
                 {loadingMore && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16 mt-16">{Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)}</div>}
                 
-                {hasMore && !loading && !activeCollection && (
+                {hasMore && !loading && (
                   <div className="mt-20 flex justify-center">
                     <button onClick={() => fetchSchemes(nextCursor)} disabled={loadingMore} className="px-8 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50">
                       {loadingMore ? '检索中...' : '加载更多档案'}

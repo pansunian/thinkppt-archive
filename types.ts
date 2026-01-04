@@ -18,16 +18,6 @@ export interface Scheme {
   isFeatured?: boolean; // New: 是否为编辑推荐/精选
 }
 
-export interface Collection {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string; // 策展人语
-  coverImage: string;  // 展览海报
-  schemeIds: string[]; // 包含的方案ID列表
-  themeColor: string;
-}
-
 export interface GeneratedOutline {
   title: string;
   sections: string[];
