@@ -10,10 +10,11 @@ export const CuratedExhibition: React.FC<CuratedExhibitionProps> = ({ collection
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Auto-rotate every 10 seconds
+  // Auto-rotate disabled for better manual exploration experience
   useEffect(() => {
+    if (collections.length <= 1) return;
     const timer = setInterval(() => {
-      handleNext();
+       // handleNext(); // Optional: uncomment to enable auto-slide
     }, 10000);
     return () => clearInterval(timer);
   }, [currentIndex, collections.length]);
@@ -22,131 +23,147 @@ export const CuratedExhibition: React.FC<CuratedExhibitionProps> = ({ collection
 
   const currentCollection = collections[currentIndex];
 
-  const handleNext = () => {
-    if (isAnimating) return;
+  const handleSelect = (index: number) => {
+    if (index === currentIndex || isAnimating) return;
     setIsAnimating(true);
     setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % collections.length);
+      setCurrentIndex(index);
       setIsAnimating(false);
-    }, 500); 
+    }, 300);
   };
 
-  const handlePrev = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + collections.length) % collections.length);
-      setIsAnimating(false);
-    }, 500);
-  };
+  // Kraft / Archive Bag Style Constants
+  const KRAFT_BG = '#D8CBB7'; 
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-6 md:px-12 mb-12">
-      {/* Exhibition Container */}
-      <div className="relative bg-white border border-black/10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] overflow-hidden">
-        
-        {/* Background Texture & Decoration */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl mix-blend-multiply"></div>
-        
-        {/* Header Bar */}
-        <div className="relative z-10 flex justify-between items-center border-b border-black/5 px-6 py-3 bg-[#F9F7F2]">
-          <div className="flex items-center gap-3">
-             <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
-             <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-black/60">
-                ThinkPPT Curated / 专题策展
-             </span>
-          </div>
-          <div className="font-mono text-[10px] text-black/40">
-             EXHIBITION {currentIndex + 1 < 10 ? `0${currentIndex + 1}` : currentIndex + 1} / {collections.length < 10 ? `0${collections.length}` : collections.length}
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex flex-col md:flex-row h-auto md:h-[420px]">
+    <section className="w-full max-w-7xl mx-auto px-4 md:px-8 mb-16 relative z-10 font-sans select-none mt-8">
+       
+       {/* 
+          Main Container: The Kraft Archive Envelope 
+          - Box shadow gives it depth off the page.
+          - Color is typical manila/kraft folder.
+       */}
+       <div className="relative w-full shadow-[0_20px_40px_-10px_rgba(0,0,0,0.2)] rounded-[2px]" style={{ backgroundColor: KRAFT_BG }}>
           
-          {/* Left: Info Panel */}
-          <div className="w-full md:w-5/12 p-8 md:p-10 flex flex-col justify-center relative border-b md:border-b-0 md:border-r border-black/5 bg-[#F9F7F2]/50">
-             
-             {/* Transition Wrapper */}
-             <div className={`transition-opacity duration-500 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
-                <div className="mb-6">
-                  <span className="inline-block px-2 py-1 bg-black text-white text-[9px] font-mono uppercase tracking-widest mb-3">
-                    Collection Vol.{currentIndex + 1}
-                  </span>
-                  <h2 
-                    className="text-3xl md:text-4xl font-heading font-black leading-[0.95] text-gray-900 mb-2 cursor-pointer hover:underline decoration-2 underline-offset-4"
-                    onClick={() => onSelectCollection(currentCollection)}
-                  >
-                    {currentCollection.title}
-                  </h2>
-                  <h3 className="font-serif italic text-lg text-gray-400 mb-4">{currentCollection.subtitle}</h3>
-                </div>
+          {/* Texture Overlay: Dirty Paper / Fiber effect */}
+          <div className="absolute inset-0 opacity-[0.3] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] rounded-[2px]"></div>
 
-                {/* Curator's Note */}
-                <div className="relative pl-5 border-l-2 border-black/20 mb-8">
-                  <p className="font-sans text-gray-600 text-sm md:text-sm leading-relaxed line-clamp-4">
-                    {currentCollection.description}
-                  </p>
-                  <span className="block mt-2 font-mono text-[9px] text-gray-400 uppercase tracking-widest">
-                    — Curator's Note
-                  </span>
-                </div>
+          {/* Top Flap Shadow Gradient: Gives illusion of volume at the top fold */}
+          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-black/5 to-transparent z-10 rounded-t-[2px]"></div>
 
-                {/* Meta & Action */}
-                <div className="flex items-center gap-6 mt-auto">
-                   <button 
-                     onClick={() => onSelectCollection(currentCollection)}
-                     className="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest hover:text-red-600 transition-colors"
+          {/* Flex Container: Left Content | Right Image */}
+          <div className="relative flex flex-col md:flex-row min-h-[460px] md:h-[480px]">
+              
+              {/* --- LEFT SIDE: Info & Closure --- */}
+              <div className="relative w-full md:w-[45%] p-8 md:p-10 flex flex-col justify-center border-b md:border-b-0 md:border-r border-black/10">
+                  
+                  {/* Stamp: Confidential */}
+                  <div className="absolute top-6 left-8 opacity-60 mix-blend-multiply pointer-events-none">
+                      <div className="border-2 border-red-900 text-red-900 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] -rotate-3 ink-stamp">
+                          Confidential
+                      </div>
+                  </div>
+
+                  {/* Visual: String & Button Closure (The "Archive Bag" look) */}
+                  {/* Positioned on the right edge of the left panel to simulate closure mechanism */}
+                  <div className="absolute right-[-14px] top-1/2 -translate-y-1/2 z-30 hidden md:flex flex-col items-center gap-12">
+                      {/* Top Button */}
+                      <div className="w-6 h-6 rounded-full bg-[#E6DCC9] shadow-[1px_2px_3px_rgba(0,0,0,0.3)] border border-[#C5B49A] flex items-center justify-center relative">
+                          <div className="w-1.5 h-1.5 bg-[#8B7D6B] rounded-full"></div>
+                      </div>
+                      
+                      {/* The String */}
+                      <div className="absolute top-3 w-[2px] bg-[#EBE3D5] shadow-sm z-0" style={{ height: 'calc(100% - 6px)', top: '12px', boxShadow: '1px 0 2px rgba(0,0,0,0.1)' }}></div>
+                      
+                      {/* Bottom Button */}
+                       <div className="w-6 h-6 rounded-full bg-[#E6DCC9] shadow-[1px_2px_3px_rgba(0,0,0,0.3)] border border-[#C5B49A] flex items-center justify-center relative">
+                          <div className="w-1.5 h-1.5 bg-[#8B7D6B] rounded-full"></div>
+                      </div>
+                  </div>
+
+                  {/* Text Content Area */}
+                  <div className={`mt-8 transition-all duration-500 ease-out ${isAnimating ? 'opacity-50 blur-[1px]' : 'opacity-100 blur-0'}`}>
+                      <div className="flex items-center gap-2 mb-4">
+                           <span className="font-mono text-[9px] uppercase tracking-widest text-black/40">Exhibition No.</span>
+                           <span className="font-mono text-sm font-bold text-black/70 bg-black/5 px-2 py-0.5 rounded-sm">0{currentIndex + 1}</span>
+                      </div>
+                      
+                      <h2 
+                        onClick={() => onSelectCollection(currentCollection)}
+                        className="font-heading font-black text-4xl md:text-5xl uppercase leading-[0.9] text-[#1A1A1A] mb-6 cursor-pointer hover:text-red-900 transition-colors tracking-tighter"
+                      >
+                          {currentCollection.title}
+                      </h2>
+
+                      <div className="w-full h-[1px] bg-black/10 mb-6"></div>
+
+                      <p className="font-mono text-xs md:text-sm leading-relaxed text-[#4A4A4A] text-justify mb-8 pr-4 line-clamp-4">
+                          {currentCollection.description}
+                      </p>
+
+                      <button 
+                         onClick={() => onSelectCollection(currentCollection)}
+                         className="group inline-flex items-center gap-3 bg-[#2A2A2A] text-[#E6DCC9] px-6 py-3 shadow-md hover:shadow-lg hover:bg-black transition-all"
+                      >
+                          <span className="font-bold text-xs uppercase tracking-[0.2em]">Open Archive</span>
+                          <span className="text-xs transition-transform group-hover:translate-x-1">→</span>
+                      </button>
+                  </div>
+              </div>
+
+              {/* --- RIGHT SIDE: Image Presentation --- */}
+              <div className="relative w-full md:w-[55%] bg-[#EBE3D5] p-4 md:p-6 flex items-center justify-center overflow-hidden">
+                   
+                   {/* Background Elements for Right Panel */}
+                   <div className="absolute inset-0 opacity-[0.2] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+
+                   {/* The Photo attached to the file */}
+                   <div 
+                      className="relative w-[90%] md:w-[85%] aspect-video shadow-[0_8px_24px_rgba(0,0,0,0.15)] bg-white p-2 transform rotate-1 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group cursor-pointer hover:rotate-0 hover:scale-[1.02] hover:shadow-[0_12px_32px_rgba(0,0,0,0.2)]"
+                      onClick={() => onSelectCollection(currentCollection)}
                    >
-                     Enter Exhibition
-                     <span className="group-hover:translate-x-1 transition-transform">→</span>
-                   </button>
-                   <div className="h-px flex-1 bg-black/10"></div>
-                   <div className="flex items-center gap-1">
-                      <span className="font-mono text-[10px] text-gray-500 font-bold">{currentCollection.schemeIds.length}</span>
-                      <span className="font-mono text-[10px] text-gray-400">ARCHIVES</span>
+                       <div className="w-full h-full relative overflow-hidden bg-gray-100">
+                           <img 
+                               src={currentCollection.coverImage} 
+                               alt={currentCollection.title} 
+                               className={`w-full h-full object-cover filter contrast-[1.05] sepia-[0.1] transition-all duration-700 ${isAnimating ? 'blur-sm scale-105 grayscale' : 'blur-0 scale-100 grayscale-0'}`}
+                           />
+                           {/* Vignette */}
+                           <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.15)] pointer-events-none"></div>
+                       </div>
+
+                       {/* Tape Effect: Top Center */}
+                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/40 backdrop-blur-[1px] shadow-sm rotate-1 z-20 opacity-80"></div>
                    </div>
-                </div>
-             </div>
+
+                   {/* Right Edge Tabs (Vertical Navigation) */}
+                   <div className="absolute right-0 top-12 bottom-12 w-10 md:w-12 flex flex-col gap-1 z-10">
+                      {collections.map((col, idx) => {
+                          const isActive = idx === currentIndex;
+                          return (
+                              <button
+                                  key={col.id}
+                                  onClick={() => handleSelect(idx)}
+                                  className={`
+                                      flex-1 w-full rounded-l-[4px] border-l border-y border-black/10 flex items-center justify-center transition-all duration-300 relative
+                                      ${isActive ? 'bg-[#D8CBB7] translate-x-[-2px] shadow-[inset_2px_0_5px_rgba(0,0,0,0.05)] z-20' : 'bg-[#E0D5C0] hover:bg-[#D8CBB7] translate-x-[4px] opacity-90'}
+                                  `}
+                              >
+                                  <span className={`rotate-90 whitespace-nowrap font-mono text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${isActive ? 'text-black' : 'text-black/30'}`}>
+                                      Vol.{idx + 1}
+                                  </span>
+                              </button>
+                          )
+                      })}
+                   </div>
+              </div>
+
           </div>
 
-          {/* Right: Visual Projection */}
-          <div className="w-full md:w-7/12 relative bg-[#1a1a1a] overflow-hidden group cursor-pointer" onClick={() => onSelectCollection(currentCollection)}>
-             {/* Image */}
-             <img 
-               src={currentCollection.coverImage} 
-               alt={currentCollection.title}
-               className={`w-full h-full object-cover opacity-90 mix-blend-normal transition-all duration-700 ease-in-out transform ${isAnimating ? 'scale-110 blur-sm opacity-50' : 'scale-100 blur-0 opacity-100 group-hover:scale-105'}`}
-             />
-             
-             {/* Dark Gradient Overlay */}
-             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
-             
-             {/* Overlay Text/Decor */}
-             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border border-white/30 px-6 py-4 backdrop-blur-sm bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-white font-mono text-xs tracking-[0.2em] uppercase">点击查看合辑内容</span>
-             </div>
+          {/* Bottom Fold Detail (Decorative) */}
+          <div className="h-3 bg-black/5 border-t border-black/5 w-full rounded-b-[2px]"></div>
+       </div>
 
-             {/* Navigation Controls */}
-             <div className="absolute bottom-0 right-0 flex border-t border-l border-white/10 bg-black/40 backdrop-blur-sm z-20" onClick={(e) => e.stopPropagation()}>
-                <button 
-                  onClick={handlePrev}
-                  className="w-14 h-14 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors border-r border-white/10"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                </button>
-                <button 
-                  onClick={handleNext}
-                  className="w-14 h-14 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </button>
-             </div>
-          </div>
-
-        </div>
-      </div>
     </section>
   );
 };
