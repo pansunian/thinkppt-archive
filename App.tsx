@@ -64,10 +64,7 @@ const SkeletonCard = () => (
 );
 
 export default function App() {
-  const [isSealed, setIsSealed] = useState(true);
-  const [showOverlay, setShowOverlay] = useState(true);
   const [logoError, setLogoError] = useState(false);
-  const [overlayLogoError, setOverlayLogoError] = useState(false);
   
   const [activeCategory, setActiveCategory] = useState('全部');
   const [categories, setCategories] = useState<string[]>(['全部']);
@@ -101,15 +98,6 @@ export default function App() {
       }
     }
   }, []);
-
-  useEffect(() => {
-    if (!isSealed) {
-        const timer = setTimeout(() => {
-            setShowOverlay(false);
-        }, 800);
-        return () => clearTimeout(timer);
-    }
-  }, [isSealed]);
 
   const getDrawerNumber = () => {
     if (currentDatabaseId === process.env.NOTION_DB_AI_ID) return '02';
@@ -237,52 +225,7 @@ export default function App() {
       
       <style>{`
         ::-webkit-scrollbar { display: none; }
-        .archive-bag-shadow { box-shadow: 0 40px 80px -20px rgba(0,0,0,0.3); }
-        .archive-flap-shadow { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
       `}</style>
-
-      {/* 加载遮罩层 */}
-      {showOverlay && (
-        <div 
-            onClick={() => setIsSealed(false)} 
-            className={`fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[#f7f7f7] transition-opacity duration-500 cursor-pointer ${!isSealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        >
-            {/* Kraft Bag Style Update - Removed archive-bag-shadow */}
-            <div className={`relative w-[340px] h-[250px] md:w-[480px] md:h-[350px] bg-[#D8CBB7] rounded-[8px] flex flex-col items-center transition-transform duration-500`}>
-                <div className="absolute top-0 left-0 right-0 h-[32%] z-30 archive-flap-shadow pointer-events-none">
-                    <svg viewBox="0 0 480 112" preserveAspectRatio="none" className="w-full h-full fill-[#E6DCC9]">
-                        <path d="M0,0 L480,0 L480,0 L455,95 Q450,112 430,112 L50,112 Q30,112 25,95 L0,0 Z" />
-                    </svg>
-                </div>
-                <div className="absolute top-8 md:top-12 z-40 pointer-events-none w-full text-center px-4">
-                    <span className="text-[10px] md:text-xs text-black/40 font-medium tracking-[0.2em] uppercase">策划人的方案档案库</span>
-                </div>
-                <div className="absolute top-[22%] md:top-[25%] left-0 right-0 flex flex-col items-center z-40 pointer-events-none">
-                    <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md">
-                        <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
-                    </div>
-                    <div className="w-[1.5px] h-10 md:h-14 bg-black/10"></div>
-                    <div className="w-5 h-5 md:w-6 md:h-6 bg-[#f0f0f0] rounded-full border border-black/5 flex items-center justify-center shadow-md -mt-1">
-                        <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
-                    </div>
-                </div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center z-50 pt-16 md:pt-24 pointer-events-none px-6">
-                    <div className="flex flex-col items-center mb-1">
-                        {BRAND_CONFIG.mode === 'image' && !overlayLogoError ? (
-                            <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-10 md:h-16 w-auto object-contain brightness-0 opacity-90" onError={() => setOverlayLogoError(true)} />
-                        ) : (
-                            <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tighter text-[#2A2A2A]">{BRAND_CONFIG.text}</h1>
-                        )}
-                    </div>
-                    <div className="mt-2">
-                        <span className="text-xs md:text-sm font-medium tracking-[0.4em] text-[#2A2A2A]/70">〔 深刻PPT 〕</span>
-                    </div>
-                </div>
-                <div className="absolute inset-0 border border-black/5 rounded-[8px] pointer-events-none"></div>
-            </div>
-            <div className={`absolute bottom-10 w-full text-center indent-[2.5em] font-mono text-[10px] text-black/10 tracking-[2.5em] uppercase transition-opacity pointer-events-none ${!isSealed ? 'opacity-0' : 'opacity-100'}`}>点击开启</div>
-        </div>
-      )}
 
       {/* 侧边导航 (移动端) - 更新背景色为 #FDFBF7 */}
       <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-[#FDFBF7] border-r border-black/5">
