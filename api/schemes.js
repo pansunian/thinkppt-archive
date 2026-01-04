@@ -25,9 +25,11 @@ export default async function handler(request) {
       'Content-Type': 'application/json',
     };
 
-    // 1. 获取数据库元数据
+    // 1. 获取数据库元数据，寻找 Category 和 Featured 字段名
     let categoryOptions = [];
     let categoryPropName = '';
+    let featuredPropName = '';
+    
     const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${NOTION_API_KEY}`, 'Notion-Version': '2022-06-28' }
@@ -37,20 +39,37 @@ export default async function handler(request) {
       const dbData = await dbRes.json();
       const properties = dbData.properties || {};
       const candidateNames = ['Category', 'Class', 'Type', '分类', '类别'];
+      // 扩充精选字段的匹配词库
+      const featuredNames = ['编辑推荐', 'Featured', 'featured', 'Editor Pick', '推荐', '精选'];
+
       for (const key in properties) {
-        if (properties[key].type === 'select' && (candidateNames.includes(key) || candidateNames.some(n => key.includes(n)))) {
+        const prop = properties[key];
+        
+        // 匹配 Category (Select)
+        if (!categoryPropName && prop.type === 'select' && (candidateNames.includes(key) || candidateNames.some(n => key.includes(n)))) {
           categoryPropName = key;
-          categoryOptions = properties[key].select.options.map(o => o.name);
-          break;
+          categoryOptions = prop.select.options.map(o => o.name);
+        }
+
+        // 匹配 Featured (Checkbox)
+        if (!featuredPropName && prop.type === 'checkbox' && featuredNames.includes(key)) {
+            featuredPropName = key;
         }
       }
     }
 
     // 2. 查询内容
+    // 构造排序规则：先按“精选”降序（勾选在前），再按时间倒序
+    const sorts = [];
+    if (featuredPropName) {
+        sorts.push({ property: featuredPropName, direction: 'descending' });
+    }
+    sorts.push({ timestamp: 'last_edited_time', direction: 'descending' });
+
     const queryBody = {
-      page_size: 48,
+      page_size: 100, // 提升至 Notion API 允许的最大值 100
       start_cursor: cursor || undefined,
-      sorts: [{ timestamp: 'last_edited_time', direction: 'descending' }]
+      sorts: sorts 
     };
 
     if (category && category !== '全部' && categoryPropName) {
@@ -85,7 +104,6 @@ export default async function handler(request) {
 
     // CRITICAL FIX: Notion image URLs expire in 1 hour. 
     // We reduce cache to 5 minutes (300s) to ensure URLs are always fresh.
-    // Removed stale-while-revalidate for long periods to prevent serving expired links.
     const cacheHeader = forceRefresh 
       ? 'no-store, max-age=0' 
       : 'public, s-maxage=300, stale-while-revalidate=30';
