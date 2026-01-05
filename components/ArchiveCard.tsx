@@ -33,7 +33,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[320px] mx-auto h-[440px] mt-20 perspective-1000 cursor-pointer select-none overflow-visible"
+      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[320px] mx-auto h-[380px] md:h-[440px] mt-12 md:mt-20 perspective-1000 cursor-pointer select-none overflow-visible"
       style={{ transformStyle: 'preserve-3d' }}
     >
       
@@ -75,7 +75,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       <div 
         className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] z-10 flex flex-col overflow-hidden [transform:translate3d(0,0,10px)] group-hover:[transform:translate3d(0,-8rem,10px)_rotate(1deg)]"
       >
-         <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100 relative">
+         <div className="w-full aspect-[2/1] md:aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100 relative">
             {/* Featured Badge */}
             {scheme.isFeatured && (
                 <div className="absolute top-0 right-0 z-20">
@@ -91,13 +91,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
             />
          </div>
-         <div className="p-5 pb-16 flex-1 relative flex flex-col">
+         <div className="p-4 md:p-5 pb-16 flex-1 relative flex flex-col">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
-            {/* UPDATED: Increased font size from text-sm to text-xl, added line-clamp-2 */}
-            <h3 className="font-heading font-bold text-xl leading-tight text-gray-900 mb-2 relative z-10 line-clamp-2" title={scheme.title}>
+            {/* UPDATED: Adjusted font sizes for mobile tightness */}
+            <h3 className="font-heading font-bold text-lg md:text-xl leading-tight text-gray-900 mb-2 relative z-10 line-clamp-2" title={scheme.title}>
               {scheme.title}
             </h3>
-            <p className="text-[11px] text-gray-500 line-clamp-3 leading-relaxed relative z-10">{scheme.description}</p>
+            <p className="text-[10px] md:text-[11px] text-gray-500 line-clamp-2 md:line-clamp-3 leading-relaxed relative z-10">{scheme.description}</p>
             <div className="mt-auto flex justify-between items-center relative z-10 pt-2 border-t border-gray-50">
                 <span className="text-[9px] font-mono text-gray-400 uppercase tracking-tighter truncate max-w-[150px]">{displayTags}</span>
                 <span className="text-[10px] font-bold text-black group-hover:underline">查阅档案 →</span>
@@ -107,7 +107,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 
       {/* 3. Front Pocket (口袋部分) - 最上层 Z=20px */}
       <div 
-        className="absolute bottom-0 left-0 right-0 h-[165px] rounded-b-lg rounded-t-[24px] z-20 pointer-events-none border-t border-black/5 shadow-[0_-15px_40px_rgba(0,0,0,0.12)] overflow-hidden [transform:translate3d(0,0,20px)]"
+        className="absolute bottom-0 left-0 right-0 h-[130px] md:h-[165px] rounded-b-lg rounded-t-[24px] z-20 pointer-events-none border-t border-black/5 shadow-[0_-15px_40px_rgba(0,0,0,0.12)] overflow-hidden [transform:translate3d(0,0,20px)]"
         style={{ backgroundColor: outerColor }}
       >
          {/* Texture Layers */}
@@ -124,14 +124,14 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
          <div className="relative z-10 p-4 md:p-5 flex flex-col h-full">
             
             {/* Pocket Header */}
-            <div className="flex justify-between items-start mb-3 border-b border-black/10 pb-1">
+            <div className="flex justify-between items-start mb-2 md:mb-3 border-b border-black/10 pb-1">
                 <div className="flex flex-col">
                     <span className="font-mono text-[7px] uppercase font-bold text-black/30">Category</span>
-                    <span className="font-bold text-[11px] font-mono uppercase text-black/60 tracking-tight">{scheme.category}</span>
+                    <span className="font-bold text-[10px] md:text-[11px] font-mono uppercase text-black/60 tracking-tight">{scheme.category}</span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span className="font-mono text-[7px] uppercase font-bold text-black/30">Archive Code</span>
-                    <span className="font-bold text-[10px] font-mono text-black/60">REF.{scheme.displayId}</span>
+                    <span className="font-bold text-[9px] md:text-[10px] font-mono text-black/60">REF.{scheme.displayId}</span>
                 </div>
             </div>
 
@@ -148,7 +148,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
             </div>
 
             {/* Empty space for the watermark to breathe */}
-            <div className="mt-auto h-12"></div>
+            <div className="mt-auto h-6 md:h-12"></div>
          </div>
          
          <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/20"></div>
