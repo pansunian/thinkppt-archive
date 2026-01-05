@@ -313,7 +313,7 @@ export default function App() {
             </div>
 
             <div className="px-6 md:px-12 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-14 md:gap-y-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[62px] md:gap-y-16">
                     {loading ? (
                         Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
                     ) : (
@@ -322,7 +322,7 @@ export default function App() {
                         ))
                     )}
                 </div>
-                {loadingMore && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16 mt-16">{Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)}</div>}
+                {loadingMore && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[62px] md:gap-y-16 mt-16">{Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)}</div>}
                 
                 {hasMore && !loading && (
                   <div className="mt-20 flex justify-center">

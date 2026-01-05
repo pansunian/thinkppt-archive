@@ -33,7 +33,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[320px] mx-auto h-[380px] md:h-[440px] mt-12 md:mt-20 perspective-1000 cursor-pointer select-none overflow-visible"
+      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[320px] mx-auto h-[380px] md:h-[440px] mt-[62px] md:mt-20 perspective-1000 cursor-pointer select-none overflow-visible"
       style={{ transformStyle: 'preserve-3d' }}
     >
       
