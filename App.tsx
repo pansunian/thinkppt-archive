@@ -241,7 +241,8 @@ export default function App() {
             </button>
             {categories.filter(c => c !== '全部').map((category, idx) => {
                 const isActive = activeCategory === category;
-                const paletteColors = [PALETTE.KRAFT_INNER, PALETTE.KRAFT_OUTER, '#D4B595', '#CEB28E'];
+                // Updated Palette: Closer shades of beige/kraft
+                const paletteColors = [PALETTE.KRAFT_INNER, '#E5DCCB', '#DFD5C4', PALETTE.KRAFT_OUTER];
                 const tabColor = paletteColors[categories.indexOf(category) % paletteColors.length];
                 return (
                     <button key={category} onClick={() => handleCategoryChange(category)} className={`relative h-16 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 ${isActive ? 'translate-x-0 w-10 shadow-md z-20' : '-translate-x-1 hover:translate-x-0 opacity-90 z-10'}`} style={{ backgroundColor: tabColor }}>
@@ -275,7 +276,8 @@ export default function App() {
                 </button>
                 {categories.map((category, idx) => {
                     const isActive = activeCategory === category;
-                    const paletteColors = [PALETTE.KRAFT_INNER, PALETTE.KRAFT_OUTER, '#D4B595', '#CEB28E'];
+                    // Updated Palette: Closer shades of beige/kraft
+                    const paletteColors = [PALETTE.KRAFT_INNER, '#E5DCCB', '#DFD5C4', PALETTE.KRAFT_OUTER];
                     const tabColor = paletteColors[idx % paletteColors.length];
                     const heightClass = isActive ? 'h-11 translate-y-[4px] z-40' : 'h-11 translate-y-[8px] hover:translate-y-[4px] z-10 hover:z-20'; 
                     return (

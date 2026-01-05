@@ -69,13 +69,13 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
           关键修复：
           使用 Tailwind 的 arbitrary value 语法来组合 translateZ 和 hover 动画。
           默认: translate3d(0,0,10px) 确保在背板之前。
-          Hover: translate3d(0,-8rem,10px) rotate(1deg) 保持 Z 轴位置不变，仅改变 Y 轴和旋转。
+          Hover: translate3d(0,-7.5rem,10px) rotate(1deg) 保持 Z 轴位置不变，仅改变 Y 轴和旋转。
           避免使用内联 style 覆盖 transform。
       */}
       <div 
-        className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] z-10 flex flex-col overflow-hidden [transform:translate3d(0,0,10px)] group-hover:[transform:translate3d(0,-8rem,10px)_rotate(1deg)]"
+        className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] z-10 flex flex-col overflow-hidden [transform:translate3d(0,0,10px)] group-hover:[transform:translate3d(0,-7.5rem,10px)_rotate(1deg)]"
       >
-         <div className="w-full aspect-[2/1] md:aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100 relative">
+         <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100 relative">
             {/* Featured Badge */}
             {scheme.isFeatured && (
                 <div className="absolute top-0 right-0 z-20">
@@ -91,7 +91,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
             />
          </div>
-         <div className="p-4 md:p-5 pb-16 flex-1 relative flex flex-col">
+         <div className="p-4 md:p-5 pb-20 md:pb-36 flex-1 relative flex flex-col">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
             {/* UPDATED: Adjusted font sizes for mobile tightness */}
             <h3 className="font-heading font-bold text-lg md:text-xl leading-tight text-gray-900 mb-2 relative z-10 line-clamp-2" title={scheme.title}>
