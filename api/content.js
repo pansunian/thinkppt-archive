@@ -42,7 +42,7 @@ export default async function handler(request) {
     // FIX: Reduced cache time to avoid expired Notion file URLs
     const cacheHeader = forceRefresh 
       ? 'no-store, max-age=0' 
-      : 'public, s-maxage=300, stale-while-revalidate=30';
+      : 'public, s-maxage=2700, stale-while-revalidate=86400';
 
     return new Response(JSON.stringify({ results }), {
       status: 200,
