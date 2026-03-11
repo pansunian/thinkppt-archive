@@ -29,6 +29,8 @@ async function redisSet(key, value, ttl = 2700) {
   } catch (e) { console.warn('Redis write failed:', e.message); }
 }
 
+const NOTION_BASE = 'https://api.notion.com/v1';
+
 export default async function handler(request) {
   const { searchParams } = new URL(request.url);
   const NOTION_API_KEY = process.env.NOTION_API_KEY;
@@ -44,10 +46,8 @@ export default async function handler(request) {
     });
   }
 
-  // Redis 缓存 key（区分 db_id、分类、分页）
   const cacheKey = `thinkppt-schemes-${NOTION_DATABASE_ID}-${category}-${cursor || 'first'}`;
 
-  // 先读 Redis 缓存
   if (!forceRefresh) {
     const cached = await redisGet(cacheKey);
     if (cached) {
@@ -63,7 +63,7 @@ export default async function handler(request) {
   }
 
   try {
-    const headers = {
+    const notionHeaders = {
       'Authorization': `Bearer ${NOTION_API_KEY}`,
       'Notion-Version': '2022-06-28',
       'Content-Type': 'application/json',
@@ -73,9 +73,9 @@ export default async function handler(request) {
     let categoryPropName = '';
     let featuredPropName = '';
 
-    const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
+    const dbRes = await fetch(`${NOTION_BASE}/databases/${NOTION_DATABASE_ID}`, {
       method: 'GET',
-      headers: { 'Authorization': `Bearer ${NOTION_API_KEY}`, 'Notion-Version': '2022-06-28' }
+      headers: notionHeaders
     });
 
     if (dbRes.ok) {
@@ -112,9 +112,9 @@ export default async function handler(request) {
       queryBody.filter = { property: categoryPropName, select: { equals: category } };
     }
 
-    const notionRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
+    const notionRes = await fetch(`${NOTION_BASE}/databases/${NOTION_DATABASE_ID}/query`, {
       method: 'POST',
-      headers: headers,
+      headers: notionHeaders,
       body: JSON.stringify(queryBody),
     });
 
@@ -123,14 +123,17 @@ export default async function handler(request) {
 
     const enrichedResults = await Promise.all(rawPages.map(async (page) => {
       try {
-        const blocksRes = await fetch(`https://api.notion.com/v1/blocks/${page.id}/children?page_size=5`, {
-          method: 'GET', headers: { 'Authorization': `Bearer ${NOTION_API_KEY}`, 'Notion-Version': '2022-06-28' }
+        const blocksRes = await fetch(`${NOTION_BASE}/blocks/${page.id}/children?page_size=5`, {
+          method: 'GET',
+          headers: notionHeaders
         });
         if (blocksRes.ok) {
           const blocksData = await blocksRes.json();
           const imageBlock = blocksData.results.find(b => b.type === 'image');
           if (imageBlock) {
-            const imageUrl = imageBlock.image.type === 'file' ? imageBlock.image.file.url : imageBlock.image.external.url;
+            const imageUrl = imageBlock.image.type === 'file'
+              ? imageBlock.image.file.url
+              : imageBlock.image.external.url;
             return { ...page, first_content_image: imageUrl };
           }
         }
@@ -145,7 +148,6 @@ export default async function handler(request) {
       categories: ['全部', ...categoryOptions]
     };
 
-    // 写入 Redis 缓存
     await redisSet(cacheKey, responseData);
 
     return new Response(JSON.stringify(responseData), {
