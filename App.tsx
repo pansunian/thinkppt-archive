@@ -150,6 +150,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
              // 仅缓存主页“全部”内容，避免缓存过大
              if (!targetDbId && currentCategory === '全部') {
                localStorage.setItem('thinkppt_schemes_cache', JSON.stringify(mappedData));
+               localStorage.setItem('thinkppt_schemes_cache_time', Date.now().toString());
              }
            }
            setNextCursor(data.next_cursor);
