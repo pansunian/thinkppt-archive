@@ -82,21 +82,23 @@ export default function App() {
 
   // 初始化时检查本地缓存实现秒开
   useEffect(() => {
-    const cachedData = localStorage.getItem('thinkppt_schemes_cache');
-    const cachedCats = localStorage.getItem('thinkppt_categories_cache');
-    
-    if (cachedData && !currentDatabaseId) {
-      try {
-        const parsed = JSON.parse(cachedData);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setSchemes(parsed);
-          setLoading(false);
-          if (cachedCats) setCategories(JSON.parse(cachedCats));
-        }
-      } catch (e) {
-        console.warn("Failed to load local cache");
-      }
+const cachedData = localStorage.getItem('thinkppt_schemes_cache');
+const cachedCats = localStorage.getItem('thinkppt_categories_cache');
+const cachedTime = localStorage.getItem('thinkppt_schemes_cache_time');
+const cacheAge = cachedTime ? Date.now() - parseInt(cachedTime) : Infinity;
+
+if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
+  try {
+    const parsed = JSON.parse(cachedData);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      setSchemes(parsed);
+      setLoading(false);
+      if (cachedCats) setCategories(JSON.parse(cachedCats));
     }
+  } catch (e) {
+    console.warn("Failed to load local cache");
+  }
+}
   }, []);
 
   const getDrawerNumber = () => {
