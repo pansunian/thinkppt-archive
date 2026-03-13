@@ -162,7 +162,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
 
   // Logic to determine if "Action" section should be shown.
   // We hide it specifically for static pages like "About" or "Subscribe"
-  const isPage = scheme.title === '关于' || scheme.title === '订阅';
+  const isPage = scheme.title === '关于' || scheme.title === '下载';
 
   useEffect(() => {
     setMounted(true);
@@ -323,7 +323,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                                             {isResourceDb ? '立即使用' : '获取方案'}
                                         </h3>
                                         <p className="text-gray-500 text-sm max-w-md">
-                                            {isResourceDb ? '点击下方按钮跳转至目标网页' : '获取完整 PPT 源文件'}
+                                            {isResourceDb ? '点击下方按钮跳转至目标网页' : '获取完整 PDF 文件'}
                                         </p>
                                     </div>
                                     <a 
