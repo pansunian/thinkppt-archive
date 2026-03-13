@@ -336,7 +336,7 @@ export default function App() {
             </div>
 
             <div className="relative h-16 bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
-                <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest">ThinkPPT Archive System © 2025</span>
+                <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest"><a class="text-color" href="https://beian.miit.gov.cn" target="_blank">陕ICP备2026004104号</a> © ThinkPPT.COM Power by Notion</span>
             </div>
         </div>
       </main>
