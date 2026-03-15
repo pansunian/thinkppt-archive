@@ -85,11 +85,14 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                      </div>
                 </div>
             )}
-            <img 
-                src={scheme.imageUrl} 
-                alt={scheme.title} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-            />
+      <img
+  src={scheme.imageUrl 
+    ? `/_vercel/image?url=${encodeURIComponent(scheme.imageUrl)}&w=640&q=75`
+    : ''
+  }
+  alt={scheme.title}
+  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+/>
          </div>
          <div className="p-4 md:p-5 pb-20 md:pb-36 flex-1 relative flex flex-col">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
