@@ -120,8 +120,7 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
         );
 
 case 'image':
-  const rawSrc = value.type === 'external' ? value.external.url : value.file.url;
-  const src = `https://wsrv.nl/?url=${encodeURIComponent(rawSrc)}&w=1200&q=75&output=webp`;
+  const src = value.type === 'external' ? value.external.url : value.file.url;
   const imgCaption = value.caption?.[0]?.plain_text;
   return (
     <div key={block.id} className="my-4">
