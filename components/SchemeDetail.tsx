@@ -120,7 +120,8 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
         );
 
 case 'image':
-  const src = value.type === 'external' ? value.external.url : value.file.url;
+  const rawSrc = value.type === 'external' ? value.external.url : value.file.url;
+  const src = `/_vercel/image?url=${encodeURIComponent(rawSrc)}&w=1200&q=75`;
   const imgCaption = value.caption?.[0]?.plain_text;
   return (
     <div key={block.id} className="my-4">
