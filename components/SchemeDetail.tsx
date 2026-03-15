@@ -8,6 +8,28 @@ interface SchemeDetailProps {
 }
 
 // Helper: Render Rich Text Array from Notion
+const ImageWithSkeleton: React.FC<{ src: string; caption?: string }> = ({ src, caption }) => {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="relative w-full">
+      {!loaded && (
+        <div className="w-full aspect-video bg-gray-200 animate-pulse rounded-lg" />
+      )}
+      <img
+        src={src}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        className={`w-full rounded-lg transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0 absolute top-0 left-0'}`}
+        alt={caption || ''}
+      />
+      {caption && loaded && (
+        <p className="text-xs text-center text-gray-400 mt-1">{caption}</p>
+      )}
+    </div>
+  );
+};
+
+// ↓ 这里是原来的 RichText 组件
 const RichText: React.FC<{ textArr: any[] }> = ({ textArr }) => {
   if (!textArr || textArr.length === 0) return null;
   return (
@@ -97,15 +119,14 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
             </a>
         );
 
-    case 'image':
-       const src = value.type === 'external' ? value.external.url : value.file.url;
-       const imgCaption = value.caption?.[0]?.plain_text;
-       return (
-         <figure className="my-6">
-            <img src={src} alt={imgCaption || 'Notion Image'} className="w-full rounded-lg border border-gray-200" />
-            {imgCaption && <figcaption className="text-center text-xs text-gray-500 mt-2 font-mono">{imgCaption}</figcaption>}
-         </figure>
-       );
+case 'image':
+  const src = value.type === 'external' ? value.external.url : value.file.url;
+  const imgCaption = value.caption?.[0]?.plain_text;
+  return (
+    <div key={block.id} className="my-4">
+      <ImageWithSkeleton src={src} caption={imgCaption} />
+    </div>
+  );
     
     case 'divider':
         return <hr className="my-8 border-t border-dashed border-gray-300" />;
