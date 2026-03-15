@@ -16,7 +16,7 @@ async function redisGet(key) {
   } catch (e) { return null; }
 }
 
-async function redisSet(key, value, ttl = 2700) {
+async function redisSet(key, value, ttl = 1500) {
   try {
     await fetch(REDIS_URL, {
       method: 'POST',
