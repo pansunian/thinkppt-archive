@@ -46,7 +46,7 @@ export default async function handler(request) {
     });
   }
 
-  const cacheKey = `thinkppt-schemes-${NOTION_DATABASE_ID}-${category}-${cursor || 'first'}`;
+  const cacheKey = `thinkppt-schemes-v2-${NOTION_DATABASE_ID}-${category}-${cursor || 'first'}`;
 
   if (!forceRefresh) {
     const cached = await redisGet(cacheKey);
@@ -103,7 +103,7 @@ export default async function handler(request) {
     sorts.push({ timestamp: 'last_edited_time', direction: 'descending' });
 
     const queryBody = {
-      page_size: 100,
+      page_size: 24,
       start_cursor: cursor || undefined,
       sorts: sorts
     };

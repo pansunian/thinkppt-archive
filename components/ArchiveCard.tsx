@@ -44,7 +44,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
       >
         <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
             {/* Paper Grain Overlays */}
-            <div className="absolute inset-0 opacity-[0.3] mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+            <div className="texture-paper absolute inset-0"></div>
             <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.05)]"></div>
         </div>
 
@@ -95,7 +95,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
 />
          </div>
          <div className="p-4 md:p-5 pb-20 md:pb-36 flex-1 relative flex flex-col">
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"></div>
+            <div className="texture-paper absolute inset-0 pointer-events-none opacity-30"></div>
             {/* UPDATED: Adjusted font sizes for mobile tightness */}
             <h3 className="font-heading font-bold text-lg md:text-xl leading-tight text-gray-900 mb-2 relative z-10 line-clamp-2" title={scheme.title}>
               {scheme.title}
@@ -114,7 +114,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
         style={{ backgroundColor: outerColor }}
       >
          {/* Texture Layers */}
-         <div className="absolute inset-0 opacity-[0.2] pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/p6-polyester.png')]"></div>
+         <div className="texture-polyester absolute inset-0 pointer-events-none"></div>
          
          {/* Brand Watermark - 字号 5xl/6xl */}
          <div className="absolute inset-x-0 bottom-0 flex justify-center z-0 pointer-events-none overflow-hidden pb-0">

@@ -339,7 +339,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
             </div>
 
             <div className="relative h-16 bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
-                <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest"><a class="text-color" href="https://beian.miit.gov.cn" target="_blank">陕ICP备2026004104号</a> © ThinkPPT.COM Power by Notion</span>
+                <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest"><a className="text-color" href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号</a> © ThinkPPT.COM Power by Notion</span>
             </div>
         </div>
       </main>

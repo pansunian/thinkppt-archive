@@ -4,104 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>ThinkPPT | 深刻 PPT</title>
-    
-    <!-- Preload -->
-    <link rel="preload" href="/XiXianTingMingTi.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-    <link rel="preload" href="/jinghualaosongti.woff" as="font" crossorigin="anonymous">
-
-    <script>
-      window.tailwind = {
-        config: {
-          theme: {
-            extend: {
-              fontFamily: {
-                sans: ['ThinkPPT-Text', 'sans-serif'],
-                mono: ['ThinkPPT-Text', 'monospace'],
-                // 使用新定义的 Display 字体，并移除 serif 后备，改用 sans-serif 以便区分
-                heading: ['ThinkPPT-Display', 'sans-serif'], 
-              }
-            }
-          }
-        }
-      }
-    </script>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <style>
-      /* 
-         【标题字体修复核心】
-         Family Name: ThinkPPT-Display
-         File: jinghualaosongti.woff
-         关键点：显式定义 font-weight 范围，强制让这一个文件响应所有的粗细请求。
-      */
-      @font-face {
-        font-family: 'ThinkPPT-Display';
-        src: url('/jinghualaosongti.woff') format('woff');
-        font-weight: 100 900; /* 告诉浏览器：这个文件支持 100 到 900 的所有粗细 */
-        font-style: normal;
-        font-display: swap;
-      }
-
-      /* 
-         为了保险起见，针对 font-black (900) 单独再写一条规则。
-         这能解决部分旧浏览器或特定渲染引擎因为找不到 weight:900 而回退的问题。
-      */
-      @font-face {
-        font-family: 'ThinkPPT-Display';
-        src: url('/jinghualaosongti.woff') format('woff');
-        font-weight: 900;
-        font-style: normal;
-        font-display: swap;
-      }
-
-      /* 正文字体 */
-      @font-face {
-        font-family: 'ThinkPPT-Text';
-        src: url('/XiXianTingMingTi.woff2') format('woff2');
-        font-weight: 100 900;
-        font-style: normal;
-        font-display: swap;
-      }
-
-      body {
-        font-family: 'ThinkPPT-Text', sans-serif;
-        background-color: #e8e4da; /* 桌面端默认背景色 */
-        -webkit-font-smoothing: antialiased;
-      }
-
-      @media (max-width: 1024px) {
-        body {
-            background-color: #FDFBF7; /* 移动端背景色，与页面内容一致 */
-        }
-      }
-
-      /* 调试辅助：如果字体加载失败，标题会变成无衬线体(Arial等)，方便一眼看出区别 */
-      h1, h2, h3, h4, h5, h6, .font-heading {
-        font-family: 'ThinkPPT-Display', sans-serif;
-      }
-
-      .paper-texture {
-        position: relative;
-      }
-      .paper-texture::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        opacity: 0.4;
-        pointer-events: none;
-        background-image: url("https://www.transparenttextures.com/patterns/p6-polyester.png");
-        mix-blend-mode: multiply;
-      }
-
-      .ink-stamp {
-        filter: url(#ink-bleed);
-      }
-      
-      .font-mono {
-        font-family: 'ThinkPPT-Text', monospace !important;
-      }
-    </style>
 
     <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
       <filter id="paper-grain">
@@ -114,19 +16,6 @@
         <feComposite in="SourceGraphic" in2="blur" operator="over" />
       </filter>
     </svg>
-
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "vite": "https://esm.sh/vite@^7.2.7",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
-  }
-}
-</script>
 </head>
   <body>
     <div id="root"></div>
