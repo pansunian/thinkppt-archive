@@ -5,6 +5,7 @@ interface SchemeDetailProps {
   scheme: Scheme;
   onClose: () => void;
   isResourceDb?: boolean;
+  onSubscribe?: () => void;
 }
 
 // Helper: Render Rich Text Array from Notion
@@ -177,7 +178,7 @@ case 'image':
   }
 };
 
-export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isResourceDb = false }) => {
+export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isResourceDb = false, onSubscribe }) => {
   const [mounted, setMounted] = useState(false);
   const [content, setContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -345,27 +346,43 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                                             {isResourceDb ? '立即使用' : '获取方案'}
                                         </h3>
                                         <p className="text-gray-500 text-sm max-w-md">
-                                            {isResourceDb ? '点击下方按钮跳转至目标网页' : '获取完整 PDF 文件'}
+                                            {isResourceDb ? '点击下方按钮跳转至目标网页' : '会员档案采用人工确认开通，付款确认后获取完整资料'}
                                         </p>
                                     </div>
-                                    <a 
-                                        href={scheme.downloadUrl}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="group relative block w-full max-w-md mx-auto"
-                                    >
-                                        <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
-                                        <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
-                                            <span>{isResourceDb ? '直达官网' : '点击下载'}</span>
-                                            {isResourceDb ? (
-                                                /* External Link Icon */
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                            ) : (
-                                                /* Download Icon */
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                            )}
+                                    {!isResourceDb && (
+                                        <div className="max-w-md mx-auto mb-4 rounded-lg border border-black/10 bg-white/70 p-4 text-left">
+                                            <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400">ACCESS NOTE</div>
+                                            <p className="mt-2 text-xs leading-relaxed text-gray-600">
+                                                个人试运营阶段建议通过微信、支付宝或银行卡转账人工确认，确认后发放资料访问权限；正式商户号上线前不做自动扣款。
+                                            </p>
                                         </div>
-                                    </a>
+                                    )}
+                                    {isResourceDb ? (
+                                        <a
+                                            href={scheme.downloadUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="group relative block w-full max-w-md mx-auto"
+                                        >
+                                            <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
+                                            <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
+                                                <span>直达官网</span>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                            </div>
+                                        </a>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={onSubscribe}
+                                            className="group relative block w-full max-w-md mx-auto"
+                                        >
+                                            <div className="absolute inset-0 bg-black rounded-lg translate-y-1 translate-x-1 transition-transform group-hover:translate-y-2 group-hover:translate-x-2"></div>
+                                            <div className="relative w-full py-4 bg-[#FFDAC1] border-2 border-black rounded-lg text-black font-bold text-sm uppercase tracking-widest hover:-translate-y-0.5 hover:-translate-x-0.5 transition-all flex items-center justify-center gap-2">
+                                                <span>申请开通会员资料</span>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v8m4-4H8m14 0c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z"></path></svg>
+                                            </div>
+                                        </button>
+                                    )}
                                 </>
                             ) : null}
                         </section>

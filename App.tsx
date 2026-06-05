@@ -44,6 +44,24 @@ const BRAND_CONFIG = {
   heightClass: 'h-8' 
 };
 
+const MEMBERSHIP_PLANS = [
+  {
+    name: '单份获取',
+    label: '适合临时找方案',
+    details: ['确认目标档案后人工开通', '提供对应资料访问权限', '适合先小额验证需求']
+  },
+  {
+    name: '年度会员',
+    label: '适合长期查资料',
+    details: ['覆盖站内会员档案库', '新增资料持续更新', '可按需备注行业方向']
+  },
+  {
+    name: '项目授权',
+    label: '适合团队或商用',
+    details: ['按项目确认使用范围', '可提供授权说明', '适合企业内部参考']
+  }
+];
+
 // --- CONFIGURATION END ---
 
 const SkeletonCard = () => (
@@ -61,6 +79,49 @@ const SkeletonCard = () => (
       </div>
     </div>
   </div>
+);
+
+const MembershipPanel: React.FC<{ onSubscribe: () => void }> = ({ onSubscribe }) => (
+  <section id="membership" className="px-6 md:px-12 pt-8">
+    <div className="border-y border-black/10 bg-white/70">
+      <div className="grid lg:grid-cols-[1.05fr_2fr]">
+        <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-black/10">
+          <span className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-widest">MEMBER ACCESS</span>
+          <h2 className="mt-2 text-xl md:text-2xl font-heading font-black tracking-tight text-gray-900">个人试运营收款入口</h2>
+          <p className="mt-3 text-sm leading-relaxed text-gray-600">
+            目前建议采用人工开通：用户提交需求后，通过微信、支付宝或银行卡转账确认，随后开通资料访问权限。正式商户号上线前不做自动扣款。
+          </p>
+          <button
+            onClick={onSubscribe}
+            className="mt-5 inline-flex items-center justify-center rounded-full border-2 border-black bg-black px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white shadow-[3px_3px_0_rgba(0,0,0,0.18)] transition-transform hover:-translate-y-0.5"
+          >
+            申请开通
+          </button>
+        </div>
+        <div className="grid md:grid-cols-3">
+          {MEMBERSHIP_PLANS.map((plan, index) => (
+            <div key={plan.name} className={`p-6 md:p-7 ${index > 0 ? 'border-t md:border-t-0 md:border-l' : ''} border-black/10`}>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-base font-black text-gray-900">{plan.name}</h3>
+                <span className="rounded-full border border-black/10 bg-[#FDFBF7] px-2 py-1 font-mono text-[9px] font-bold text-gray-500">{plan.label}</span>
+              </div>
+              <ul className="mt-4 space-y-2">
+                {plan.details.map((item) => (
+                  <li key={item} className="flex gap-2 text-xs leading-relaxed text-gray-600">
+                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-black/60"></span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="border-t border-black/10 px-6 py-3 font-mono text-[10px] leading-relaxed text-gray-400">
+        个人阶段建议先做“付费意向 + 人工收款 + 人工发放权限”，后续再升级为个体户或公司主体的正式在线支付。
+      </div>
+    </div>
+  </section>
 );
 
 export default function App() {
@@ -177,6 +238,13 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
               if (mapped.length > 0) setSelectedScheme(mapped[0]);
           }
       } catch (e) { console.error(e); }
+  };
+
+  const handleSubscribeClick = () => {
+      const subscribePage = RESOURCE_LINKS.find(link => link.label === '订阅' && link.id);
+      if (subscribePage?.id) {
+          fetchAndOpenPage(subscribePage.id);
+      }
   };
 
   useEffect(() => { fetchSchemes(); }, []);
@@ -317,6 +385,10 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
                 </div>
             </div>
 
+            {currentDatabaseId === null && activeCategory === '全部' && (
+              <MembershipPanel onSubscribe={handleSubscribeClick} />
+            )}
+
             <div className="px-6 md:px-12 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[62px] md:gap-y-16">
                     {loading ? (
@@ -339,13 +411,13 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
             </div>
 
             <div className="relative h-16 bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
-                <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest"><a className="text-color" href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号</a> © ThinkPPT.COM Power by Notion</span>
+                <span className="px-4 text-center font-mono text-[10px] text-gray-400 uppercase tracking-widest"><a className="text-color" href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号</a> © ThinkPPT.COM Power by Notion / 个人试运营阶段人工确认开通</span>
             </div>
         </div>
       </main>
 
       <Archivist schemes={schemes} onOpenScheme={setSelectedScheme} />
-      {selectedScheme && <SchemeDetail scheme={selectedScheme} onClose={() => setSelectedScheme(null)} isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID} />}
+      {selectedScheme && <SchemeDetail scheme={selectedScheme} onClose={() => setSelectedScheme(null)} isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID} onSubscribe={handleSubscribeClick} />}
     </div>
   );
 }
