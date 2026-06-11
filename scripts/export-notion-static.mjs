@@ -17,6 +17,7 @@ const mainDatabaseId = process.env.NOTION_DATABASE_ID;
 const aiDatabaseId = process.env.NOTION_DB_AI_ID;
 const aboutPageId = process.env.NOTION_PAGE_ABOUT_ID;
 const subscribePageId = process.env.NOTION_PAGE_SUBSCRIBE_ID;
+const mediaMode = process.env.NOTION_MEDIA_MODE || 'all';
 
 const notionHeaders = {
   Authorization: `Bearer ${notionApiKey}`,
@@ -232,6 +233,8 @@ async function localizeImageUrl(url, cacheKey = url) {
 }
 
 async function localizePageMedia(page) {
+  if (mediaMode === 'none') return page;
+
   if (page.first_content_image) {
     page.first_content_image = await localizeImageUrl(page.first_content_image, `${page.id}:first_content_image`);
   }
@@ -261,6 +264,8 @@ async function localizePageMedia(page) {
 }
 
 async function localizeBlockMedia(block) {
+  if (mediaMode !== 'all') return block;
+
   if (block.type === 'image') {
     const image = block.image;
     if (image?.type === 'external' && image.external?.url) {
