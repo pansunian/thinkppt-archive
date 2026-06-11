@@ -26,6 +26,20 @@ const notionHeaders = {
 
 const mediaCache = new Map();
 
+async function fetchWithTimeout(url, init = {}, timeoutMs = 20_000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function requireEnv(name, value) {
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
@@ -53,13 +67,13 @@ function mediaExtension(url, contentType = '') {
 }
 
 async function notionFetch(endpoint, init = {}) {
-  const res = await fetch(`${NOTION_BASE}${endpoint}`, {
+  const res = await fetchWithTimeout(`${NOTION_BASE}${endpoint}`, {
     ...init,
     headers: {
       ...notionHeaders,
       ...(init.headers || {}),
     },
-  });
+  }, 20_000);
 
   if (!res.ok) {
     const body = await res.text();
@@ -173,7 +187,14 @@ async function localizeImageUrl(url) {
   if (mediaCache.has(url)) return mediaCache.get(url);
 
   const hash = createHash('sha256').update(url).digest('hex').slice(0, 20);
-  const res = await fetch(url);
+  let res;
+
+  try {
+    res = await fetchWithTimeout(url, {}, 15_000);
+  } catch (error) {
+    console.warn(`Skipping image ${url}: ${error.name === 'AbortError' ? 'timeout' : error.message}`);
+    return url;
+  }
 
   if (!res.ok) {
     console.warn(`Skipping image ${url}: ${res.status}`);
