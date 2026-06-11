@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
+import { GoogleGenAI, type Chat, type GenerateContentResponse } from "@google/genai";
 import { Scheme } from '../types';
 
 interface ArchivistProps {
@@ -13,8 +13,7 @@ interface Message {
   relatedSchemes?: Scheme[]; // If the model references schemes
 }
 
-// Always use named parameter for apiKey and use process.env.API_KEY directly.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = process.env.API_KEY;
 
 export const Archivist: React.FC<ArchivistProps> = ({ schemes, onOpenScheme }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +43,17 @@ export const Archivist: React.FC<ArchivistProps> = ({ schemes, onOpenScheme }) =
     setLoading(true);
 
     try {
+      if (!apiKey) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'model',
+            content: 'AI 档案员暂未启用，但您仍然可以正常浏览和打开方案档案。'
+          }
+        ]);
+        return;
+      }
+
       // 1. Prepare Context from Schemes (Simplified to save tokens)
       const schemeContext = schemes.map(s => 
         `ID: ${s.id} | REF: ${s.displayId} | Title: ${s.title} | Tags: ${s.tags.join(', ')} | Desc: ${s.description} | Industry: ${s.industry}`
@@ -72,6 +82,7 @@ export const Archivist: React.FC<ArchivistProps> = ({ schemes, onOpenScheme }) =
       `;
 
       // 2. Call Gemini
+      const ai = new GoogleGenAI({ apiKey });
       const chat: Chat = ai.chats.create({
         model: 'gemini-3-flash-preview',
         config: {
