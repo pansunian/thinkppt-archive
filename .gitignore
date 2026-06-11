@@ -1,4 +1,7 @@
 node_modules
 dist
+public/data
 .env
+.env.*
+!.env.aliyun.example
 .DS_Store

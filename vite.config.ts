@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
       // 3. Independent Pages (关于, 订阅)
       'process.env.NOTION_PAGE_ABOUT_ID': JSON.stringify(env.NOTION_PAGE_ABOUT_ID),
       'process.env.NOTION_PAGE_SUBSCRIBE_ID': JSON.stringify(env.NOTION_PAGE_SUBSCRIBE_ID),
+
+      // Static OSS/ESA mode. When true, the frontend reads pre-exported JSON from /data.
+      'process.env.STATIC_DATA_ENABLED': JSON.stringify(env.STATIC_DATA_ENABLED || 'false'),
     },
     server: {
       proxy: {

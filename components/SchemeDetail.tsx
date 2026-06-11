@@ -6,7 +6,23 @@ interface SchemeDetailProps {
   onClose: () => void;
   isResourceDb?: boolean;
   onSubscribe?: () => void;
+  staticDataMode?: boolean;
 }
+
+const normalizeStaticId = (id: string) => id.replace(/-/g, '');
+
+const shouldUseVercelImageProxy = (src: string) => (
+  process.env.STATIC_DATA_ENABLED !== 'true' &&
+  /^https?:\/\//i.test(src)
+);
+
+const getDisplayImageSrc = (src: string, width: number) => {
+  if (!src) return '';
+  if (shouldUseVercelImageProxy(src)) {
+    return `/_vercel/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+  }
+  return src;
+};
 
 // Helper: Render Rich Text Array from Notion
 const ImageWithSkeleton: React.FC<{ src: string; caption?: string }> = ({ src, caption }) => {
@@ -122,7 +138,7 @@ const NotionBlock: React.FC<{ block: any }> = ({ block }) => {
 
 case 'image':
   const rawSrc = value.type === 'external' ? value.external.url : value.file.url;
-  const src = `/_vercel/image?url=${encodeURIComponent(rawSrc)}&w=1200&q=75`;
+  const src = getDisplayImageSrc(rawSrc, 1200);
   const imgCaption = value.caption?.[0]?.plain_text;
   return (
     <div key={block.id} className="my-4">
@@ -178,7 +194,7 @@ case 'image':
   }
 };
 
-export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isResourceDb = false, onSubscribe }) => {
+export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isResourceDb = false, onSubscribe, staticDataMode = false }) => {
   const [mounted, setMounted] = useState(false);
   const [content, setContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -195,7 +211,10 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
     const fetchContent = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/content?id=${scheme.id}`);
+            const contentUrl = staticDataMode
+              ? `/data/content/${normalizeStaticId(scheme.id)}.json`
+              : `/api/content?id=${scheme.id}`;
+            const res = await fetch(contentUrl);
             if (res.ok) {
                 const data = await res.json();
                 // Notion API returns { results: [...] }
@@ -246,7 +265,7 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
             <div className="w-full relative bg-gray-100 border-b-2 border-black">
                 <div className="aspect-video w-full relative overflow-hidden">
                     <img 
-                        src={scheme.imageUrl} 
+                        src={getDisplayImageSrc(scheme.imageUrl, 1200)}
                         alt={scheme.title} 
                         className="w-full h-full object-cover"
                     />

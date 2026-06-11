@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "export:notion": "node scripts/export-notion-static.mjs",
+    "build:aliyun": "STATIC_DATA_ENABLED=true npm run export:notion && STATIC_DATA_ENABLED=true vite build",
+    "deploy:aliyun": "node scripts/deploy-aliyun-oss.mjs",
+    "deploy:aliyun:all": "npm run build:aliyun && npm run deploy:aliyun"
   },
   "dependencies": {
     "react": "^18.3.1",

@@ -7,6 +7,12 @@ interface ArchiveCardProps {
   onClick: () => void;
 }
 
+const getCardImageSrc = (src: string) => {
+  if (!src) return '';
+  if (process.env.STATIC_DATA_ENABLED === 'true' || src.startsWith('/')) return src;
+  return `/_vercel/image?url=${encodeURIComponent(src)}&w=640&q=75`;
+};
+
 export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => {
   // 颜色区分：外层口袋使用 PALETTE.KRAFT_OUTER，内层背板使用 KRAFT_INNER
   const outerColor = PALETTE.KRAFT_OUTER;
@@ -86,10 +92,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
                 </div>
             )}
       <img
-  src={scheme.imageUrl 
-    ? `/_vercel/image?url=${encodeURIComponent(scheme.imageUrl)}&w=640&q=75`
-    : ''
-  }
+  src={getCardImageSrc(scheme.imageUrl)}
   alt={scheme.title}
   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
 />

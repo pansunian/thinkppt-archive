@@ -44,6 +44,8 @@ const BRAND_CONFIG = {
   heightClass: 'h-8' 
 };
 
+const STATIC_DATA_ENABLED = process.env.STATIC_DATA_ENABLED === 'true';
+
 const MEMBERSHIP_PLANS = [
   {
     name: '单份获取',
@@ -124,6 +126,15 @@ const MembershipPanel: React.FC<{ onSubscribe: () => void }> = ({ onSubscribe })
   </section>
 );
 
+const normalizeStaticId = (id: string) => id.replace(/-/g, '');
+
+const getStaticDatabaseFile = (databaseId: string | null) => {
+  if (databaseId === process.env.NOTION_DB_AI_ID) return '/data/databases/ai.json';
+  return '/data/databases/main.json';
+};
+
+const getStaticPageFile = (pageId: string) => `/data/pages/${normalizeStaticId(pageId)}.json`;
+
 export default function App() {
   const [logoError, setLogoError] = useState(false);
   
@@ -180,6 +191,39 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       const urlParams = new URLSearchParams(window.location.search);
       const isForceRefresh = urlParams.get('refresh') === 'true';
 
+      if (STATIC_DATA_ENABLED) {
+        const res = await fetch(getStaticDatabaseFile(targetDbId), { cache: isForceRefresh ? 'reload' : 'default' });
+        if (!res.ok) throw new Error('Static database not found');
+
+        const data = await res.json();
+        const filteredData = currentCategory && currentCategory !== '全部'
+          ? {
+              ...data,
+              results: (data.results || []).filter((page: any) => {
+                const mapped = mapNotionResultToSchemes({ results: [page] })[0];
+                return mapped?.category === currentCategory;
+              })
+            }
+          : data;
+        const mappedData = mapNotionResultToSchemes(filteredData);
+
+        setCategories(data.categories || DEFAULT_CATEGORIES);
+        if (cursor) {
+          setSchemes(prev => [...prev, ...mappedData]);
+        } else {
+          setSchemes(mappedData);
+          setUseMock(false);
+          if (!targetDbId && currentCategory === '全部') {
+            localStorage.setItem('thinkppt_schemes_cache', JSON.stringify(mappedData));
+            localStorage.setItem('thinkppt_categories_cache', JSON.stringify(data.categories || DEFAULT_CATEGORIES));
+            localStorage.setItem('thinkppt_schemes_cache_time', Date.now().toString());
+          }
+        }
+        setNextCursor(null);
+        setHasMore(false);
+        return;
+      }
+
       let url = `/api/schemes`;
       const params = new URLSearchParams();
       if (cursor) params.append('cursor', cursor);
@@ -231,7 +275,8 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
 
   const fetchAndOpenPage = async (pageId: string) => {
       try {
-          const res = await fetch(`/api/page?id=${pageId}`);
+          const pageUrl = STATIC_DATA_ENABLED ? getStaticPageFile(pageId) : `/api/page?id=${pageId}`;
+          const res = await fetch(pageUrl);
           if (res.ok) {
               const pageData = await res.json();
               const mapped = mapNotionResultToSchemes({ results: [pageData] });
@@ -417,7 +462,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       </main>
 
       <Archivist schemes={schemes} onOpenScheme={setSelectedScheme} />
-      {selectedScheme && <SchemeDetail scheme={selectedScheme} onClose={() => setSelectedScheme(null)} isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID} onSubscribe={handleSubscribeClick} />}
+      {selectedScheme && <SchemeDetail scheme={selectedScheme} onClose={() => setSelectedScheme(null)} isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID} onSubscribe={handleSubscribeClick} staticDataMode={STATIC_DATA_ENABLED} />}
     </div>
   );
 }
