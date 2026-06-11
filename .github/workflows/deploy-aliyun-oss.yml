@@ -25,7 +25,7 @@ jobs:
       ALIYUN_OSS_ENDPOINT: ${{ vars.ALIYUN_OSS_ENDPOINT || 'oss-cn-shanghai.aliyuncs.com' }}
       STATIC_DATA_ENABLED: 'true'
       NOTION_MEDIA_MODE: all
-      NOTION_MEDIA_DOWNLOAD_LIMIT: '80'
+      NOTION_MEDIA_DOWNLOAD_LIMIT: '40'
 
     steps:
       - name: Checkout repository
