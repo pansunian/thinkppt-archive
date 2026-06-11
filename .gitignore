@@ -5,3 +5,4 @@ public/data
 .env.*
 !.env.aliyun.example
 .DS_Store
+.vercel
