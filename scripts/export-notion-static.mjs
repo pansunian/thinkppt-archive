@@ -268,6 +268,18 @@ async function writeJson(filePath, data) {
   await writeFile(filePath, `${JSON.stringify(data)}\n`);
 }
 
+async function runWithConcurrency(items, limit, worker) {
+  const queue = [...items];
+  const workers = Array.from({ length: Math.min(limit, queue.length) }, async () => {
+    while (queue.length > 0) {
+      const item = queue.shift();
+      await worker(item);
+    }
+  });
+
+  await Promise.all(workers);
+}
+
 async function exportDatabase(key, databaseId) {
   if (!databaseId) return null;
 
@@ -347,10 +359,10 @@ async function main() {
     if (page?.id) contentIds.add(page.id);
   }
 
-  for (const pageId of contentIds) {
+  await runWithConcurrency([...contentIds], 3, async (pageId) => {
     console.log(`Exporting content: ${pageId}`);
     await exportContent(pageId);
-  }
+  });
 
   await writeJson(path.join(dataDir, 'manifest.json'), manifest);
   console.log(`Static export complete: ${dataDir}`);
