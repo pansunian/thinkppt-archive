@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           ./ossutil64 sync -f --delete dist/ "oss://$ALIYUN_OSS_BUCKET/"
-          ./ossutil64 set-meta "oss://$ALIYUN_OSS_BUCKET/index.html" Content-Type:text/html Cache-Control:no-cache --update
+          ./ossutil64 set-meta "oss://$ALIYUN_OSS_BUCKET/index.html" "Content-Type:text/html#Cache-Control:no-cache" --update
 
       - name: Write deployment summary
         run: |
