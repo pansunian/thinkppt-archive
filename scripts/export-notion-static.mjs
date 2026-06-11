@@ -18,6 +18,8 @@ const aiDatabaseId = process.env.NOTION_DB_AI_ID;
 const aboutPageId = process.env.NOTION_PAGE_ABOUT_ID;
 const subscribePageId = process.env.NOTION_PAGE_SUBSCRIBE_ID;
 const mediaMode = process.env.NOTION_MEDIA_MODE || 'all';
+const mediaDownloadLimit = Number.parseInt(process.env.NOTION_MEDIA_DOWNLOAD_LIMIT || '0', 10);
+const hasMediaDownloadLimit = Number.isFinite(mediaDownloadLimit) && mediaDownloadLimit > 0;
 
 const notionHeaders = {
   Authorization: `Bearer ${notionApiKey}`,
@@ -27,6 +29,8 @@ const notionHeaders = {
 
 const mediaCache = new Map();
 const retryableStatuses = new Set([408, 409, 425, 429, 500, 502, 503, 504]);
+let mediaDownloadAttempts = 0;
+let mediaSkippedByLimit = 0;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -226,6 +230,12 @@ async function localizeImageUrl(url, cacheKey = url) {
     return staticUrl;
   }
 
+  if (hasMediaDownloadLimit && mediaDownloadAttempts >= mediaDownloadLimit) {
+    mediaSkippedByLimit += 1;
+    return url;
+  }
+
+  mediaDownloadAttempts += 1;
   let res;
 
   try {
@@ -411,7 +421,15 @@ async function main() {
     await exportContent(pageId);
   });
 
+  manifest.media = {
+    mode: mediaMode,
+    downloadLimit: hasMediaDownloadLimit ? mediaDownloadLimit : null,
+    downloadedOrAttempted: mediaDownloadAttempts,
+    skippedByLimit: mediaSkippedByLimit,
+  };
+
   await writeJson(path.join(dataDir, 'manifest.json'), manifest);
+  console.log(`Media localization: mode=${mediaMode}, attempted=${mediaDownloadAttempts}, skippedByLimit=${mediaSkippedByLimit}`);
   console.log(`Static export complete: ${dataDir}`);
 }
 

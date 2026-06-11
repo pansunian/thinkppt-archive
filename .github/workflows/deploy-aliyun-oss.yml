@@ -24,7 +24,8 @@ jobs:
       ALIYUN_OSS_BUCKET: ${{ vars.ALIYUN_OSS_BUCKET || 'thinkppt' }}
       ALIYUN_OSS_ENDPOINT: ${{ vars.ALIYUN_OSS_ENDPOINT || 'oss-cn-shanghai.aliyuncs.com' }}
       STATIC_DATA_ENABLED: 'true'
-      NOTION_MEDIA_MODE: covers
+      NOTION_MEDIA_MODE: all
+      NOTION_MEDIA_DOWNLOAD_LIMIT: '80'
 
     steps:
       - name: Checkout repository
