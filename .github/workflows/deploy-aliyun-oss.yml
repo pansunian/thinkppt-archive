@@ -54,6 +54,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Restore exported media cache
+        uses: actions/cache@v4
+        with:
+          path: public/data/media
+          key: thinkppt-media-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            thinkppt-media-${{ runner.os }}-
+
       - name: Export Notion and build static site
         run: npm run build:aliyun
 

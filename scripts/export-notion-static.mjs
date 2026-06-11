@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const NOTION_BASE = 'https://api.notion.com/v1';
@@ -38,6 +38,13 @@ async function fetchWithTimeout(url, init = {}, timeoutMs = 20_000) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function findCachedMedia(hash) {
+  if (!existsSync(mediaDir)) return null;
+
+  const files = await readdir(mediaDir);
+  return files.find(file => file.startsWith(`${hash}.`)) || null;
 }
 
 function requireEnv(name, value) {
@@ -182,11 +189,19 @@ async function fetchChildrenRecursively(blockId) {
   return output;
 }
 
-async function localizeImageUrl(url) {
+async function localizeImageUrl(url, cacheKey = url) {
   if (!url || !/^https?:\/\//i.test(url)) return url;
-  if (mediaCache.has(url)) return mediaCache.get(url);
+  if (mediaCache.has(cacheKey)) return mediaCache.get(cacheKey);
 
-  const hash = createHash('sha256').update(url).digest('hex').slice(0, 20);
+  const hash = createHash('sha256').update(cacheKey).digest('hex').slice(0, 20);
+  const cachedFilename = await findCachedMedia(hash);
+
+  if (cachedFilename) {
+    const staticUrl = `/data/media/${cachedFilename}`;
+    mediaCache.set(cacheKey, staticUrl);
+    return staticUrl;
+  }
+
   let res;
 
   try {
@@ -212,31 +227,32 @@ async function localizeImageUrl(url) {
   }
 
   const staticUrl = `/data/media/${filename}`;
-  mediaCache.set(url, staticUrl);
+  mediaCache.set(cacheKey, staticUrl);
   return staticUrl;
 }
 
 async function localizePageMedia(page) {
   if (page.first_content_image) {
-    page.first_content_image = await localizeImageUrl(page.first_content_image);
+    page.first_content_image = await localizeImageUrl(page.first_content_image, `${page.id}:first_content_image`);
   }
 
   if (page.cover?.type === 'external' && page.cover.external?.url) {
-    page.cover.external.url = await localizeImageUrl(page.cover.external.url);
+    page.cover.external.url = await localizeImageUrl(page.cover.external.url, `${page.id}:cover`);
   }
 
   if (page.cover?.type === 'file' && page.cover.file?.url) {
-    page.cover.file.url = await localizeImageUrl(page.cover.file.url);
+    page.cover.file.url = await localizeImageUrl(page.cover.file.url, `${page.id}:cover`);
   }
 
-  for (const prop of Object.values(page.properties || {})) {
+  for (const [propName, prop] of Object.entries(page.properties || {})) {
     if (prop.type !== 'files') continue;
-    for (const file of prop.files || []) {
+    for (const [index, file] of (prop.files || []).entries()) {
+      const key = `${page.id}:property:${propName}:${file.name || index}`;
       if (file.type === 'external' && file.external?.url) {
-        file.external.url = await localizeImageUrl(file.external.url);
+        file.external.url = await localizeImageUrl(file.external.url, key);
       }
       if (file.type === 'file' && file.file?.url) {
-        file.file.url = await localizeImageUrl(file.file.url);
+        file.file.url = await localizeImageUrl(file.file.url, key);
       }
     }
   }
@@ -248,10 +264,10 @@ async function localizeBlockMedia(block) {
   if (block.type === 'image') {
     const image = block.image;
     if (image?.type === 'external' && image.external?.url) {
-      image.external.url = await localizeImageUrl(image.external.url);
+      image.external.url = await localizeImageUrl(image.external.url, `${block.id}:image`);
     }
     if (image?.type === 'file' && image.file?.url) {
-      image.file.url = await localizeImageUrl(image.file.url);
+      image.file.url = await localizeImageUrl(image.file.url, `${block.id}:image`);
     }
   }
 
@@ -329,7 +345,10 @@ async function main() {
   requireEnv('NOTION_API_KEY', notionApiKey);
   requireEnv('NOTION_DATABASE_ID', mainDatabaseId);
 
-  await rm(dataDir, { recursive: true, force: true });
+  await rm(databaseDir, { recursive: true, force: true });
+  await rm(pageDir, { recursive: true, force: true });
+  await rm(contentDir, { recursive: true, force: true });
+  await rm(path.join(dataDir, 'manifest.json'), { force: true });
   await mkdir(databaseDir, { recursive: true });
   await mkdir(pageDir, { recursive: true });
   await mkdir(contentDir, { recursive: true });
