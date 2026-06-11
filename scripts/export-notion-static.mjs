@@ -26,6 +26,11 @@ const notionHeaders = {
 };
 
 const mediaCache = new Map();
+const retryableStatuses = new Set([408, 409, 425, 429, 500, 502, 503, 504]);
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function fetchWithTimeout(url, init = {}, timeoutMs = 20_000) {
   const controller = new AbortController();
@@ -75,20 +80,38 @@ function mediaExtension(url, contentType = '') {
 }
 
 async function notionFetch(endpoint, init = {}) {
-  const res = await fetchWithTimeout(`${NOTION_BASE}${endpoint}`, {
-    ...init,
-    headers: {
-      ...notionHeaders,
-      ...(init.headers || {}),
-    },
-  }, 20_000);
+  let lastError;
 
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Notion request failed ${res.status} ${endpoint}: ${body.slice(0, 300)}`);
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const res = await fetchWithTimeout(`${NOTION_BASE}${endpoint}`, {
+        ...init,
+        headers: {
+          ...notionHeaders,
+          ...(init.headers || {}),
+        },
+      }, 20_000);
+
+      if (res.ok) return res.json();
+
+      const body = await res.text();
+      const message = `Notion request failed ${res.status} ${endpoint}: ${body.slice(0, 300)}`;
+      lastError = new Error(message);
+
+      if (!retryableStatuses.has(res.status) || attempt === 4) {
+        throw lastError;
+      }
+
+      const retryAfter = Number(res.headers.get('retry-after'));
+      await sleep(Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 800 * 2 ** attempt);
+    } catch (error) {
+      lastError = error;
+      if (attempt === 4) throw lastError;
+      await sleep(800 * 2 ** attempt);
+    }
   }
 
-  return res.json();
+  throw lastError;
 }
 
 async function fetchDatabaseMeta(databaseId) {
@@ -383,7 +406,7 @@ async function main() {
     if (page?.id) contentIds.add(page.id);
   }
 
-  await runWithConcurrency([...contentIds], 3, async (pageId) => {
+  await runWithConcurrency([...contentIds], 2, async (pageId) => {
     console.log(`Exporting content: ${pageId}`);
     await exportContent(pageId);
   });
