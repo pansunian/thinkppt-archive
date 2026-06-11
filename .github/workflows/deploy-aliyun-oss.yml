@@ -83,7 +83,7 @@ jobs:
       - name: Upload dist to Aliyun OSS
         shell: bash
         run: |
-          ./ossutil64 sync -f --delete dist/ "oss://$ALIYUN_OSS_BUCKET/"
+          OSSUTIL_BIN=./ossutil64 node scripts/deploy-aliyun-oss.mjs
           node scripts/set-oss-index-meta.mjs
 
       - name: Write deployment summary
