@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
 
       // Static OSS/ESA mode. When true, the frontend reads pre-exported JSON from /data.
       'process.env.STATIC_DATA_ENABLED': JSON.stringify(env.STATIC_DATA_ENABLED || 'false'),
+      'process.env.VITE_DEMO_MODE': JSON.stringify(env.VITE_DEMO_MODE || 'false'),
     },
     server: {
       proxy: {
