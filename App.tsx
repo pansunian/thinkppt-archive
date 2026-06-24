@@ -46,7 +46,7 @@ const BRAND_CONFIG = {
 
 const STATIC_DATA_ENABLED = process.env.STATIC_DATA_ENABLED === 'true';
 const DEMO_MODE = process.env.VITE_DEMO_MODE === 'true';
-const DATA_CACHE_VERSION = 'ip-archive-v3';
+const DATA_CACHE_VERSION = 'ip-archive-v4';
 
 const MEMBERSHIP_PLANS = [
   {
@@ -141,17 +141,129 @@ const uniqueValues = (values: string[]) => Array.from(new Set(values.filter(Bool
 
 const FEATURED_DEMO_ARCHIVE_IDS = ['xhs-slow-life', 'xhs-snowman', 'xhs-outsider'];
 const SCHEME_FRAME_LABELS = ['封面', '洞察', '人群', '主题', '玩法', '权益', '脉络', '收束'];
+const NOTION_PLATFORM_ORDER = ['小红书', '快手', '抖音', 'BILIBILI', 'B站', '天猫校园', '知乎', '伊利', '去哪儿'];
 
-const IpArchiveProductDemo: React.FC = () => {
+const splitField = (value?: string) => (value || '')
+  .split(/[\n,，、/|]+/)
+  .map(item => item.trim())
+  .filter(Boolean);
+
+const getSchemeImage = (scheme: Scheme) => scheme.coverOssUrl || scheme.imageUrl;
+
+const buildPagesFromScheme = (scheme: Scheme) => {
+  const image = getSchemeImage(scheme);
+  const titleHints = splitField(scheme.featuredPageTitles);
+  const noteHints = splitField(scheme.featuredPageNotes);
+  const pageData = [
+    {
+      label: '封面',
+      title: titleHints[0] || scheme.title,
+      role: scheme.description || `${scheme.ipName} 的年度方案封面。`,
+      note: noteHints[0] || '这里优先展示 PDF 封面；后续接入 PDF 转图后可替换为真实页面图。'
+    },
+    {
+      label: '洞察',
+      title: titleHints[1] || scheme.coreInsight || `${scheme.ipName} / 核心洞察`,
+      role: scheme.coreInsight || scheme.editorNote || '从方案中提取人群、趋势或平台语境，说明这个 IP 为什么成立。',
+      note: noteHints[1] || '建议在 Notion 中补充“核心洞察”，首页弹窗会自动读取。'
+    },
+    {
+      label: '主题',
+      title: titleHints[2] || scheme.annualTheme || scheme.slogan || `${scheme.ipName} / 年度主题`,
+      role: scheme.bigIdea || scheme.slogan || '展示方案如何把洞察翻译成年度主题、Big Idea 或传播主张。',
+      note: noteHints[2] || '主题页不要叠加大段说明，解释文字放在右侧。'
+    },
+    {
+      label: '脉络',
+      title: titleHints[3] || `${scheme.ipName} / 方案脉络`,
+      role: scheme.schemeNarrative || scheme.curationSummary || '梳理从封面、洞察、主题、玩法到权益的阅读路径。',
+      note: noteHints[3] || '如果 Notion 里补充“方案脉络”，这里会优先呈现。'
+    },
+    {
+      label: '玩法',
+      title: titleHints[4] || `${scheme.ipName} / 参与玩法`,
+      role: scheme.resultSummary || scheme.schemeRole || '展示平台资源、内容玩法、达人共创或用户参与机制。',
+      note: noteHints[4] || '适合放 PDF 中的活动机制页、传播节奏页或资源组合页。'
+    },
+    {
+      label: '权益',
+      title: titleHints[5] || `${scheme.ipName} / 招商权益`,
+      role: scheme.rights.length ? scheme.rights.join(' / ') : '展示品牌可购买、可露出、可共创的资源结构。',
+      note: noteHints[5] || '招商权益是营销人最常回看的部分，后续建议抽 1-2 页真实图。'
+    }
+  ];
+
+  return pageData.map(item => ({ ...item, image }));
+};
+
+const buildArchivesFromSchemes = (schemes: Scheme[]): IpArchive[] => {
+  const groups = schemes.reduce((map, scheme) => {
+    const platform = scheme.platform || '未标注平台';
+    const name = scheme.ipName || scheme.title;
+    const key = `${platform}__${name}`;
+    const current = map.get(key) || [] as Scheme[];
+    current.push(scheme);
+    map.set(key, current);
+    return map;
+  }, new Map<string, Scheme[]>());
+
+  return Array.from(groups.entries()).map(([key, group]) => {
+    const [platform, name] = key.split('__');
+    const sortedSchemes = group.slice().sort((a, b) => {
+      if (!!a.isFeatured !== !!b.isFeatured) return a.isFeatured ? -1 : 1;
+      return String(b.year || '').localeCompare(String(a.year || ''));
+    });
+    const coverScheme = sortedSchemes[0];
+    const years = uniqueValues(sortedSchemes.map(scheme => scheme.year)).sort();
+    const versions = sortedSchemes.map(scheme => ({
+      year: scheme.year || '未标注',
+      title: scheme.title,
+      phase: scheme.ipStage || scheme.projectType || scheme.category,
+      planSummary: scheme.curationSummary || scheme.schemeNarrative || scheme.description || scheme.editorNote || '待补充方案摘要。',
+      materials: [scheme.archiveType, scheme.projectType, scheme.schemeRole].filter(Boolean),
+      visuals: [getSchemeImage(scheme)].filter(Boolean),
+      pageCount: scheme.pageCount,
+      fileSize: scheme.fileSize,
+      schemePages: buildPagesFromScheme(scheme),
+      evidencePoints: [scheme.coreInsight, scheme.bigIdea, scheme.keyChange, scheme.resultSummary].filter(Boolean),
+      sourceTitle: scheme.title,
+      sourceUrl: scheme.pdfOssUrl || scheme.downloadUrl,
+      downloadUrl: scheme.pdfOssUrl || scheme.downloadUrl,
+      execution: scheme.editorNote || scheme.resultSummary || '适合用于平台 IP 招商方案研究。'
+    }));
+
+    return {
+      id: key,
+      platform,
+      name,
+      type: coverScheme.projectType || coverScheme.category || 'IP 方案',
+      years: years.length > 1 ? `${years[0]}-${years[years.length - 1]}` : (years[0] || '持续更新'),
+      coverImage: getSchemeImage(coverScheme),
+      thesis: coverScheme.curationSummary || coverScheme.ipPosition || coverScheme.description || coverScheme.editorNote || `${name} 的平台 IP 方案档案。`,
+      authorNote: coverScheme.editorNote || coverScheme.keyChange || '待补充站长观察。',
+      versions
+    };
+  }).sort((a, b) => {
+    const aRank = NOTION_PLATFORM_ORDER.includes(a.platform) ? NOTION_PLATFORM_ORDER.indexOf(a.platform) : 99;
+    const bRank = NOTION_PLATFORM_ORDER.includes(b.platform) ? NOTION_PLATFORM_ORDER.indexOf(b.platform) : 99;
+    if (aRank !== bRank) return aRank - bRank;
+    return b.versions.length - a.versions.length;
+  });
+};
+
+const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean }> = ({ schemes, loading }) => {
+  const notionArchives = buildArchivesFromSchemes(schemes);
   const demoArchives = CURATED_IP_ARCHIVES.filter(archive => FEATURED_DEMO_ARCHIVE_IDS.includes(archive.id));
-  const platforms = ['全部', ...uniqueValues(demoArchives.map(archive => archive.platform))];
+  const archivesSource = notionArchives.length > 0 ? notionArchives : demoArchives;
+  const isUsingNotion = notionArchives.length > 0;
+  const platforms = ['全部', ...uniqueValues(archivesSource.map(archive => archive.platform))];
   const [activePlatform, setActivePlatform] = useState('全部');
   const [selectedArchive, setSelectedArchive] = useState<IpArchive | null>(null);
   const [activeYear, setActiveYear] = useState('');
   const [activePageIndex, setActivePageIndex] = useState(0);
-  const archives = demoArchives.filter(archive => activePlatform === '全部' || archive.platform === activePlatform);
+  const archives = archivesSource.filter(archive => activePlatform === '全部' || archive.platform === activePlatform);
   const selectedVersion = selectedArchive?.versions.find(version => version.year === activeYear) || selectedArchive?.versions[0];
-  const schemeCount = demoArchives.reduce((sum, archive) => sum + archive.versions.length, 0);
+  const schemeCount = archivesSource.reduce((sum, archive) => sum + archive.versions.length, 0);
 
   const getSchemePages = (archive: IpArchive, version: NonNullable<typeof selectedVersion>) => {
     if (version.schemePages?.length) return version.schemePages;
@@ -192,7 +304,9 @@ const IpArchiveProductDemo: React.FC = () => {
               互联网平台<br />IP 方案大赏
             </h1>
             <p className="mt-6 max-w-2xl text-[15px] leading-8 text-[#4D4A45]">
-              第一版先用 3 个小红书 IP 做样板：不把完整 PDF 粗暴塞进页面，而是抽取关键页，做成可浏览、可下载、可理解的方案展览。
+              {isUsingNotion
+                ? '已接入 Notion 方案库：以平台为线索，以 IP 为入口，把每一份 PDF 方案整理成可浏览、可下载、可理解的方案展览。'
+                : '正在等待 Notion 数据；加载完成前先显示 3 个小红书 IP 样板，便于确认页面形式。'}
             </p>
           </div>
           <div className="border-y border-black/10 py-5 lg:border-l lg:border-y-0 lg:pl-10">
@@ -231,7 +345,7 @@ const IpArchiveProductDemo: React.FC = () => {
             <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-black/35">Scheme Index</div>
             <h2 className="mt-2 text-2xl font-heading font-black">选择一个 IP 方案</h2>
           </div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">样板库 / {archives.length} 个 IP</div>
+          <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">{isUsingNotion ? 'Notion 已同步' : loading ? 'Notion 加载中' : '样板库'} / {archives.length} 个 IP</div>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -876,7 +990,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       <main className={`flex-grow z-20 pt-0 ${showProductDemo ? 'px-0 lg:px-8 lg:pb-12' : 'pl-12 lg:px-8 lg:pb-12'}`}>
         <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] rounded-none shadow-none relative border border-black/10">
             {isHome ? (
-              showProductDemo ? <IpArchiveProductDemo /> : <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
+              showProductDemo ? <IpArchiveProductDemo schemes={displayedSchemes} loading={loading} /> : <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
             ) : (
               <div className="px-6 md:px-12 pt-12 pb-8 border-b border-black/10 bg-[#F8F5EE]">
                   <div>
