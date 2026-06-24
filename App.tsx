@@ -156,13 +156,14 @@ const splitField = (value?: string) => (value || '')
 const getSchemeImage = (scheme: Scheme) => scheme.coverOssUrl || scheme.imageUrl;
 
 const getArchiveName = (scheme: Scheme) => {
-  if (scheme.ipName && scheme.ipName !== scheme.title) return scheme.ipName;
+  const isCurated = Boolean(scheme.readingStatus || scheme.curationSummary || scheme.editorNote);
+  if (isCurated && scheme.ipName && scheme.ipName !== scheme.title) return scheme.ipName;
   const title = scheme.title.replace(/\s+/g, '');
   const matched = KNOWN_IP_NAMES.find(name => title.includes(name));
   if (matched) return matched;
   const bracketMatch = title.match(/《([^》]{2,24})》/);
   if (bracketMatch?.[1]) return bracketMatch[1];
-  return scheme.title;
+  return '';
 };
 
 const buildPagesFromScheme = (scheme: Scheme) => {
@@ -215,6 +216,7 @@ const buildArchivesFromSchemes = (schemes: Scheme[]): IpArchive[] => {
   const groups = schemes.reduce((map, scheme) => {
     const platform = scheme.platform || '未标注平台';
     const name = getArchiveName(scheme);
+    if (!name) return map;
     const key = `${platform}__${name}`;
     const current = map.get(key) || [] as Scheme[];
     current.push(scheme);
