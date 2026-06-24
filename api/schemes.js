@@ -46,7 +46,7 @@ export default async function handler(request) {
     });
   }
 
-  const cacheKey = `thinkppt-schemes-v3-${NOTION_DATABASE_ID}-${category}-${cursor || 'first'}`;
+  const cacheKey = `thinkppt-schemes-v4-${NOTION_DATABASE_ID}-${category}-${cursor || 'first'}`;
 
   if (!forceRefresh) {
     const cached = await redisGet(cacheKey);

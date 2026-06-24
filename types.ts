@@ -22,6 +22,20 @@ export interface Scheme {
   archiveType: string; // 档案类型
   ipStage: string;    // 第几年 / 持续年限
   slogan: string;     // 当年主题或 Slogan
+  ipPosition?: string; // IP 定位
+  schemeRole?: string; // 方案角色
+  annualTheme?: string; // 年度主题
+  coreInsight?: string; // 核心洞察
+  bigIdea?: string; // Big Idea
+  schemeNarrative?: string; // 方案脉络
+  curationSummary?: string; // 策展摘要
+  featuredPageNumbers?: string; // 精选页码
+  featuredPageTitles?: string; // 精选页标题
+  featuredPageNotes?: string; // 精选页说明
+  pdfOssUrl?: string; // OSS PDF 原件
+  pageImagesOssPrefix?: string; // OSS 页面图目录
+  coverOssUrl?: string; // OSS 封面图
+  readingStatus?: string; // 阅读/整理状态
   editorNote: string; // 站长观察
   keyChange: string;  // 关键变化
   partners: string[]; // 合作品牌
@@ -34,12 +48,28 @@ export interface GeneratedOutline {
   sections: string[];
 }
 
+export interface IpArchiveSchemePage {
+  label: string;
+  title: string;
+  role: string;
+  image: string;
+  note: string;
+}
+
 export interface IpArchiveVersion {
   year: string;
   title: string;
   phase: string;
   planSummary: string;
   materials: string[];
+  visuals: string[];
+  pageCount?: string;
+  fileSize?: string;
+  schemePages?: IpArchiveSchemePage[];
+  evidencePoints?: string[];
+  sourceTitle?: string;
+  sourceUrl?: string;
+  downloadUrl?: string;
   execution: string;
 }
 
@@ -49,6 +79,7 @@ export interface IpArchive {
   name: string;
   type: string;
   years: string;
+  coverImage: string;
   thesis: string;
   authorNote: string;
   versions: IpArchiveVersion[];

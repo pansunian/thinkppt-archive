@@ -178,6 +178,8 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     };
 
     const getImage = (keys: string[]) => {
+       const preferredImage = getUrl(['封面图OSS', 'Cover OSS', 'Image URL', 'Cover URL']);
+       if (preferredImage) return preferredImage;
        if (page.first_content_image) return page.first_content_image;
        if (page.cover) {
            if (page.cover.type === 'external') return page.cover.external.url;
@@ -212,6 +214,8 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     const projectType = getFlexibleString(['Project Type', '项目类型', '项目类别', '方案类型']) || category;
     const archiveType = getFlexibleString(['Archive Type', '档案类型', '资料类型', '文件类型', '物料类型']) || projectType;
     const editorNote = getText(['Editor Note', "Editor's Note", '站长观察', '编辑观察', '观察', 'AI摘要', 'AI 摘要', '摘要']);
+    const annualTheme = getText(['年度主题', 'Theme Slogan', '主题Slogan', '主题 Slogan', '活动主题', '主题']) || '';
+    const pdfOssUrl = getUrl(['PDF原件OSS', 'PDF OSS', 'PDF原件', 'PDF下载']);
 
     return {
       id: page.id,
@@ -220,7 +224,7 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       brand: getFlexibleString(['Brand', 'Client', '品牌', '客户']) || 'ThinkPPT',    
       industry: getFlexibleString(['Industry', 'Sector', '行业']) || '通用',   
       year: yearStr,           
-      downloadUrl: getUrl(['Download', 'Link', 'URL', '下载链接', '网址']),             
+      downloadUrl: getUrl(['Download', 'Link', 'URL', '下载链接', '网址']) || pdfOssUrl,
       date: dateStr,
       displayId: getDisplayId(['ID', 'ID 属性', 'Code', '编号', 'No', 'Number']) || page.id.slice(-4).toUpperCase(),
       description: getText(['Description', 'Summary', 'Intro', '描述', '简介']),
@@ -237,7 +241,21 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       archiveType,
       ipStage: getFlexibleString(['IP Stage', '持续年限', '第几年', 'IP阶段', '运营年限']) || '',
       slogan: getText(['Slogan', 'Theme Slogan', '主题Slogan', '主题 Slogan', '活动主题', '年度主题', '主题']) || '',
-      editorNote: editorNote || getText(['Description', 'Summary', 'Intro', '描述', '简介']),
+      ipPosition: getText(['IP定位', 'IP Position', 'IP Definition', '定位']) || '',
+      schemeRole: getFlexibleString(['方案角色', 'Scheme Role', 'Project Role', '角色']) || '',
+      annualTheme,
+      coreInsight: getText(['核心洞察', 'Insight', '洞察', '用户洞察']) || '',
+      bigIdea: getText(['Big Idea', 'Big Idea一句话', '创意主张', '核心主张']) || '',
+      schemeNarrative: getText(['方案脉络', 'Narrative', '整体脉络', '方案结构']) || '',
+      curationSummary: getText(['策展摘要', 'Curator Summary', '站长摘要', '策展说明']) || '',
+      featuredPageNumbers: getText(['精选页码', 'Featured Pages', '推荐页码']) || '',
+      featuredPageTitles: getText(['精选页标题', 'Featured Page Titles', '推荐页标题']) || '',
+      featuredPageNotes: getText(['精选页说明', 'Featured Page Notes', '推荐页说明']) || '',
+      pdfOssUrl,
+      pageImagesOssPrefix: getUrl(['页面图OSS目录', 'Page Images OSS', '页面图目录', '页面图OSS']) || '',
+      coverOssUrl: getUrl(['封面图OSS', 'Cover OSS', '封面OSS']) || '',
+      readingStatus: getFlexibleString(['阅读状态', 'Reading Status', '整理状态', '上线状态']) || '',
+      editorNote: editorNote || getText(['策展摘要', 'Description', 'Summary', 'Intro', '描述', '简介']),
       keyChange: getText(['Key Change', '关键变化', '年度变化', '变化观察', '变化']) || '',
       partners: getList(['Partners', 'Co Brands', '合作品牌', '参与品牌', '品牌伙伴']),
       rights: getList(['Rights', 'Benefits', '权益', '招商权益', '核心权益', '资源权益']),
