@@ -142,6 +142,11 @@ const uniqueValues = (values: string[]) => Array.from(new Set(values.filter(Bool
 const FEATURED_DEMO_ARCHIVE_IDS = ['xhs-slow-life', 'xhs-snowman', 'xhs-outsider'];
 const SCHEME_FRAME_LABELS = ['封面', '洞察', '人群', '主题', '玩法', '权益', '脉络', '收束'];
 const NOTION_PLATFORM_ORDER = ['小红书', '快手', '抖音', 'BILIBILI', 'B站', '天猫校园', '知乎', '伊利', '去哪儿'];
+const KNOWN_IP_NAMES = [
+  '慢人节', '雪人节', '外人节', '马路生活节', '夜人节', '闪光青春派', '我就要这样生活', '遛遛生活',
+  '开学季', '拜年纪', '毕业季', '百大UP主盛典', '我们野太会了吧', '生活B修课',
+  '马年星晚', '团圆进行时', '节气文化', '最是人间好时节', '汽水音乐'
+];
 
 const splitField = (value?: string) => (value || '')
   .split(/[\n,，、/|]+/)
@@ -149,6 +154,16 @@ const splitField = (value?: string) => (value || '')
   .filter(Boolean);
 
 const getSchemeImage = (scheme: Scheme) => scheme.coverOssUrl || scheme.imageUrl;
+
+const getArchiveName = (scheme: Scheme) => {
+  if (scheme.ipName && scheme.ipName !== scheme.title) return scheme.ipName;
+  const title = scheme.title.replace(/\s+/g, '');
+  const matched = KNOWN_IP_NAMES.find(name => title.includes(name));
+  if (matched) return matched;
+  const bracketMatch = title.match(/《([^》]{2,24})》/);
+  if (bracketMatch?.[1]) return bracketMatch[1];
+  return scheme.title;
+};
 
 const buildPagesFromScheme = (scheme: Scheme) => {
   const image = getSchemeImage(scheme);
@@ -199,7 +214,7 @@ const buildPagesFromScheme = (scheme: Scheme) => {
 const buildArchivesFromSchemes = (schemes: Scheme[]): IpArchive[] => {
   const groups = schemes.reduce((map, scheme) => {
     const platform = scheme.platform || '未标注平台';
-    const name = scheme.ipName || scheme.title;
+    const name = getArchiveName(scheme);
     const key = `${platform}__${name}`;
     const current = map.get(key) || [] as Scheme[];
     current.push(scheme);
@@ -317,7 +332,7 @@ const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean }> = 
               </div>
               <div className="px-4">
                 <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">IP</div>
-                <div className="mt-2 text-3xl font-black">{demoArchives.length}</div>
+                <div className="mt-2 text-3xl font-black">{archivesSource.length}</div>
               </div>
               <div className="pl-4">
                 <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">方案</div>
