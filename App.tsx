@@ -46,7 +46,7 @@ const BRAND_CONFIG = {
 
 const STATIC_DATA_ENABLED = process.env.STATIC_DATA_ENABLED === 'true';
 const DEMO_MODE = process.env.VITE_DEMO_MODE === 'true';
-const DATA_CACHE_VERSION = 'ip-archive-v2';
+const DATA_CACHE_VERSION = 'ip-archive-v3';
 
 const MEMBERSHIP_PLANS = [
   {
@@ -782,7 +782,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
     return 0; 
   });
   const isHome = currentDatabaseId === null && activeCategory === '全部';
-  const showProductDemo = DEMO_MODE && isHome;
+  const showProductDemo = isHome;
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] lg:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
@@ -792,7 +792,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       `}</style>
 
       {/* 侧边导航 (移动端) - 更新背景色为 #FDFBF7 */}
-      {!DEMO_MODE && <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-[#FDFBF7] border-r border-black/5">
+      {!showProductDemo && <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-[#FDFBF7] border-r border-black/5">
         <div className="flex flex-col gap-1 pointer-events-auto items-start">
             <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-[#FDFBF7] ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
                  {BRAND_CONFIG.mode === 'image' && !logoError ? (
@@ -837,12 +837,12 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
                     <div className="text-sm font-black text-[#111111]">Platform IP Marketing Annual</div>
                 </div>
             </button>
-            {DEMO_MODE && (
+            {showProductDemo && (
               <div className="border border-[#8F2F24]/30 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#8F2F24]">
                 Scheme Exhibition V1
               </div>
             )}
-            {!DEMO_MODE && <div className="flex items-center gap-1">
+            {!showProductDemo && <div className="flex items-center gap-1">
                 {categories.slice(0, 7).map((category) => {
                     const isActive = activeCategory === category;
                     return (
@@ -856,7 +856,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
                     );
                 })}
             </div>}
-            {!DEMO_MODE && <div className="flex items-center gap-2">
+            {!showProductDemo && <div className="flex items-center gap-2">
                 {RESOURCE_LINKS.map((link) => {
                     const isCurrentDB = link.type === 'database' && ((link.id === currentDatabaseId) || (currentDatabaseId === null && link.id === process.env.NOTION_DATABASE_ID));
                     return (
