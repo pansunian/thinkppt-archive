@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ArchiveCard } from './components/ArchiveCard';
 import { Archivist } from './components/Archivist';
 import { SchemeDetail } from './components/SchemeDetail';
-import { CATEGORIES as DEFAULT_CATEGORIES, MOCK_SCHEMES, PALETTE } from './constants';
-import { Scheme } from './types';
+import { CATEGORIES as DEFAULT_CATEGORIES, CURATED_IP_ARCHIVES, MOCK_SCHEMES, PALETTE } from './constants';
+import { IpArchive, Scheme } from './types';
 import { mapNotionResultToSchemes } from './utils/notionMapper';
 
 // --- CONFIGURATION START ---
@@ -137,6 +137,142 @@ const getStaticDatabaseFile = (databaseId: string | null) => {
 const getStaticPageFile = (pageId: string) => `/data/pages/${normalizeStaticId(pageId)}.json`;
 
 const uniqueValues = (values: string[]) => Array.from(new Set(values.filter(Boolean)));
+
+const IpArchiveProductDemo: React.FC = () => {
+  const platforms = ['全部', ...uniqueValues(CURATED_IP_ARCHIVES.map(archive => archive.platform))];
+  const [activePlatform, setActivePlatform] = useState('全部');
+  const [expandedId, setExpandedId] = useState(CURATED_IP_ARCHIVES[0]?.id || '');
+  const archives = CURATED_IP_ARCHIVES.filter(archive => activePlatform === '全部' || archive.platform === activePlatform);
+  const expandedArchive = archives.find(archive => archive.id === expandedId) || archives[0];
+
+  const openArchive = (archive: IpArchive) => {
+    setExpandedId(archive.id);
+  };
+
+  return (
+    <section className="bg-[#F4F0E8]">
+      <div className="border-b border-black/10 px-6 py-12 md:px-12 lg:py-16">
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <div className="font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-[#8F2F24]">THINKPPT / IP ARCHIVE MODEL</div>
+            <h1 className="mt-8 max-w-3xl text-[42px] font-heading font-black leading-[1.04] text-[#111111] md:text-[70px]">
+              以 IP 为入口的营销年鉴
+            </h1>
+            <p className="mt-6 max-w-2xl text-[15px] leading-8 text-[#4D4A45]">
+              先不按“单个方案文件”组织，而是以平台为第一层、IP 为核心单元，记录每个 IP 不同年份的招商方案、宣传物料和执行观察。
+            </p>
+          </div>
+          <div className="border-y border-black/10 lg:border-l lg:border-y-0 lg:pl-10">
+            <div className="grid grid-cols-3 divide-x divide-black/10">
+              <div className="py-5 pr-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">Platforms</div>
+                <div className="mt-2 text-3xl font-black">{platforms.length - 1}</div>
+              </div>
+              <div className="py-5 px-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">IP Units</div>
+                <div className="mt-2 text-3xl font-black">{CURATED_IP_ARCHIVES.length}</div>
+              </div>
+              <div className="py-5 pl-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">Model</div>
+                <div className="mt-2 text-xl font-black">平台 / IP / 年份</div>
+              </div>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-2">
+              {platforms.map(platform => (
+                <button
+                  key={platform}
+                  onClick={() => {
+                    setActivePlatform(platform);
+                    const next = CURATED_IP_ARCHIVES.find(archive => platform === '全部' || archive.platform === platform);
+                    if (next) setExpandedId(next.id);
+                  }}
+                  className={`border px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${activePlatform === platform ? 'border-[#111111] bg-[#111111] text-[#F4F0E8]' : 'border-black/15 text-black/55 hover:border-black/60 hover:text-black'}`}
+                >
+                  {platform}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid border-b border-black/10 lg:grid-cols-[0.82fr_1.18fr]">
+        <div className="border-b border-black/10 lg:border-b-0 lg:border-r">
+          <div className="sticky top-0 px-6 py-8 md:px-12">
+            <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-black/35">IP Index</div>
+            <div className="mt-6 divide-y divide-black/10 border-y border-black/10">
+              {archives.map(archive => (
+                <button
+                  key={archive.id}
+                  onClick={() => openArchive(archive)}
+                  className={`grid w-full grid-cols-[1fr_auto] gap-4 py-5 text-left transition-colors ${expandedArchive?.id === archive.id ? 'text-[#8F2F24]' : 'text-[#111111] hover:text-[#8F2F24]'}`}
+                >
+                  <span>
+                    <span className="block text-lg font-black">{archive.name}</span>
+                    <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-black/35">{archive.platform} / {archive.type}</span>
+                  </span>
+                  <span className="text-right font-mono text-[10px] leading-5 text-black/45">
+                    <span className="block">{archive.years}</span>
+                    <span className="block">{archive.versions.length} 个版本</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-[#111111] text-[#F4F0E8]">
+          {expandedArchive && (
+            <div className="px-6 py-8 md:px-12 md:py-12">
+              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#C9694C]">{expandedArchive.platform}</div>
+              <h2 className="mt-5 text-4xl font-heading font-black leading-tight md:text-6xl">{expandedArchive.name}</h2>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {[expandedArchive.type, expandedArchive.years, `${expandedArchive.versions.length} 个年度版本`].map(item => (
+                  <span key={item} className="border border-white/15 px-3 py-1.5 font-mono text-[10px] text-white/55">{item}</span>
+                ))}
+              </div>
+              <p className="mt-8 max-w-2xl text-sm leading-8 text-white/62">{expandedArchive.thesis}</p>
+              <div className="mt-10 border-y border-white/10 py-6">
+                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/35">Pan's Note</div>
+                <p className="mt-4 text-base leading-8 text-[#F4F0E8]">{expandedArchive.authorNote}</p>
+              </div>
+              <div className="mt-10 space-y-4">
+                {expandedArchive.versions.map(version => (
+                  <article key={version.year} className="border border-white/10 bg-white/[0.03] p-5">
+                    <div className="grid gap-5 md:grid-cols-[96px_1fr]">
+                      <div>
+                        <div className="font-mono text-2xl font-black text-[#C9694C]">{version.year}</div>
+                        <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-white/35">{version.phase}</div>
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-black">{version.title}</h3>
+                        <p className="mt-3 text-sm leading-7 text-white/62">{version.planSummary}</p>
+                        <div className="mt-5 grid gap-3 md:grid-cols-3">
+                          <div className="border border-white/10 p-3">
+                            <div className="font-mono text-[9px] uppercase tracking-widest text-white/35">方案层</div>
+                            <div className="mt-2 text-sm leading-6 text-white/70">{version.planSummary}</div>
+                          </div>
+                          <div className="border border-white/10 p-3">
+                            <div className="font-mono text-[9px] uppercase tracking-widest text-white/35">物料层</div>
+                            <div className="mt-2 text-sm leading-6 text-white/70">{version.materials.join(' / ')}</div>
+                          </div>
+                          <div className="border border-white/10 p-3">
+                            <div className="font-mono text-[9px] uppercase tracking-widest text-white/35">效果层</div>
+                            <div className="mt-2 text-sm leading-6 text-white/70">{version.execution}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const CuratedHomeIntro: React.FC<{ schemes: Scheme[]; onOpenScheme: (scheme: Scheme) => void }> = ({ schemes, onOpenScheme }) => {
   const platforms = uniqueValues(schemes.map(scheme => scheme.platform).filter(value => value !== '未标注平台'));
@@ -517,6 +653,8 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
     if (!aFeatured && bFeatured) return 1;
     return 0; 
   });
+  const isHome = currentDatabaseId === null && activeCategory === '全部';
+  const showProductDemo = DEMO_MODE && isHome;
 
   return (
     <div className="min-h-[100dvh] bg-[#FDFBF7] lg:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
@@ -609,8 +747,8 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       {/* 主内容区 - 移动端背景色改为 #FDFBF7 */}
       <main className="flex-grow pl-12 lg:px-8 lg:pb-12 z-20 pt-0">
         <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] rounded-none shadow-none relative border border-black/10">
-            {currentDatabaseId === null && activeCategory === '全部' ? (
-              <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
+            {isHome ? (
+              showProductDemo ? <IpArchiveProductDemo /> : <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
             ) : (
               <div className="px-6 md:px-12 pt-12 pb-8 border-b border-black/10 bg-[#F8F5EE]">
                   <div>
@@ -622,6 +760,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
               </div>
             )}
 
+            {!showProductDemo && (
             <div className="px-6 md:px-12 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[62px] md:gap-y-16">
                     {loading ? (
@@ -642,6 +781,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
                   </div>
                 )}
             </div>
+            )}
 
             <div className="relative h-16 bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
                 <span className="px-4 text-center font-mono text-[10px] text-gray-400 uppercase tracking-widest"><a className="text-color" href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号</a> © ThinkPPT.COM Power by Notion / 个人试运营阶段人工确认开通</span>
@@ -649,7 +789,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
         </div>
       </main>
 
-      <Archivist schemes={schemes} onOpenScheme={setSelectedScheme} />
+      {!DEMO_MODE && <Archivist schemes={schemes} onOpenScheme={setSelectedScheme} />}
       {selectedScheme && <SchemeDetail scheme={selectedScheme} onClose={() => setSelectedScheme(null)} isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID} onSubscribe={handleSubscribeClick} staticDataMode={STATIC_DATA_ENABLED} />}
     </div>
   );

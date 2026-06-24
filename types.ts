@@ -33,3 +33,23 @@ export interface GeneratedOutline {
   title: string;
   sections: string[];
 }
+
+export interface IpArchiveVersion {
+  year: string;
+  title: string;
+  phase: string;
+  planSummary: string;
+  materials: string[];
+  execution: string;
+}
+
+export interface IpArchive {
+  id: string;
+  platform: string;
+  name: string;
+  type: string;
+  years: string;
+  thesis: string;
+  authorNote: string;
+  versions: IpArchiveVersion[];
+}

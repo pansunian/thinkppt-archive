@@ -1,6 +1,68 @@
 import { Scheme } from '../types';
 import { PALETTE } from '../constants';
 
+const KNOWN_IP_PATTERNS = [
+  '慢人节',
+  '雪人节',
+  '外人节',
+  '马路生活节',
+  '夜人节',
+  '闪光青春派',
+  '闪光开学季',
+  '遛遛生活',
+  '我就要这样生活',
+  '过年就来小红书',
+  '新年小红大集',
+  '大家运动周',
+  '溯源看世界',
+  '万物有时节',
+  '神奇国货在哪里',
+  '潮流奶爸在哪里',
+  '红薯旅行社',
+  '专薯日',
+  '气味飞行计划',
+  '每日美食日历',
+  '拜年纪',
+  '百大UP主盛典',
+  '毕业季',
+  '考试季',
+  '高考季',
+  '开学季',
+  '校园IP生活B修课',
+  '中秋晚会',
+  '有求B应',
+  'B无忧好物集',
+  'CNY',
+  '马年星晚',
+  '冰雪季',
+  '校运会',
+  '节气文化',
+  '团圆进行时',
+  '上班搭子',
+  '城市漫游',
+  '天空之下音乐会',
+  '风从东方来',
+];
+
+const inferIpName = (title: string, platform: string) => {
+  const cleanTitle = title.replace(/\s+/g, '');
+  const matched = KNOWN_IP_PATTERNS.find(pattern => cleanTitle.includes(pattern.replace(/\s+/g, '')));
+  if (matched) {
+    if (matched === 'CNY' || matched === '马年星晚' || matched === '团圆进行时') return `${platform || '平台'}春节 IP`;
+    if (matched === '闪光开学季') return '闪光青春派';
+    return matched;
+  }
+
+  const generic = cleanTitle
+    .replace(/20\\d{2}/g, '')
+    .replace(new RegExp(platform || '$^', 'g'), '')
+    .replace(/[《》【】「」\\[\\]（）()·：:—\\-_]/g, '')
+    .replace(/招商项目|招商方案|招商通案|营销通案|项目通案|合作方案|设计方案|企划|方案|通案|营销IP|IP通案|IP/g, '')
+    .trim();
+
+  return generic ? `${generic.slice(0, 12)} IP` : title;
+};
+
 export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
   if (!notionData || !notionData.results) return [];
 
@@ -170,7 +232,7 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       // Map '编辑推荐' checkbox
       isFeatured: getCheckbox(['编辑推荐', 'Featured', 'Editor Pick', '推荐', '精选']),
       platform: platform || getFlexibleString(['Brand', 'Client', '品牌', '客户']) || '未标注平台',
-      ipName: ipName || getFlexibleString(['Series', 'Collection', '专题', '系列']) || getText(['Title', 'Name', 'Page', '标题', '方案名称', '网站标题', 'title']) || '未命名 IP',
+      ipName: ipName || getFlexibleString(['Series', 'Collection', '专题', '系列']) || inferIpName(getText(['Title', 'Name', 'Page', '标题', '方案名称', '网站标题', 'title']) || '', platform),
       projectType,
       archiveType,
       ipStage: getFlexibleString(['IP Stage', '持续年限', '第几年', 'IP阶段', '运营年限']) || '',
