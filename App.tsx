@@ -45,6 +45,7 @@ const BRAND_CONFIG = {
 };
 
 const STATIC_DATA_ENABLED = process.env.STATIC_DATA_ENABLED === 'true';
+const DEMO_MODE = process.env.VITE_DEMO_MODE === 'true';
 
 const MEMBERSHIP_PLANS = [
   {
@@ -344,6 +345,19 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
 
   const fetchSchemes = async (cursor: string | null = null, categoryOverride?: string, dbIdOverride?: string | null) => {
     try {
+      if (DEMO_MODE) {
+        const currentCategory = categoryOverride !== undefined ? categoryOverride : activeCategory;
+        const demoSchemes = currentCategory && currentCategory !== '全部'
+          ? MOCK_SCHEMES.filter(scheme => scheme.category === currentCategory)
+          : MOCK_SCHEMES;
+        setSchemes(demoSchemes);
+        setCategories(['全部', ...uniqueValues(MOCK_SCHEMES.map(scheme => scheme.category))]);
+        setUseMock(true);
+        setNextCursor(null);
+        setHasMore(false);
+        return;
+      }
+
       const currentCategory = categoryOverride !== undefined ? categoryOverride : activeCategory;
       const targetDbId = dbIdOverride !== undefined ? dbIdOverride : currentDatabaseId;
       

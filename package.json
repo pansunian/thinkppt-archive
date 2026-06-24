@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:demo": "vite --host 127.0.0.1",
+    "dev:demo": "VITE_DEMO_MODE=true vite --host 127.0.0.1",
     "build": "vite build",
-    "build:demo": "vite build",
+    "build:demo": "VITE_DEMO_MODE=true vite build",
     "preview": "vite preview",
     "export:notion": "node scripts/export-notion-static.mjs",
     "build:aliyun": "STATIC_DATA_ENABLED=true npm run export:notion && STATIC_DATA_ENABLED=true vite build",
