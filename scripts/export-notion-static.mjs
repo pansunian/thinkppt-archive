@@ -20,6 +20,9 @@ const subscribePageId = process.env.NOTION_PAGE_SUBSCRIBE_ID;
 const mediaMode = process.env.NOTION_MEDIA_MODE || 'all';
 const mediaDownloadLimit = Number.parseInt(process.env.NOTION_MEDIA_DOWNLOAD_LIMIT || '0', 10);
 const hasMediaDownloadLimit = Number.isFinite(mediaDownloadLimit) && mediaDownloadLimit > 0;
+const contentExportMode = process.env.NOTION_CONTENT_EXPORT_MODE || 'all';
+const shouldExportContent = !['none', 'false', '0'].includes(contentExportMode.toLowerCase());
+const shouldEnrichFirstImage = process.env.NOTION_ENRICH_FIRST_IMAGE !== 'false';
 
 const notionHeaders = {
   Authorization: `Bearer ${notionApiKey}`,
@@ -169,8 +172,12 @@ async function fetchDatabasePages(databaseId) {
   } while (nextCursor);
 
   const enrichedResults = [];
-  for (const page of results) {
-    enrichedResults.push(await enrichFirstContentImage(page));
+  if (shouldEnrichFirstImage) {
+    for (const page of results) {
+      enrichedResults.push(await enrichFirstContentImage(page));
+    }
+  } else {
+    enrichedResults.push(...results);
   }
 
   return {
@@ -199,6 +206,7 @@ async function enrichFirstContentImage(page) {
 
 async function fetchPage(pageId) {
   const page = await notionFetch(`/pages/${pageId}`, { method: 'GET' });
+  if (!shouldEnrichFirstImage) return page;
   return enrichFirstContentImage(page);
 }
 
@@ -403,29 +411,38 @@ async function main() {
   manifest.pages.about = await exportPage('about', aboutPageId);
   manifest.pages.subscribe = await exportPage('subscribe', subscribePageId);
 
-  const contentIds = new Set();
-  for (const database of ['main', 'ai']) {
-    const meta = manifest.databases[database];
-    if (!meta) continue;
-    const data = JSON.parse(await readFile(path.join(databaseDir, `${database}.json`), 'utf8'));
-    for (const page of data.results || []) {
-      contentIds.add(page.id);
+  if (shouldExportContent) {
+    const contentIds = new Set();
+    for (const database of ['main', 'ai']) {
+      const meta = manifest.databases[database];
+      if (!meta) continue;
+      const data = JSON.parse(await readFile(path.join(databaseDir, `${database}.json`), 'utf8'));
+      for (const page of data.results || []) {
+        contentIds.add(page.id);
+      }
     }
-  }
-  for (const page of Object.values(manifest.pages)) {
-    if (page?.id) contentIds.add(page.id);
-  }
+    for (const page of Object.values(manifest.pages)) {
+      if (page?.id) contentIds.add(page.id);
+    }
 
-  await runWithConcurrency([...contentIds], 2, async (pageId) => {
-    console.log(`Exporting content: ${pageId}`);
-    await exportContent(pageId);
-  });
+    await runWithConcurrency([...contentIds], 2, async (pageId) => {
+      console.log(`Exporting content: ${pageId}`);
+      await exportContent(pageId);
+    });
+  } else {
+    console.log(`Skipping page content export: NOTION_CONTENT_EXPORT_MODE=${contentExportMode}`);
+  }
 
   manifest.media = {
     mode: mediaMode,
     downloadLimit: hasMediaDownloadLimit ? mediaDownloadLimit : null,
     downloadedOrAttempted: mediaDownloadAttempts,
     skippedByLimit: mediaSkippedByLimit,
+    enrichedFirstImage: shouldEnrichFirstImage,
+  };
+  manifest.content = {
+    mode: contentExportMode,
+    exported: shouldExportContent,
   };
 
   await writeJson(path.join(dataDir, 'manifest.json'), manifest);

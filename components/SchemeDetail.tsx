@@ -17,6 +17,8 @@ const shouldUseVercelImageProxy = (src: string) => (
   /^https?:\/\//i.test(src)
 );
 
+const hasStaticContentExport = process.env.STATIC_CONTENT_ENABLED !== 'false';
+
 const getDisplayImageSrc = (src: string, width: number) => {
   if (!src) return '';
   if (shouldUseVercelImageProxy(src)) {
@@ -215,6 +217,11 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
             setLoading(false);
             return;
         }
+        if (staticDataMode && !hasStaticContentExport) {
+            setContent([]);
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
             const contentUrl = staticDataMode
@@ -405,8 +412,8 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12 text-gray-400 font-mono text-xs">
-                            [ 该方案暂无详细内容 ]
+                        <div className="text-center py-12 text-gray-400 font-mono text-xs leading-6">
+                            [ 完整 PDF 页面图待接入 OSS 后展示 ]
                         </div>
                     )}
 
