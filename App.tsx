@@ -137,8 +137,9 @@ const getStaticPageFile = (pageId: string) => `/data/pages/${normalizeStaticId(p
 
 const uniqueValues = (values: string[]) => Array.from(new Set(values.filter(Boolean)));
 
-const CuratedHomeIntro: React.FC<{ schemes: Scheme[] }> = ({ schemes }) => {
+const CuratedHomeIntro: React.FC<{ schemes: Scheme[]; onOpenScheme: (scheme: Scheme) => void }> = ({ schemes, onOpenScheme }) => {
   const platforms = uniqueValues(schemes.map(scheme => scheme.platform).filter(value => value !== '未标注平台'));
+  const [activePlatform, setActivePlatform] = useState<string>('全部');
   const ipGroups = Array.from(
     schemes.reduce((map, scheme) => {
       const key = `${scheme.platform || '未标注平台'}__${scheme.ipName || scheme.title}`;
@@ -148,80 +149,145 @@ const CuratedHomeIntro: React.FC<{ schemes: Scheme[] }> = ({ schemes }) => {
         years: new Set<string>(),
         count: 0,
         type: scheme.projectType || scheme.category,
+        schemes: [] as Scheme[],
       };
       current.years.add(scheme.year);
       current.count += 1;
+      current.schemes.push(scheme);
       map.set(key, current);
       return map;
-    }, new Map<string, { platform: string; ipName: string; years: Set<string>; count: number; type: string }>())
-  ).sort((a, b) => b[1].count - a[1].count).slice(0, 6);
+    }, new Map<string, { platform: string; ipName: string; years: Set<string>; count: number; type: string; schemes: Scheme[] }>())
+  ).sort((a, b) => b[1].count - a[1].count);
+  const visibleIpGroups = ipGroups.filter(([, group]) => activePlatform === '全部' || group.platform === activePlatform).slice(0, 6);
+  const heroGroup = visibleIpGroups[0]?.[1];
+  const heroSchemes = heroGroup?.schemes.slice().sort((a, b) => String(a.year).localeCompare(String(b.year))) || [];
 
   const years = uniqueValues(schemes.map(scheme => scheme.year)).sort();
   const yearLabel = years.length > 1 ? `${years[0]}-${years[years.length - 1]}` : (years[0] || '持续更新');
 
   return (
-    <section className="border-b border-black/10 bg-[#F8F5EE]">
-      <div className="grid lg:grid-cols-[1.25fr_0.75fr]">
-        <div className="px-6 md:px-12 pt-12 pb-10 lg:py-14">
-          <span className="font-mono text-[10px] font-bold text-[#8F2F24] uppercase tracking-[0.28em]">THINKPPT / PLATFORM IP ANNUAL</span>
-          <h1 className="mt-4 max-w-3xl text-3xl md:text-5xl font-heading font-black tracking-tight leading-[1.05] text-[#161616]">
-            平台 IP 营销观察库
-          </h1>
-          <p className="mt-5 max-w-2xl text-sm md:text-base leading-8 text-[#4D4A45]">
-            持续追踪互联网平台 IP 项目的招商方案、宣传物料与商业化演进。以平台为线索，以 IP 为单元，观察它们如何被包装、招商、传播和复用。
-          </p>
-          <div className="mt-8 grid grid-cols-3 border-y border-black/10 text-[#161616]">
-            <div className="py-4 pr-4 border-r border-black/10">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">Platforms</div>
-              <div className="mt-1 text-2xl font-black">{platforms.length || '—'}</div>
+    <section className="border-b border-black/10 bg-[#F4F0E8]">
+      <div className="grid min-h-[620px] lg:grid-cols-[0.88fr_1.12fr]">
+        <div className="relative border-b border-black/10 px-6 py-10 md:px-12 lg:border-b-0 lg:border-r lg:py-14">
+          <div className="absolute left-6 top-8 hidden h-[calc(100%-4rem)] w-px bg-black/10 md:block"></div>
+          <div className="md:pl-8">
+            <div className="flex items-center justify-between gap-4 border-b border-black/10 pb-4">
+              <span className="font-mono text-[10px] font-bold text-[#8F2F24] uppercase tracking-[0.32em]">THINKPPT ANNUAL</span>
+              <span className="font-mono text-[10px] text-black/35">VOL. {yearLabel}</span>
             </div>
-            <div className="py-4 px-4 border-r border-black/10">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">IP Archives</div>
-              <div className="mt-1 text-2xl font-black">{ipGroups.length ? `${ipGroups.length}+` : '—'}</div>
+            <h1 className="mt-10 max-w-xl text-[44px] font-heading font-black leading-[0.98] tracking-normal text-[#111111] md:text-[72px]">
+              平台 IP<br />营销观察库
+            </h1>
+            <p className="mt-7 max-w-xl text-[15px] leading-8 text-[#4D4A45]">
+              一本面向策划人与品牌市场部的数字年鉴。持续追踪互联网平台 IP 项目的招商方案、视觉物料、商业权益与年度演进。
+            </p>
+            <div className="mt-10 grid grid-cols-3 border-y border-black/10">
+              {[
+                ['平台', platforms.length || '—'],
+                ['IP档案', ipGroups.length || '—'],
+                ['年份跨度', yearLabel],
+              ].map(([label, value], index) => (
+                <div key={label} className={`py-5 ${index > 0 ? 'border-l border-black/10 pl-4' : 'pr-4'}`}>
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">{label}</div>
+                  <div className="mt-2 text-2xl font-black text-[#111111]">{value}</div>
+                </div>
+              ))}
             </div>
-            <div className="py-4 pl-4">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">Years</div>
-              <div className="mt-1 text-xl md:text-2xl font-black">{yearLabel}</div>
+            <div className="mt-10 flex flex-wrap gap-2">
+              {['全部', ...platforms.slice(0, 8)].map(platform => (
+                <button
+                  key={platform}
+                  onClick={() => setActivePlatform(platform)}
+                  className={`border px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${activePlatform === platform ? 'border-[#111111] bg-[#111111] text-[#F4F0E8]' : 'border-black/15 text-black/55 hover:border-black/60 hover:text-black'}`}
+                >
+                  {platform}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        <aside className="border-t lg:border-t-0 lg:border-l border-black/10 bg-[#161616] text-[#F8F5EE] px-6 md:px-8 py-8 lg:py-12">
-          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">Curated Index</div>
-          <div className="mt-6 space-y-4">
-            {platforms.slice(0, 7).map((platform, index) => (
-              <div key={platform} className="flex items-center justify-between border-b border-white/10 pb-3">
-                <span className="text-lg font-heading font-black">{platform}</span>
-                <span className="font-mono text-[10px] text-white/40">{String(index + 1).padStart(2, '0')}</span>
+        <div className="bg-[#111111] text-[#F4F0E8]">
+          <div className="grid h-full lg:grid-rows-[auto_1fr]">
+            <div className="border-b border-white/10 px-6 py-5 md:px-10">
+              <div className="flex items-center justify-between gap-4">
+                <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/40">Curated Focus</span>
+                <span className="font-mono text-[10px] text-white/35">{activePlatform}</span>
               </div>
-            ))}
-            {platforms.length === 0 && (
-              <p className="text-sm leading-7 text-white/55">在 Notion 增加“平台”和“IP名称”字段后，这里会自动生成平台索引。</p>
-            )}
+            </div>
+            <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
+              <div className="border-b border-white/10 px-6 py-8 md:px-10 lg:border-b-0 lg:border-r">
+                {heroGroup ? (
+                  <>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#C9694C]">{heroGroup.platform}</div>
+                    <h2 className="mt-5 text-3xl font-heading font-black leading-tight md:text-5xl">{heroGroup.ipName}</h2>
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      {[heroGroup.type, `${heroGroup.count} 份档案`, Array.from(heroGroup.years).sort().join(' / ')].map(item => (
+                        <span key={item} className="border border-white/15 px-3 py-1.5 font-mono text-[10px] text-white/55">{item}</span>
+                      ))}
+                    </div>
+                    <p className="mt-8 text-sm leading-8 text-white/62">
+                      {heroSchemes[0]?.editorNote || '选择一个平台，查看其连续 IP 的年度招商逻辑、权益变化和物料演进。'}
+                    </p>
+                    {heroSchemes[0] && (
+                      <button
+                        onClick={() => onOpenScheme(heroSchemes[0])}
+                        className="mt-8 border border-[#C9694C] px-5 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#F4F0E8] transition-colors hover:bg-[#C9694C] hover:text-[#111111]"
+                      >
+                        打开代表档案
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-sm leading-8 text-white/55">在 Notion 增加“平台”和“IP名称”字段后，这里会自动形成可切换的 IP 聚焦面板。</p>
+                )}
+              </div>
+              <div className="px-6 py-8 md:px-10">
+                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/35">Annual Timeline</div>
+                <div className="mt-8 space-y-0 border-y border-white/10">
+                  {heroSchemes.map((scheme, index) => (
+                    <button
+                      key={scheme.id}
+                      onClick={() => onOpenScheme(scheme)}
+                      className="grid w-full grid-cols-[64px_1fr] gap-4 border-b border-white/10 py-4 text-left last:border-b-0"
+                    >
+                      <span className="font-mono text-xs text-[#C9694C]">{scheme.year}</span>
+                      <span>
+                        <span className="block text-sm font-bold leading-6 text-[#F4F0E8]">{scheme.title}</span>
+                        <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-white/35">{scheme.archiveType || scheme.projectType} / {String(index + 1).padStart(2, '0')}</span>
+                      </span>
+                    </button>
+                  ))}
+                  {heroSchemes.length === 0 && (
+                    <div className="py-5 text-sm text-white/45">暂无可展示时间线。</div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </aside>
+        </div>
       </div>
 
-      <div className="border-t border-black/10 px-6 md:px-12 py-7">
-        <div className="grid gap-4 lg:grid-cols-[0.9fr_2.1fr]">
+      <div className="border-t border-black/10 px-6 py-8 md:px-12">
+        <div className="grid gap-8 lg:grid-cols-[0.82fr_2.18fr]">
           <div>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-black/35">Featured IP Archives</span>
-            <p className="mt-2 text-sm leading-7 text-black/55">先看连续出现、可长期跟踪的平台 IP。</p>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-black/35">Index of Records</span>
+            <p className="mt-3 text-sm leading-7 text-black/55">以平台为索引，以 IP 为单元，让每一份方案进入长期观察序列。</p>
           </div>
-          <div className="divide-y divide-black/10 border-y border-black/10">
-            {ipGroups.slice(0, 4).map(([, group]) => (
-              <div key={`${group.platform}-${group.ipName}`} className="grid grid-cols-[1fr_auto] gap-4 py-3">
+          <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
+            {visibleIpGroups.slice(0, 6).map(([, group]) => (
+              <button key={`${group.platform}-${group.ipName}`} onClick={() => onOpenScheme(group.schemes[0])} className="grid grid-cols-[1fr_auto] gap-4 border-t border-black/10 py-5 text-left transition-colors hover:text-[#8F2F24]">
                 <div>
-                  <div className="text-sm font-black text-[#161616]">{group.ipName}</div>
+                  <div className="text-base font-black text-current">{group.ipName}</div>
                   <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-black/35">{group.platform} / {group.type}</div>
                 </div>
                 <div className="text-right font-mono text-[10px] leading-5 text-black/45">
                   <div>{Array.from(group.years).sort().join(' / ')}</div>
                   <div>{group.count} 份档案</div>
                 </div>
-              </div>
+              </button>
             ))}
-            {ipGroups.length === 0 && (
+            {visibleIpGroups.length === 0 && (
               <div className="py-4 text-sm text-black/45">待补充 IP 字段后自动生成。</div>
             )}
           </div>
@@ -474,51 +540,52 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       </nav>
 
       {/* 顶部导航 (桌面端) */}
-      <header className="hidden lg:block relative w-full z-40 px-8 pt-6 pointer-events-auto">
-        <div className="max-w-7xl mx-auto relative pointer-events-auto">
-            <div className="flex items-end overflow-x-auto w-full no-scrollbar relative" style={{ scrollbarWidth: 'none' }}>
-                <button onClick={() => handleCategoryChange('全部')} className="relative group flex-shrink-0 mr-[-6px] z-50 h-14 translate-y-[4px]">
-                    <div className="w-full h-full rounded-t-xl bg-white shadow-[0_-2px_4px_rgba(0,0,0,0.05)] flex items-center justify-center px-6 min-w-[200px]">
-                        {BRAND_CONFIG.mode === 'image' && !logoError ? (
-                            <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className={`${BRAND_CONFIG.heightClass} w-auto object-contain select-none pointer-events-none`} onError={() => setLogoError(true)} />
-                        ) : (
-                            <span className="font-black text-lg tracking-tighter text-black uppercase">{BRAND_CONFIG.text}</span>
-                        )}
-                    </div>
-                </button>
-                {categories.map((category, idx) => {
+      <header className="hidden lg:block relative z-40 px-8 py-5 pointer-events-auto">
+        <div className="mx-auto flex max-w-7xl items-center justify-between border-b border-black/10 pb-5">
+            <button onClick={() => handleCategoryChange('全部')} className="group flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center border border-black bg-[#111111] text-[#F4F0E8]">
+                    <span className="font-heading text-xl font-black">T</span>
+                </div>
+                <div className="text-left">
+                    <div className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-black/35">ThinkPPT</div>
+                    <div className="text-sm font-black text-[#111111]">Platform IP Marketing Annual</div>
+                </div>
+            </button>
+            <div className="flex items-center gap-1">
+                {categories.slice(0, 7).map((category) => {
                     const isActive = activeCategory === category;
-                    // Updated Palette: Closer shades of beige/kraft
-                    const paletteColors = [PALETTE.KRAFT_INNER, '#E5DCCB', '#DFD5C4', PALETTE.KRAFT_OUTER];
-                    const tabColor = paletteColors[idx % paletteColors.length];
-                    const heightClass = isActive ? 'h-11 translate-y-[4px] z-40' : 'h-11 translate-y-[8px] hover:translate-y-[4px] z-10 hover:z-20'; 
                     return (
-                        <button key={category} onClick={() => handleCategoryChange(category)} className={`relative group flex-shrink-0 mr-[-8px] px-0 transition-all duration-200 ease-out ${heightClass}`}>
-                            <div className={`w-full h-full rounded-t-xl border-t border-x border-black/5 shadow-[inset_0_-4px_4px_rgba(0,0,0,0.02)] flex items-center justify-center px-5 min-w-[100px] pt-1`} style={{ backgroundColor: tabColor }}>
-                                <span className={`font-mono text-xs font-bold uppercase tracking-wider text-black/80 group-hover:text-black transition-colors ${isActive ? 'text-black' : ''}`}>{category}</span>
-                            </div>
+                        <button
+                          key={category}
+                          onClick={() => handleCategoryChange(category)}
+                          className={`px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${isActive ? 'bg-[#111111] text-[#F4F0E8]' : 'text-black/45 hover:bg-black/5 hover:text-black'}`}
+                        >
+                          {category}
                         </button>
                     );
                 })}
-                <div className="flex-grow min-w-[20px]"></div>
-                <div className="flex items-end gap-3 pl-4 -translate-x-[5px]">
-                    {RESOURCE_LINKS.map((link) => {
-                        const isCurrentDB = link.type === 'database' && ((link.id === currentDatabaseId) || (currentDatabaseId === null && link.id === process.env.NOTION_DATABASE_ID));
-                        return (
-                         <button key={link.label} onClick={() => handleResourceClick(link)} className={`relative group h-9 w-[54px] rounded-t-lg border border-black/10 shadow-sm flex items-center justify-center transition-transform translate-y-[8px] hover:translate-y-[4px] z-0 hover:z-40 pt-1 cursor-pointer ${isCurrentDB ? 'bg-white z-50 translate-y-[4px] border-b-white pb-2 shadow-none' : ''}`} style={{ backgroundColor: isCurrentDB ? '#fff' : link.color }}>
-                            <span className={`font-mono text-[8px] font-bold tracking-tight whitespace-nowrap ${isCurrentDB ? 'text-black' : 'text-black/70'}`}>{link.label}</span>
-                         </button>
-                    )})}
-                </div>
+            </div>
+            <div className="flex items-center gap-2">
+                {RESOURCE_LINKS.map((link) => {
+                    const isCurrentDB = link.type === 'database' && ((link.id === currentDatabaseId) || (currentDatabaseId === null && link.id === process.env.NOTION_DATABASE_ID));
+                    return (
+                     <button
+                       key={link.label}
+                       onClick={() => handleResourceClick(link)}
+                       className={`border px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${isCurrentDB ? 'border-[#8F2F24] text-[#8F2F24]' : 'border-black/10 text-black/45 hover:border-black/40 hover:text-black'}`}
+                     >
+                        {link.label}
+                     </button>
+                )})}
             </div>
         </div>
       </header>
 
       {/* 主内容区 - 移动端背景色改为 #FDFBF7 */}
       <main className="flex-grow pl-12 lg:px-8 lg:pb-12 z-20 pt-0">
-        <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg lg:rounded-tr-lg rounded-none shadow-none lg:shadow-[0_4px_20px_rgba(0,0,0,0.08)] relative border-t-0 lg:border-t border-black/5">
+        <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] rounded-none shadow-none relative border border-black/10">
             {currentDatabaseId === null && activeCategory === '全部' ? (
-              <CuratedHomeIntro schemes={displayedSchemes} />
+              <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
             ) : (
               <div className="px-6 md:px-12 pt-12 pb-8 border-b border-black/10 bg-[#F8F5EE]">
                   <div>

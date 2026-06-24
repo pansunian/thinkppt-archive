@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Scheme } from '../types';
-import { PALETTE } from '../constants';
 
 interface ArchiveCardProps {
   scheme: Scheme;
@@ -14,10 +13,6 @@ const getCardImageSrc = (src: string) => {
 };
 
 export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => {
-  // 颜色区分：外层口袋使用 PALETTE.KRAFT_OUTER，内层背板使用 KRAFT_INNER
-  const outerColor = PALETTE.KRAFT_OUTER;
-  const innerColor = PALETTE.KRAFT_INNER;
-
   // 格式化页数显示，确保带有“页”字
   const displayPageCount = scheme.pageCount && scheme.pageCount !== 'N/A' && scheme.pageCount !== ''
     ? (scheme.pageCount.includes('页') ? scheme.pageCount : `${scheme.pageCount} 页`)
@@ -39,134 +34,49 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   return (
     <div 
       onClick={onClick}
-      className="group relative w-[94%] max-w-[380px] md:w-full md:max-w-[320px] mx-auto h-[380px] md:h-[440px] mt-[62px] md:mt-20 perspective-1000 cursor-pointer select-none overflow-visible"
-      style={{ transformStyle: 'preserve-3d' }}
+      className="group relative mx-auto w-full max-w-[360px] cursor-pointer select-none border border-black/10 bg-[#F8F5EE] transition-colors hover:border-black/35"
     >
-      
-      {/* 1. Back Folder (The Inner Plate) - 基础层 Z=0px */}
-      <div 
-        className="absolute inset-0 rounded-lg shadow-lg z-0 [transform:translate3d(0,0,0)]"
-        style={{ backgroundColor: innerColor }}
-      >
-        <div className="absolute inset-0 rounded-lg overflow-hidden pointer-events-none">
-            {/* Paper Grain Overlays */}
-            <div className="texture-paper absolute inset-0"></div>
-            <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.05)]"></div>
-        </div>
-
-        {/* Tab Ear */}
-        <div className="absolute -top-[30px] left-0 w-[110px] h-[34px] z-[-1]">
-             <svg viewBox="0 0 110 34" preserveAspectRatio="none" className="w-full h-full drop-shadow-sm" style={{ color: innerColor }}>
-                <path 
-                   d="M0,34 L0,10 C0,4.5 4.5,0 10,0 L90,0 C98,0 102,6 105,14 L110,34 Z" 
-                   fill="currentColor"
-                />
-             </svg>
-             <div className="absolute inset-0 flex items-center justify-center pt-2 pr-6">
-                 <span className="font-mono text-[9px] font-black opacity-20 uppercase tracking-[0.2em] text-black">
-                    VOL.{scheme.year}
-                 </span>
-             </div>
-        </div>
-      </div>
-
-      {/* 2. Slide-out Content (The "White" Paper) - 中间层 Z=10px */}
-      {/* 
-          关键修复：
-          使用 Tailwind 的 arbitrary value 语法来组合 translateZ 和 hover 动画。
-          默认: translate3d(0,0,10px) 确保在背板之前。
-          Hover: translate3d(0,-7.5rem,10px) rotate(1deg) 保持 Z 轴位置不变，仅改变 Y 轴和旋转。
-          避免使用内联 style 覆盖 transform。
-      */}
-      <div 
-        className="absolute inset-x-3 top-4 bottom-2 bg-white rounded shadow-md transition-all duration-700 ease-[cubic-bezier(0.2,1,0.2,1)] z-10 flex flex-col overflow-hidden [transform:translate3d(0,0,10px)] group-hover:[transform:translate3d(0,-7.5rem,10px)_rotate(1deg)]"
-      >
-         <div className="w-full aspect-video bg-gray-50 overflow-hidden shrink-0 border-b border-gray-100 relative">
+      <div className="flex min-h-[520px] flex-col">
+         <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-black/10 bg-[#111111]">
             {/* Featured Badge */}
             {scheme.isFeatured && (
                 <div className="absolute top-0 right-0 z-20">
-                     <div className="bg-[#D32F2F] text-white text-[10px] font-bold px-3 py-1.5 shadow-sm rounded-bl-lg tracking-widest uppercase flex items-center gap-1">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" className="text-white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                     <div className="bg-[#8F2F24] text-white text-[10px] font-bold px-3 py-1.5 tracking-widest uppercase flex items-center gap-1">
                          精选
                      </div>
                 </div>
             )}
-      <img
-  src={getCardImageSrc(scheme.imageUrl)}
-  alt={scheme.title}
-  loading="lazy"
-  decoding="async"
-  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-/>
+            <img
+              src={getCardImageSrc(scheme.imageUrl)}
+              alt={scheme.title}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover opacity-88 grayscale-[20%] transition-all duration-700 group-hover:scale-[1.04] group-hover:grayscale-0"
+            />
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/70 to-transparent p-4">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-white/75">{brandDisplay}</span>
+              <span className="font-mono text-[10px] text-white/55">VOL.{scheme.year}</span>
+            </div>
          </div>
-         <div className="p-4 md:p-5 pb-20 md:pb-36 flex-1 relative flex flex-col">
-            <div className="texture-paper absolute inset-0 pointer-events-none opacity-30"></div>
-            {/* UPDATED: Adjusted font sizes for mobile tightness */}
-            <h3 className="font-heading font-bold text-lg md:text-xl leading-tight text-gray-900 mb-2 relative z-10 line-clamp-2" title={scheme.title}>
+         <div className="flex flex-1 flex-col p-5">
+            <div className="mb-4 flex items-center justify-between border-b border-black/10 pb-3">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8F2F24]">{ipLabel}</span>
+              <span className="font-mono text-[10px] text-black/35">REF.{scheme.displayId}</span>
+            </div>
+            <h3 className="font-heading text-2xl font-black leading-tight text-[#111111] line-clamp-2" title={scheme.title}>
               {scheme.title}
             </h3>
-            <div className="mb-2 flex items-center gap-2 relative z-10 font-mono text-[9px] uppercase tracking-widest text-[#8F2F24]">
-              <span className="truncate">{scheme.platform}</span>
-              <span className="text-black/20">/</span>
-              <span className="truncate">{ipLabel}</span>
+            <p className="mt-4 text-sm leading-7 text-black/58 line-clamp-4">{scheme.editorNote || scheme.description}</p>
+            <div className="mt-5 grid grid-cols-2 border-y border-black/10 font-mono text-[10px] text-black/45">
+              <div className="border-r border-black/10 py-3 pr-3">档案类型<br /><span className="font-bold text-black/75">{scheme.archiveType || scheme.category}</span></div>
+              <div className="py-3 pl-3">规模<br /><span className="font-bold text-black/75">{displayPageCount} / {displayFileSize}</span></div>
             </div>
-            <p className="text-[10px] md:text-[11px] text-gray-500 line-clamp-2 md:line-clamp-3 leading-relaxed relative z-10">{scheme.description}</p>
-            <div className="mt-auto flex justify-between items-center relative z-10 pt-2 border-t border-gray-50">
-                <span className="text-[9px] font-mono text-gray-400 uppercase tracking-tighter truncate max-w-[150px]">{displayTags}</span>
-                <span className="text-[10px] font-bold text-black group-hover:underline">查阅档案 →</span>
+            <div className="mt-auto flex items-center justify-between pt-5">
+                <span className="max-w-[170px] truncate font-mono text-[10px] uppercase tracking-widest text-black/35">{displayTags}</span>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#8F2F24]">进入档案</span>
             </div>
          </div>
       </div>
-
-      {/* 3. Front Pocket (口袋部分) - 最上层 Z=20px */}
-      <div 
-        className="absolute bottom-0 left-0 right-0 h-[130px] md:h-[165px] rounded-b-lg rounded-t-[24px] z-20 pointer-events-none border-t border-black/5 shadow-[0_-15px_40px_rgba(0,0,0,0.12)] overflow-hidden [transform:translate3d(0,0,20px)]"
-        style={{ backgroundColor: outerColor }}
-      >
-         {/* Texture Layers */}
-         <div className="texture-polyester absolute inset-0 pointer-events-none"></div>
-         
-         {/* Brand Watermark - 字号 5xl/6xl */}
-         <div className="absolute inset-x-0 bottom-0 flex justify-center z-0 pointer-events-none overflow-hidden pb-0">
-            <span className="font-serif text-5xl md:text-6xl font-medium tracking-[0.2em] select-none text-white opacity-[0.25] whitespace-nowrap leading-none transform translate-y-[15%] pl-[0.2em]">
-                {brandDisplay}
-            </span>
-         </div>
-
-         {/* Pocket Form Layout */}
-         <div className="relative z-10 p-4 md:p-5 flex flex-col h-full">
-            
-            {/* Pocket Header */}
-            <div className="flex justify-between items-start mb-2 md:mb-3 border-b border-black/10 pb-1">
-                <div className="flex flex-col">
-                    <span className="font-mono text-[7px] uppercase font-bold text-black/30">Category</span>
-                    <span className="font-bold text-[10px] md:text-[11px] font-mono uppercase text-black/60 tracking-tight">{scheme.archiveType || scheme.category}</span>
-                </div>
-                <div className="flex flex-col items-end">
-                    <span className="font-mono text-[7px] uppercase font-bold text-black/30">Archive Code</span>
-                    <span className="font-bold text-[9px] md:text-[10px] font-mono text-black/60">REF.{scheme.displayId}</span>
-                </div>
-            </div>
-
-            {/* The Table Grid */}
-            <div className="w-full border border-black/10 flex flex-col font-mono text-[7px] text-black/50 mb-2 bg-black/5 backdrop-blur-[1px]">
-                <div className="flex border-b border-black/10">
-                    <div className="w-1/2 border-r border-black/10 p-1.5">平台: <span className="text-black/70 font-bold">{scheme.platform}</span></div>
-                    <div className="w-1/2 p-1.5">年份: <span className="text-black/70 font-bold">{scheme.year}</span></div>
-                </div>
-                <div className="flex">
-                    <div className="w-1/2 border-r border-black/10 p-1.5">页数: <span className="text-black/70 font-bold">{displayPageCount}</span></div>
-                    <div className="w-1/2 p-1.5">大小: <span className="text-black/70 font-bold">{displayFileSize}</span></div>
-                </div>
-            </div>
-
-            {/* Empty space for the watermark to breathe */}
-            <div className="mt-auto h-6 md:h-12"></div>
-         </div>
-         
-         <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/20"></div>
-      </div>
-
     </div>
   );
 };
