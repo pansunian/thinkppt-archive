@@ -46,6 +46,7 @@ const BRAND_CONFIG = {
 
 const STATIC_DATA_ENABLED = process.env.STATIC_DATA_ENABLED === 'true';
 const DEMO_MODE = process.env.VITE_DEMO_MODE === 'true';
+const DATA_CACHE_VERSION = 'ip-archive-v2';
 
 const MEMBERSHIP_PLANS = [
   {
@@ -574,7 +575,15 @@ if (DEMO_MODE) {
   localStorage.removeItem('thinkppt_schemes_cache');
   localStorage.removeItem('thinkppt_categories_cache');
   localStorage.removeItem('thinkppt_schemes_cache_time');
+  localStorage.removeItem('thinkppt_schemes_cache_version');
   return;
+}
+const cachedVersion = localStorage.getItem('thinkppt_schemes_cache_version');
+if (cachedVersion !== DATA_CACHE_VERSION) {
+  localStorage.removeItem('thinkppt_schemes_cache');
+  localStorage.removeItem('thinkppt_categories_cache');
+  localStorage.removeItem('thinkppt_schemes_cache_time');
+  localStorage.setItem('thinkppt_schemes_cache_version', DATA_CACHE_VERSION);
 }
 const cachedData = localStorage.getItem('thinkppt_schemes_cache');
 const cachedCats = localStorage.getItem('thinkppt_categories_cache');
@@ -652,6 +661,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
             localStorage.setItem('thinkppt_schemes_cache', JSON.stringify(mappedData));
             localStorage.setItem('thinkppt_categories_cache', JSON.stringify(data.categories || DEFAULT_CATEGORIES));
             localStorage.setItem('thinkppt_schemes_cache_time', Date.now().toString());
+            localStorage.setItem('thinkppt_schemes_cache_version', DATA_CACHE_VERSION);
           }
         }
         setNextCursor(null);
@@ -691,6 +701,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
              if (!targetDbId && currentCategory === '全部') {
                localStorage.setItem('thinkppt_schemes_cache', JSON.stringify(mappedData));
                localStorage.setItem('thinkppt_schemes_cache_time', Date.now().toString());
+               localStorage.setItem('thinkppt_schemes_cache_version', DATA_CACHE_VERSION);
              }
            }
            setNextCursor(data.next_cursor);
