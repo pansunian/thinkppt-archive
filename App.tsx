@@ -317,6 +317,12 @@ export default function App() {
 
   // 初始化时检查本地缓存实现秒开
   useEffect(() => {
+if (DEMO_MODE) {
+  localStorage.removeItem('thinkppt_schemes_cache');
+  localStorage.removeItem('thinkppt_categories_cache');
+  localStorage.removeItem('thinkppt_schemes_cache_time');
+  return;
+}
 const cachedData = localStorage.getItem('thinkppt_schemes_cache');
 const cachedCats = localStorage.getItem('thinkppt_categories_cache');
 const cachedTime = localStorage.getItem('thinkppt_schemes_cache_time');
