@@ -12,6 +12,7 @@ interface SchemeDetailProps {
 const normalizeStaticId = (id: string) => id.replace(/-/g, '');
 
 const shouldUseVercelImageProxy = (src: string) => (
+  process.env.VITE_DEMO_MODE !== 'true' &&
   process.env.STATIC_DATA_ENABLED !== 'true' &&
   /^https?:\/\//i.test(src)
 );
@@ -209,6 +210,11 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
 
     // Fetch Notion Content
     const fetchContent = async () => {
+        if (process.env.VITE_DEMO_MODE === 'true') {
+            setContent([]);
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
             const contentUrl = staticDataMode

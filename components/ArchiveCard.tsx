@@ -8,7 +8,7 @@ interface ArchiveCardProps {
 
 const getCardImageSrc = (src: string) => {
   if (!src) return '';
-  if (process.env.STATIC_DATA_ENABLED === 'true' || src.startsWith('/')) return src;
+  if (process.env.VITE_DEMO_MODE === 'true' || process.env.STATIC_DATA_ENABLED === 'true' || src.startsWith('/')) return src;
   return `/_vercel/image?url=${encodeURIComponent(src)}&w=640&q=75`;
 };
 

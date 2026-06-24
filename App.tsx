@@ -571,6 +571,11 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
                     <div className="text-sm font-black text-[#111111]">Platform IP Marketing Annual</div>
                 </div>
             </button>
+            {DEMO_MODE && (
+              <div className="border border-[#8F2F24]/30 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#8F2F24]">
+                Annual Demo V2
+              </div>
+            )}
             <div className="flex items-center gap-1">
                 {categories.slice(0, 7).map((category) => {
                     const isActive = activeCategory === category;
