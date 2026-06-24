@@ -28,8 +28,8 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     const getText = (keys: string[]) => {
       const prop = getProp(keys);
       if (!prop) return '';
-      if (prop.type === 'title') return prop.title?.[0]?.plain_text || '';
-      if (prop.type === 'rich_text') return prop.rich_text?.[0]?.plain_text || '';
+      if (prop.type === 'title') return prop.title?.map((item: any) => item.plain_text).join('') || '';
+      if (prop.type === 'rich_text') return prop.rich_text?.map((item: any) => item.plain_text).join('') || '';
       return '';
     };
 
@@ -51,6 +51,22 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     const getMultiSelect = (keys: string[]) => {
         const prop = getProp(keys);
         return prop?.multi_select?.map((item: any) => item.name) || [];
+    }
+
+    const getList = (keys: string[]) => {
+        const prop = getProp(keys);
+        if (!prop) return [];
+        if (prop.type === 'multi_select') return prop.multi_select?.map((item: any) => item.name).filter(Boolean) || [];
+        if (prop.type === 'select') return prop.select?.name ? [prop.select.name] : [];
+        if (prop.type === 'rich_text') {
+            const text = prop.rich_text?.map((item: any) => item.plain_text).join('') || '';
+            return text.split(/[、,，;；\n]/).map((item: string) => item.trim()).filter(Boolean);
+        }
+        if (prop.type === 'title') {
+            const text = prop.title?.map((item: any) => item.plain_text).join('') || '';
+            return text.split(/[、,，;；\n]/).map((item: string) => item.trim()).filter(Boolean);
+        }
+        return [];
     }
     
     const getUrl = (keys: string[]) => {
@@ -128,10 +144,17 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
     if (!yearStr && dateStr) yearStr = dateStr.split('-')[0];
     if (!yearStr) yearStr = '2025';
 
+    const category = getFlexibleString(['Category', 'Class', 'Type', '分类', '类别']) || '未分类';
+    const platform = getFlexibleString(['Platform', '平台', '所属平台', '渠道平台']) || '';
+    const ipName = getFlexibleString(['IP', 'IP Name', 'IP名称', 'IP项目', '项目IP', '栏目IP']) || '';
+    const projectType = getFlexibleString(['Project Type', '项目类型', '项目类别', '方案类型']) || category;
+    const archiveType = getFlexibleString(['Archive Type', '档案类型', '资料类型', '文件类型', '物料类型']) || projectType;
+    const editorNote = getText(['Editor Note', "Editor's Note", '站长观察', '编辑观察', '观察', 'AI摘要', 'AI 摘要', '摘要']);
+
     return {
       id: page.id,
       title: getText(['Title', 'Name', 'Page', '标题', '方案名称', '网站标题', 'title']) || '无标题',
-      category: getFlexibleString(['Category', 'Class', 'Type', '分类', '类别']) || '未分类',
+      category,
       brand: getFlexibleString(['Brand', 'Client', '品牌', '客户']) || 'ThinkPPT',    
       industry: getFlexibleString(['Industry', 'Sector', '行业']) || '通用',   
       year: yearStr,           
@@ -146,6 +169,17 @@ export const mapNotionResultToSchemes = (notionData: any): Scheme[] => {
       pageCount: getFlexibleString(['Pages', '页数', '方案页数', 'PageCount', '文件页数', '页码']) || '',
       // Map '编辑推荐' checkbox
       isFeatured: getCheckbox(['编辑推荐', 'Featured', 'Editor Pick', '推荐', '精选']),
+      platform: platform || getFlexibleString(['Brand', 'Client', '品牌', '客户']) || '未标注平台',
+      ipName: ipName || getFlexibleString(['Series', 'Collection', '专题', '系列']) || getText(['Title', 'Name', 'Page', '标题', '方案名称', '网站标题', 'title']) || '未命名 IP',
+      projectType,
+      archiveType,
+      ipStage: getFlexibleString(['IP Stage', '持续年限', '第几年', 'IP阶段', '运营年限']) || '',
+      slogan: getText(['Slogan', 'Theme Slogan', '主题Slogan', '主题 Slogan', '活动主题', '年度主题', '主题']) || '',
+      editorNote: editorNote || getText(['Description', 'Summary', 'Intro', '描述', '简介']),
+      keyChange: getText(['Key Change', '关键变化', '年度变化', '变化观察', '变化']) || '',
+      partners: getList(['Partners', 'Co Brands', '合作品牌', '参与品牌', '品牌伙伴']),
+      rights: getList(['Rights', 'Benefits', '权益', '招商权益', '核心权益', '资源权益']),
+      resultSummary: getText(['Results', 'Effect', '执行效果', '传播效果', '效果摘要', '战报']) || '',
     };
   });
 };

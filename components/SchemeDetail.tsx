@@ -294,11 +294,37 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                     {scheme.title}
                     </h1>
 
+                    {!isPage && (
+                        <div className="mb-5 border-y border-black/10 bg-[#F8F5EE]">
+                            <div className="grid md:grid-cols-[0.95fr_1.05fr]">
+                                <div className="p-5 border-b md:border-b-0 md:border-r border-black/10">
+                                    <span className="block font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-[#8F2F24]">IP Archive</span>
+                                    <h2 className="mt-2 text-xl font-heading font-black text-gray-950 leading-tight">{scheme.ipName}</h2>
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        {[scheme.platform, scheme.projectType, scheme.archiveType, scheme.ipStage].filter(Boolean).map(item => (
+                                            <span key={item} className="border border-black/10 bg-white/70 px-2.5 py-1 font-mono text-[10px] font-bold text-black/55">{item}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="p-5">
+                                    <span className="block font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-black/35">Editor's Note</span>
+                                    <p className="mt-2 text-sm leading-7 text-black/65">
+                                        {scheme.editorNote || '待补充站长观察：这部分适合记录该 IP 的招商逻辑、年度变化和可借鉴之处。'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Meta Data Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-5 rounded-xl border border-gray-200">
                         <div>
-                            <span className="block text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">Brand / Client</span>
-                            <span className="font-bold text-sm block truncate">{scheme.brand}</span>
+                            <span className="block text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">Platform</span>
+                            <span className="font-bold text-sm block truncate">{scheme.platform}</span>
+                        </div>
+                        <div>
+                            <span className="block text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">Project Type</span>
+                            <span className="font-bold text-sm block truncate">{scheme.projectType}</span>
                         </div>
                         <div>
                             <span className="block text-[10px] font-mono text-gray-400 uppercase tracking-wider mb-1">Industry</span>
@@ -311,6 +337,35 @@ export const SchemeDetail: React.FC<SchemeDetailProps> = ({ scheme, onClose, isR
                             </div>
                         </div>
                     </div>
+
+                    {!isPage && (scheme.slogan || scheme.keyChange || scheme.rights.length > 0 || scheme.partners.length > 0 || scheme.resultSummary) && (
+                        <div className="mt-5 grid gap-3 md:grid-cols-2">
+                            {scheme.slogan && (
+                                <div className="rounded-xl border border-black/10 bg-white/70 p-4">
+                                    <span className="block font-mono text-[10px] font-bold uppercase tracking-widest text-black/35">Theme / Slogan</span>
+                                    <p className="mt-2 text-sm font-bold leading-6 text-black/75">{scheme.slogan}</p>
+                                </div>
+                            )}
+                            {scheme.keyChange && (
+                                <div className="rounded-xl border border-black/10 bg-white/70 p-4">
+                                    <span className="block font-mono text-[10px] font-bold uppercase tracking-widest text-black/35">Key Change</span>
+                                    <p className="mt-2 text-sm leading-6 text-black/65">{scheme.keyChange}</p>
+                                </div>
+                            )}
+                            {scheme.rights.length > 0 && (
+                                <div className="rounded-xl border border-black/10 bg-white/70 p-4">
+                                    <span className="block font-mono text-[10px] font-bold uppercase tracking-widest text-black/35">Commercial Rights</span>
+                                    <p className="mt-2 text-sm leading-6 text-black/65">{scheme.rights.slice(0, 6).join(' / ')}</p>
+                                </div>
+                            )}
+                            {(scheme.partners.length > 0 || scheme.resultSummary) && (
+                                <div className="rounded-xl border border-black/10 bg-white/70 p-4">
+                                    <span className="block font-mono text-[10px] font-bold uppercase tracking-widest text-black/35">Execution Notes</span>
+                                    <p className="mt-2 text-sm leading-6 text-black/65">{scheme.resultSummary || scheme.partners.slice(0, 8).join(' / ')}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     <div className="flex flex-wrap gap-2 mt-4">
                     {scheme.tags.map(tag => (

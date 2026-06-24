@@ -135,6 +135,102 @@ const getStaticDatabaseFile = (databaseId: string | null) => {
 
 const getStaticPageFile = (pageId: string) => `/data/pages/${normalizeStaticId(pageId)}.json`;
 
+const uniqueValues = (values: string[]) => Array.from(new Set(values.filter(Boolean)));
+
+const CuratedHomeIntro: React.FC<{ schemes: Scheme[] }> = ({ schemes }) => {
+  const platforms = uniqueValues(schemes.map(scheme => scheme.platform).filter(value => value !== '未标注平台'));
+  const ipGroups = Array.from(
+    schemes.reduce((map, scheme) => {
+      const key = `${scheme.platform || '未标注平台'}__${scheme.ipName || scheme.title}`;
+      const current = map.get(key) || {
+        platform: scheme.platform || '未标注平台',
+        ipName: scheme.ipName || scheme.title,
+        years: new Set<string>(),
+        count: 0,
+        type: scheme.projectType || scheme.category,
+      };
+      current.years.add(scheme.year);
+      current.count += 1;
+      map.set(key, current);
+      return map;
+    }, new Map<string, { platform: string; ipName: string; years: Set<string>; count: number; type: string }>())
+  ).sort((a, b) => b[1].count - a[1].count).slice(0, 6);
+
+  const years = uniqueValues(schemes.map(scheme => scheme.year)).sort();
+  const yearLabel = years.length > 1 ? `${years[0]}-${years[years.length - 1]}` : (years[0] || '持续更新');
+
+  return (
+    <section className="border-b border-black/10 bg-[#F8F5EE]">
+      <div className="grid lg:grid-cols-[1.25fr_0.75fr]">
+        <div className="px-6 md:px-12 pt-12 pb-10 lg:py-14">
+          <span className="font-mono text-[10px] font-bold text-[#8F2F24] uppercase tracking-[0.28em]">THINKPPT / PLATFORM IP ANNUAL</span>
+          <h1 className="mt-4 max-w-3xl text-3xl md:text-5xl font-heading font-black tracking-tight leading-[1.05] text-[#161616]">
+            平台 IP 营销观察库
+          </h1>
+          <p className="mt-5 max-w-2xl text-sm md:text-base leading-8 text-[#4D4A45]">
+            持续追踪互联网平台 IP 项目的招商方案、宣传物料与商业化演进。以平台为线索，以 IP 为单元，观察它们如何被包装、招商、传播和复用。
+          </p>
+          <div className="mt-8 grid grid-cols-3 border-y border-black/10 text-[#161616]">
+            <div className="py-4 pr-4 border-r border-black/10">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">Platforms</div>
+              <div className="mt-1 text-2xl font-black">{platforms.length || '—'}</div>
+            </div>
+            <div className="py-4 px-4 border-r border-black/10">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">IP Archives</div>
+              <div className="mt-1 text-2xl font-black">{ipGroups.length ? `${ipGroups.length}+` : '—'}</div>
+            </div>
+            <div className="py-4 pl-4">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-black/40">Years</div>
+              <div className="mt-1 text-xl md:text-2xl font-black">{yearLabel}</div>
+            </div>
+          </div>
+        </div>
+
+        <aside className="border-t lg:border-t-0 lg:border-l border-black/10 bg-[#161616] text-[#F8F5EE] px-6 md:px-8 py-8 lg:py-12">
+          <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/40">Curated Index</div>
+          <div className="mt-6 space-y-4">
+            {platforms.slice(0, 7).map((platform, index) => (
+              <div key={platform} className="flex items-center justify-between border-b border-white/10 pb-3">
+                <span className="text-lg font-heading font-black">{platform}</span>
+                <span className="font-mono text-[10px] text-white/40">{String(index + 1).padStart(2, '0')}</span>
+              </div>
+            ))}
+            {platforms.length === 0 && (
+              <p className="text-sm leading-7 text-white/55">在 Notion 增加“平台”和“IP名称”字段后，这里会自动生成平台索引。</p>
+            )}
+          </div>
+        </aside>
+      </div>
+
+      <div className="border-t border-black/10 px-6 md:px-12 py-7">
+        <div className="grid gap-4 lg:grid-cols-[0.9fr_2.1fr]">
+          <div>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-black/35">Featured IP Archives</span>
+            <p className="mt-2 text-sm leading-7 text-black/55">先看连续出现、可长期跟踪的平台 IP。</p>
+          </div>
+          <div className="divide-y divide-black/10 border-y border-black/10">
+            {ipGroups.slice(0, 4).map(([, group]) => (
+              <div key={`${group.platform}-${group.ipName}`} className="grid grid-cols-[1fr_auto] gap-4 py-3">
+                <div>
+                  <div className="text-sm font-black text-[#161616]">{group.ipName}</div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-black/35">{group.platform} / {group.type}</div>
+                </div>
+                <div className="text-right font-mono text-[10px] leading-5 text-black/45">
+                  <div>{Array.from(group.years).sort().join(' / ')}</div>
+                  <div>{group.count} 份档案</div>
+                </div>
+              </div>
+            ))}
+            {ipGroups.length === 0 && (
+              <div className="py-4 text-sm text-black/45">待补充 IP 字段后自动生成。</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 export default function App() {
   const [logoError, setLogoError] = useState(false);
   
@@ -421,17 +517,17 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       {/* 主内容区 - 移动端背景色改为 #FDFBF7 */}
       <main className="flex-grow pl-12 lg:px-8 lg:pb-12 z-20 pt-0">
         <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg lg:rounded-tr-lg rounded-none shadow-none lg:shadow-[0_4px_20px_rgba(0,0,0,0.08)] relative border-t-0 lg:border-t border-black/5">
-            <div className="px-6 md:px-12 pt-12 pb-8 border-b-2 border-dashed border-gray-200">
-                <div>
-                    <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
-                    <h1 className="text-2xl md:text-4xl font-heading font-black uppercase tracking-tight text-gray-900 mb-2">
-                        {activeCategory === '全部' ? (currentDatabaseId === null ? '策划人的方案档案库' : `${currentDatabaseLabel} 库`) : activeCategory}
-                    </h1>
-                </div>
-            </div>
-
-            {currentDatabaseId === null && activeCategory === '全部' && (
-              <MembershipPanel onSubscribe={handleSubscribeClick} />
+            {currentDatabaseId === null && activeCategory === '全部' ? (
+              <CuratedHomeIntro schemes={displayedSchemes} />
+            ) : (
+              <div className="px-6 md:px-12 pt-12 pb-8 border-b border-black/10 bg-[#F8F5EE]">
+                  <div>
+                      <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
+                      <h1 className="text-2xl md:text-4xl font-heading font-black uppercase tracking-tight text-gray-900 mb-2">
+                          {activeCategory === '全部' ? `${currentDatabaseLabel} 库` : activeCategory}
+                      </h1>
+                  </div>
+              </div>
             )}
 
             <div className="px-6 md:px-12 py-12">

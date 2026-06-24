@@ -31,10 +31,10 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
   // 格式化标签显示，取前两个标签以防过长
   const displayTags = scheme.tags && scheme.tags.length > 0 
     ? scheme.tags.slice(0, 2).join(' ') 
-    : (scheme.industry || 'General');
+    : (scheme.archiveType || scheme.industry || 'General');
 
-  // 动态调用 Brand 属性，如果没有则显示默认值
-  const brandDisplay = scheme.brand || "深刻策划";
+  const brandDisplay = scheme.platform || scheme.brand || "ThinkPPT";
+  const ipLabel = scheme.ipName && scheme.ipName !== scheme.title ? scheme.ipName : scheme.projectType;
 
   return (
     <div 
@@ -105,6 +105,11 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
             <h3 className="font-heading font-bold text-lg md:text-xl leading-tight text-gray-900 mb-2 relative z-10 line-clamp-2" title={scheme.title}>
               {scheme.title}
             </h3>
+            <div className="mb-2 flex items-center gap-2 relative z-10 font-mono text-[9px] uppercase tracking-widest text-[#8F2F24]">
+              <span className="truncate">{scheme.platform}</span>
+              <span className="text-black/20">/</span>
+              <span className="truncate">{ipLabel}</span>
+            </div>
             <p className="text-[10px] md:text-[11px] text-gray-500 line-clamp-2 md:line-clamp-3 leading-relaxed relative z-10">{scheme.description}</p>
             <div className="mt-auto flex justify-between items-center relative z-10 pt-2 border-t border-gray-50">
                 <span className="text-[9px] font-mono text-gray-400 uppercase tracking-tighter truncate max-w-[150px]">{displayTags}</span>
@@ -135,7 +140,7 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
             <div className="flex justify-between items-start mb-2 md:mb-3 border-b border-black/10 pb-1">
                 <div className="flex flex-col">
                     <span className="font-mono text-[7px] uppercase font-bold text-black/30">Category</span>
-                    <span className="font-bold text-[10px] md:text-[11px] font-mono uppercase text-black/60 tracking-tight">{scheme.category}</span>
+                    <span className="font-bold text-[10px] md:text-[11px] font-mono uppercase text-black/60 tracking-tight">{scheme.archiveType || scheme.category}</span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span className="font-mono text-[7px] uppercase font-bold text-black/30">Archive Code</span>
@@ -146,12 +151,12 @@ export const ArchiveCard: React.FC<ArchiveCardProps> = ({ scheme, onClick }) => 
             {/* The Table Grid */}
             <div className="w-full border border-black/10 flex flex-col font-mono text-[7px] text-black/50 mb-2 bg-black/5 backdrop-blur-[1px]">
                 <div className="flex border-b border-black/10">
-                    <div className="w-1/2 border-r border-black/10 p-1.5">方案页数: <span className="text-black/70 font-bold">{displayPageCount}</span></div>
-                    <div className="w-1/2 p-1.5">文件大小: <span className="text-black/70 font-bold">{displayFileSize}</span></div>
+                    <div className="w-1/2 border-r border-black/10 p-1.5">平台: <span className="text-black/70 font-bold">{scheme.platform}</span></div>
+                    <div className="w-1/2 p-1.5">年份: <span className="text-black/70 font-bold">{scheme.year}</span></div>
                 </div>
                 <div className="flex">
-                    <div className="w-1/2 border-r border-black/10 p-1.5">存封日期: {scheme.date}</div>
-                    <div className="w-1/2 p-1.5">所属行业: <span className="text-black/70 font-bold">{scheme.industry || 'General'}</span></div>
+                    <div className="w-1/2 border-r border-black/10 p-1.5">页数: <span className="text-black/70 font-bold">{displayPageCount}</span></div>
+                    <div className="w-1/2 p-1.5">大小: <span className="text-black/70 font-bold">{displayFileSize}</span></div>
                 </div>
             </div>
 
