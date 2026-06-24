@@ -142,49 +142,52 @@ const IpArchiveProductDemo: React.FC = () => {
   const platforms = ['全部', ...uniqueValues(CURATED_IP_ARCHIVES.map(archive => archive.platform))];
   const [activePlatform, setActivePlatform] = useState('全部');
   const [expandedId, setExpandedId] = useState(CURATED_IP_ARCHIVES[0]?.id || '');
+  const [activeYear, setActiveYear] = useState(CURATED_IP_ARCHIVES[0]?.versions[0]?.year || '');
   const archives = CURATED_IP_ARCHIVES.filter(archive => activePlatform === '全部' || archive.platform === activePlatform);
   const expandedArchive = archives.find(archive => archive.id === expandedId) || archives[0];
+  const selectedVersion = expandedArchive?.versions.find(version => version.year === activeYear) || expandedArchive?.versions[0];
 
   const openArchive = (archive: IpArchive) => {
     setExpandedId(archive.id);
+    setActiveYear(archive.versions[0]?.year || '');
   };
 
   return (
     <section className="bg-[#F4F0E8]">
-      <div className="border-b border-black/10 px-6 py-12 md:px-12 lg:py-16">
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="border-b border-black/10 px-6 py-12 md:px-12 lg:py-14">
+        <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <div className="font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-[#8F2F24]">THINKPPT / IP ARCHIVE MODEL</div>
-            <h1 className="mt-8 max-w-3xl text-[42px] font-heading font-black leading-[1.04] text-[#111111] md:text-[70px]">
-              以 IP 为入口的营销年鉴
+            <h1 className="mt-7 max-w-3xl text-[40px] font-heading font-black leading-[1.08] text-[#111111] md:text-[64px]">
+              平台 IP<br />营销年鉴
             </h1>
             <p className="mt-6 max-w-2xl text-[15px] leading-8 text-[#4D4A45]">
-              先不按“单个方案文件”组织，而是以平台为第一层、IP 为核心单元，记录每个 IP 不同年份的招商方案、宣传物料和执行观察。
+              不是按文件堆叠，而是按平台和 IP 归档。每个 IP 下面再收纳不同年份的招商方案、宣传物料与执行观察。
             </p>
           </div>
-          <div className="border-y border-black/10 lg:border-l lg:border-y-0 lg:pl-10">
-            <div className="grid grid-cols-3 divide-x divide-black/10">
-              <div className="py-5 pr-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">Platforms</div>
+          <div className="border-y border-black/10 py-5 lg:border-l lg:border-y-0 lg:pl-10">
+            <div className="grid grid-cols-3 divide-x divide-black/10 border-b border-black/10 pb-5">
+              <div className="pr-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">平台</div>
                 <div className="mt-2 text-3xl font-black">{platforms.length - 1}</div>
               </div>
-              <div className="py-5 px-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">IP Units</div>
+              <div className="px-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">IP</div>
                 <div className="mt-2 text-3xl font-black">{CURATED_IP_ARCHIVES.length}</div>
               </div>
-              <div className="py-5 pl-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">Model</div>
-                <div className="mt-2 text-xl font-black">平台 / IP / 年份</div>
+              <div className="pl-4">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">结构</div>
+                <div className="mt-2 text-xl font-black">IP / 年份</div>
               </div>
             </div>
-            <div className="mt-8 flex flex-wrap gap-2">
+            <div className="mt-6 flex flex-wrap gap-2">
               {platforms.map(platform => (
                 <button
                   key={platform}
                   onClick={() => {
                     setActivePlatform(platform);
                     const next = CURATED_IP_ARCHIVES.find(archive => platform === '全部' || archive.platform === platform);
-                    if (next) setExpandedId(next.id);
+                    if (next) openArchive(next);
                   }}
                   className={`border px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${activePlatform === platform ? 'border-[#111111] bg-[#111111] text-[#F4F0E8]' : 'border-black/15 text-black/55 hover:border-black/60 hover:text-black'}`}
                 >
@@ -196,80 +199,87 @@ const IpArchiveProductDemo: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid border-b border-black/10 lg:grid-cols-[0.82fr_1.18fr]">
-        <div className="border-b border-black/10 lg:border-b-0 lg:border-r">
-          <div className="sticky top-0 px-6 py-8 md:px-12">
+      <div className="border-b border-black/10 px-6 py-10 md:px-12">
+        <div className="mb-5 flex items-end justify-between gap-4 border-b border-black/10 pb-4">
+          <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-black/35">IP Index</div>
-            <div className="mt-6 divide-y divide-black/10 border-y border-black/10">
-              {archives.map(archive => (
-                <button
-                  key={archive.id}
-                  onClick={() => openArchive(archive)}
-                  className={`grid w-full grid-cols-[1fr_auto] gap-4 py-5 text-left transition-colors ${expandedArchive?.id === archive.id ? 'text-[#8F2F24]' : 'text-[#111111] hover:text-[#8F2F24]'}`}
-                >
-                  <span>
-                    <span className="block text-lg font-black">{archive.name}</span>
-                    <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-black/35">{archive.platform} / {archive.type}</span>
-                  </span>
-                  <span className="text-right font-mono text-[10px] leading-5 text-black/45">
-                    <span className="block">{archive.years}</span>
-                    <span className="block">{archive.versions.length} 个版本</span>
-                  </span>
-                </button>
-              ))}
+            <h2 className="mt-2 text-2xl font-heading font-black">选择一个 IP 档案</h2>
+          </div>
+          <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">{activePlatform} / {archives.length} 个 IP</div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {archives.map(archive => (
+            <button
+              key={archive.id}
+              onClick={() => openArchive(archive)}
+              className={`min-h-[220px] border bg-[#FFFCF5] p-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] ${expandedArchive?.id === archive.id ? 'border-[#8F2F24] shadow-[0_10px_30px_rgba(0,0,0,0.06)]' : 'border-black/10'}`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#8F2F24]">{archive.platform}</div>
+                  <h3 className="mt-3 text-2xl font-heading font-black leading-tight text-[#111111]">{archive.name}</h3>
+                </div>
+                <span className="border border-black/10 px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-black/40">{archive.versions.length} 版</span>
+              </div>
+              <p className="mt-5 line-clamp-3 text-sm leading-7 text-black/58">{archive.thesis}</p>
+              <div className="mt-6 flex items-center gap-2">
+                {archive.versions.map(version => (
+                  <span key={version.year} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111111] font-mono text-[9px] font-bold text-[#F4F0E8]">{version.year.slice(-2)}</span>
+                ))}
+              </div>
+              <div className="mt-5 border-t border-black/10 pt-4 font-mono text-[10px] uppercase tracking-widest text-black/35">{archive.type} / {archive.years}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {expandedArchive && selectedVersion && (
+        <div className="border-b border-black/10 bg-[#FFFCF5] px-6 py-10 md:px-12">
+          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+            <aside className="border-y border-black/10 py-6 lg:border-y-0 lg:border-r lg:pr-8">
+              <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#8F2F24]">{expandedArchive.platform}</div>
+              <h2 className="mt-4 text-4xl font-heading font-black leading-tight text-[#111111]">{expandedArchive.name}</h2>
+              <p className="mt-5 text-sm leading-7 text-black/60">{expandedArchive.thesis}</p>
+              <div className="mt-6 border-y border-black/10 py-5">
+                <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-black/35">站长观察</div>
+                <p className="mt-3 text-sm leading-7 text-black/70">{expandedArchive.authorNote}</p>
+              </div>
+            </aside>
+            <div>
+              <div className="flex flex-wrap gap-2 border-b border-black/10 pb-4">
+                {expandedArchive.versions.map(version => (
+                  <button
+                    key={version.year}
+                    onClick={() => setActiveYear(version.year)}
+                    className={`border px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${selectedVersion.year === version.year ? 'border-[#111111] bg-[#111111] text-[#F4F0E8]' : 'border-black/15 text-black/50 hover:border-black/50 hover:text-black'}`}
+                  >
+                    {version.year}
+                  </button>
+                ))}
+              </div>
+              <article className="pt-6">
+                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-black/35">{selectedVersion.phase}</div>
+                <h3 className="mt-3 text-2xl font-black text-[#111111]">{selectedVersion.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-black/62">{selectedVersion.planSummary}</p>
+                <div className="mt-6 grid gap-4 md:grid-cols-3">
+                  <div className="border border-black/10 bg-[#F4F0E8] p-4">
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">方案层</div>
+                    <div className="mt-3 text-sm leading-6 text-black/70">{selectedVersion.planSummary}</div>
+                  </div>
+                  <div className="border border-black/10 bg-[#F4F0E8] p-4">
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">物料层</div>
+                    <div className="mt-3 text-sm leading-6 text-black/70">{selectedVersion.materials.join(' / ')}</div>
+                  </div>
+                  <div className="border border-black/10 bg-[#F4F0E8] p-4">
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">效果层</div>
+                    <div className="mt-3 text-sm leading-6 text-black/70">{selectedVersion.execution}</div>
+                  </div>
+                </div>
+              </article>
             </div>
           </div>
         </div>
-
-        <div className="bg-[#111111] text-[#F4F0E8]">
-          {expandedArchive && (
-            <div className="px-6 py-8 md:px-12 md:py-12">
-              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#C9694C]">{expandedArchive.platform}</div>
-              <h2 className="mt-5 text-4xl font-heading font-black leading-tight md:text-6xl">{expandedArchive.name}</h2>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {[expandedArchive.type, expandedArchive.years, `${expandedArchive.versions.length} 个年度版本`].map(item => (
-                  <span key={item} className="border border-white/15 px-3 py-1.5 font-mono text-[10px] text-white/55">{item}</span>
-                ))}
-              </div>
-              <p className="mt-8 max-w-2xl text-sm leading-8 text-white/62">{expandedArchive.thesis}</p>
-              <div className="mt-10 border-y border-white/10 py-6">
-                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/35">Pan's Note</div>
-                <p className="mt-4 text-base leading-8 text-[#F4F0E8]">{expandedArchive.authorNote}</p>
-              </div>
-              <div className="mt-10 space-y-4">
-                {expandedArchive.versions.map(version => (
-                  <article key={version.year} className="border border-white/10 bg-white/[0.03] p-5">
-                    <div className="grid gap-5 md:grid-cols-[96px_1fr]">
-                      <div>
-                        <div className="font-mono text-2xl font-black text-[#C9694C]">{version.year}</div>
-                        <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-white/35">{version.phase}</div>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-black">{version.title}</h3>
-                        <p className="mt-3 text-sm leading-7 text-white/62">{version.planSummary}</p>
-                        <div className="mt-5 grid gap-3 md:grid-cols-3">
-                          <div className="border border-white/10 p-3">
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-white/35">方案层</div>
-                            <div className="mt-2 text-sm leading-6 text-white/70">{version.planSummary}</div>
-                          </div>
-                          <div className="border border-white/10 p-3">
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-white/35">物料层</div>
-                            <div className="mt-2 text-sm leading-6 text-white/70">{version.materials.join(' / ')}</div>
-                          </div>
-                          <div className="border border-white/10 p-3">
-                            <div className="font-mono text-[9px] uppercase tracking-widest text-white/35">效果层</div>
-                            <div className="mt-2 text-sm leading-6 text-white/70">{version.execution}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </section>
   );
 };
