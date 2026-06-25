@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThinkPPT Design Demo 03 · Curation Table</title>
+  <!--
+    Huashu-Design assumptions:
+    - 第三版不再做复杂全屏弹窗，而是换成“策展桌 / Contact Sheet”。
+    - PDF 方案天然适合像胶片接触印相一样铺开：一眼看多页，点击一页看解读。
+    - 这个方向更适合 ThinkPPT 的“数字年鉴 / 策展档案”定位，兼顾高级感和内容可读性。
+  -->
+  <style>
+    :root {
+      --paper: #ebe4d8;
+      --warm: #f8f2e8;
+      --ink: #14110e;
+      --soft-ink: rgba(20, 17, 14, .58);
+      --line: rgba(20, 17, 14, .15);
+      --accent: #9c352a;
+      --green: #284f45;
+      --black: #11100e;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --serif: Georgia, "Songti SC", "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(156, 53, 42, .08), transparent 26%),
+        linear-gradient(90deg, rgba(20,17,14,.04) 1px, transparent 1px),
+        linear-gradient(rgba(20,17,14,.04) 1px, transparent 1px),
+        var(--paper);
+      background-size: auto, 44px 44px, 44px 44px, auto;
+      color: var(--ink);
+      font-family: var(--sans);
+    }
+
+    button { font: inherit; color: inherit; }
+    .page {
+      min-height: 100vh;
+      padding: 26px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 22px;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: 320px 1fr auto;
+      gap: 28px;
+      align-items: end;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      background: var(--black);
+      color: var(--warm);
+      font: 700 28px var(--serif);
+    }
+    .brand small {
+      display: block;
+      font: 800 10px var(--mono);
+      letter-spacing: .34em;
+      color: var(--soft-ink);
+    }
+    .brand b {
+      display: block;
+      margin-top: 4px;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .headline {
+      max-width: 900px;
+    }
+    .headline span {
+      display: block;
+      font: 800 10px var(--mono);
+      letter-spacing: .32em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .headline h1 {
+      margin: 8px 0 0;
+      font: 700 clamp(40px, 5.2vw, 88px)/.86 var(--serif);
+      letter-spacing: -0.06em;
+    }
+    .tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .tools button {
+      border: 1px solid var(--line);
+      background: rgba(248, 242, 232, .65);
+      padding: 10px 14px;
+      cursor: pointer;
+      font: 800 10px var(--mono);
+      letter-spacing: .16em;
+      transition: .18s ease;
+    }
+    .tools button.active,
+    .tools button:hover {
+      background: var(--black);
+      color: var(--warm);
+      border-color: var(--black);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 500px;
+      gap: 22px;
+      min-height: 0;
+    }
+
+    .table {
+      border: 1px solid var(--line);
+      background: rgba(248, 242, 232, .68);
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .table-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .table-head p {
+      margin: 0;
+      max-width: 720px;
+      color: var(--soft-ink);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .table-head .stamp {
+      color: var(--soft-ink);
+      font: 800 10px/1.7 var(--mono);
+      letter-spacing: .2em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+    .ip-shelf {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(20, 17, 14, .025);
+    }
+    .ip-chip {
+      min-height: 132px;
+      border: 1px solid var(--line);
+      background: rgba(255, 250, 241, .72);
+      padding: 12px;
+      cursor: pointer;
+      text-align: left;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      transition: .18s ease;
+    }
+    .ip-chip:hover,
+    .ip-chip.active {
+      border-color: var(--accent);
+      background: #fffaf1;
+      transform: translateY(-1px);
+    }
+    .ip-chip small {
+      font: 800 9px var(--mono);
+      letter-spacing: .18em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .ip-chip b {
+      font: 700 30px/.92 var(--serif);
+      letter-spacing: -0.05em;
+    }
+    .ip-chip span {
+      color: var(--soft-ink);
+      font: 800 10px/1.5 var(--mono);
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .contact-sheet {
+      min-height: 0;
+      overflow: auto;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(230px, 1fr));
+      gap: 18px;
+      align-content: start;
+    }
+
+    .frame {
+      border: 1px solid var(--line);
+      background: #fffaf1;
+      padding: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: .2s ease;
+      position: relative;
+    }
+    .frame:hover,
+    .frame.active {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(20, 17, 14, .10);
+    }
+    .frame.active::before {
+      content: "SELECTED";
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      background: var(--accent);
+      color: #fffaf1;
+      padding: 6px 8px;
+      font: 800 9px var(--mono);
+      letter-spacing: .14em;
+    }
+    .image {
+      aspect-ratio: 16 / 9;
+      background: #111;
+      border: 10px solid #111;
+    }
+    .image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
+    .empty-image {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      align-content: space-between;
+      padding: 18px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        #fffaf1;
+      background-size: 34px 34px;
+      color: var(--ink);
+    }
+    .empty-image strong {
+      font: 700 34px/.92 var(--serif);
+      letter-spacing: -0.05em;
+    }
+    .empty-image span {
+      font: 800 9px var(--mono);
+      letter-spacing: .18em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .frame-meta {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      padding-top: 13px;
+      align-items: start;
+    }
+    .frame-meta em {
+      font-style: normal;
+      font: 800 10px var(--mono);
+      letter-spacing: .12em;
+      color: var(--accent);
+    }
+    .frame-meta b {
+      display: block;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .frame-meta span {
+      display: block;
+      margin-top: 5px;
+      color: var(--soft-ink);
+      font: 800 9px var(--mono);
+      letter-spacing: .14em;
+    }
+
+    .inspector {
+      position: sticky;
+      top: 26px;
+      align-self: start;
+      height: calc(100vh - 52px);
+      border: 1px solid var(--line);
+      background: var(--black);
+      color: var(--warm);
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      gap: 16px;
+    }
+    .inspector small {
+      display: block;
+      font: 800 10px var(--mono);
+      letter-spacing: .3em;
+      color: rgba(248, 242, 232, .42);
+      text-transform: uppercase;
+    }
+    .inspector h2 {
+      margin: 10px 0 0;
+      font: 700 44px/.92 var(--serif);
+      letter-spacing: -0.06em;
+    }
+    .inspector p {
+      margin: 0;
+      color: rgba(248, 242, 232, .68);
+      font-size: 14px;
+      line-height: 1.85;
+    }
+    .inspector-intro {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: start;
+    }
+    .inspector-intro p {
+      max-width: 260px;
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .version-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .version-strip button {
+      min-width: 142px;
+      border: 1px solid rgba(248, 242, 232, .2);
+      background: transparent;
+      color: rgba(248, 242, 232, .72);
+      padding: 10px;
+      cursor: pointer;
+      text-align: left;
+      display: grid;
+      gap: 5px;
+      transition: .18s ease;
+    }
+    .version-strip button.active,
+    .version-strip button:hover {
+      background: var(--warm);
+      color: var(--black);
+      border-color: var(--warm);
+    }
+    .version-strip em {
+      font-style: normal;
+      font: 800 10px var(--mono);
+      color: var(--accent);
+    }
+    .version-strip b {
+      font-size: 11px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .focus {
+      min-height: 0;
+      border: 1px solid rgba(248, 242, 232, .16);
+      padding: 14px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+    }
+    .focus-title b {
+      display: block;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+    .focus-title span {
+      display: block;
+      margin-top: 6px;
+      color: rgba(248, 242, 232, .4);
+      font: 800 10px var(--mono);
+      letter-spacing: .18em;
+    }
+    .focus img {
+      align-self: center;
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: contain;
+      background: #fff;
+      border: 14px solid #0a0a09;
+    }
+    .focus-placeholder {
+      align-self: center;
+      aspect-ratio: 16/9;
+      border: 14px solid #0a0a09;
+      background: var(--warm);
+      color: var(--black);
+      display: grid;
+      align-content: space-between;
+      padding: 22px;
+    }
+    .focus-placeholder strong {
+      font: 700 42px/.92 var(--serif);
+      letter-spacing: -0.05em;
+    }
+    .focus-placeholder span {
+      color: var(--accent);
+      font: 800 10px var(--mono);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .inspector-foot {
+      border-top: 1px solid rgba(248, 242, 232, .16);
+      padding-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .inspector-foot span {
+      color: rgba(248, 242, 232, .48);
+      font: 800 10px/1.7 var(--mono);
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+    .arrow-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .arrow-buttons button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(248, 242, 232, .24);
+      background: transparent;
+      color: var(--warm);
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .arrow-buttons button:hover {
+      background: var(--warm);
+      color: var(--black);
+    }
+
+    @media (max-width: 1180px) {
+      .masthead { grid-template-columns: 1fr; align-items: start; }
+      .tools { justify-content: flex-start; }
+      .workspace { grid-template-columns: 1fr; }
+      .inspector { position: static; height: auto; }
+    }
+    @media (max-width: 760px) {
+      .page { padding: 14px; }
+      .ip-shelf { grid-template-columns: 1fr; padding: 14px; }
+      .contact-sheet { grid-template-columns: 1fr; padding: 14px; }
+      .table-head { grid-template-columns: 1fr; }
+      .table-head .stamp { text-align: left; }
+      .headline h1 { font-size: 46px; }
+      .inspector h2 { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <div class="brand">
+        <div class="mark">T</div>
+        <div><small>THINKPPT</small><b>营销 IP 策展档案</b></div>
+      </div>
+      <div class="headline">
+        <span>Curated Contact Sheet</span>
+        <h1>把方案页摊开，像看一场营销展。</h1>
+      </div>
+      <nav class="tools" id="platformTools"></nav>
+    </header>
+
+    <section class="workspace">
+      <div class="table">
+        <div class="table-head">
+          <p id="tableIntro">这版先把逻辑明确成三层：先选平台，再选 IP，最后展开该 IP 下面不同年份/版本的方案精选页。图片不是主角本身，图片是证明这个 IP 演进的“证据页”。</p>
+          <div class="stamp" id="tableStamp">XIAOHONGSHU<br>MANRENJIE</div>
+        </div>
+        <div class="ip-shelf" id="ipShelf"></div>
+        <div class="contact-sheet" id="contactSheet"></div>
+      </div>
+
+      <aside class="inspector">
+        <div class="inspector-intro">
+          <div>
+            <small>Display Window</small>
+            <h2 id="ipName">慢人节</h2>
+            <p id="ipThesis"></p>
+          </div>
+          <small id="displayCount">01 / 12</small>
+        </div>
+        <div class="focus">
+          <div class="focus-title">
+            <b id="focusTitle"></b>
+            <span id="focusMeta"></span>
+          </div>
+          <div id="focusVisual"></div>
+        </div>
+        <div class="version-strip" id="versionStrip"></div>
+        <div class="inspector-foot">
+          <span id="footNote"></span>
+          <div class="arrow-buttons">
+            <button id="prevPage" aria-label="上一页">←</button>
+            <button id="nextPage" aria-label="下一页">→</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const root = "/scheme-pages/xiaohongshu/manrenjie";
+    const archives = [
+      {
+        platform: "小红书",
+        name: "慢人节",
+        type: "生活方式情绪 IP",
+        thesis: "慢人节是最适合做 ThinkPPT 样板的 IP：同一主题有多份招商方案，也有从年度招商到长线规划的演进。",
+        versions: [
+          { year: "2024", title: "2024小红书慢人节招商通案", dir: `${root}/2024-tongan`, pages: ["001", "003", "012", "033"], labels: ["封面", "慢人心态", "平台级事件", "慢人路线"] },
+          { year: "2024 2.0", title: "小红书2024慢人节2.0营销方案", dir: `${root}/2024-2`, pages: ["001", "005", "008", "023"], labels: ["封面", "慢人群趋势", "核心洞察", "长线运营"] },
+          { year: "2025", title: "小红书慢人节2025年长线IP规划", dir: `${root}/2025-planning`, pages: ["001", "003", "021", "028"], labels: ["封面", "年度规划", "内容阵地", "用户旅程"] }
+        ]
+      },
+      {
+        platform: "小红书",
+        name: "遛遛生活",
+        type: "城市散步与市集 IP",
+        thesis: "用于观察小红书如何把城市散步、市集、线下摊位和品牌共创组合成可招商的生活方式场景。",
+        versions: [{ year: "2025", title: "遛遛生活城市企划招商方案", dir: "", pages: ["", "", "", ""], labels: ["封面", "城市场景", "品牌共创", "资源权益"] }]
+      },
+      {
+        platform: "小红书",
+        name: "闪光青春派",
+        type: "校园开学季 IP",
+        thesis: "用于观察校园节点如何被包装成年度营销资产，包括内容共创、校园场景和品牌曝光。",
+        versions: [{ year: "2025", title: "闪光青春派校园季招商方案", dir: "", pages: ["", "", "", ""], labels: ["封面", "学生人群", "校园场景", "合作权益"] }]
+      },
+      {
+        platform: "小红书",
+        name: "外人节",
+        type: "户外生活方式 IP",
+        thesis: "用于观察户外生活方式从内容话题变成平台级招商项目的路径。",
+        versions: [{ year: "2024", title: "外人节户外生活方式招商方案", dir: "", pages: ["", "", "", ""], labels: ["封面", "户外情绪", "活动玩法", "招商资源"] }]
+      },
+      {
+        platform: "抖音",
+        name: "节气 IP",
+        type: "传统文化节点 IP",
+        thesis: "用二十四节气作为全年内容日历，观察传统文化、达人内容和品牌种草如何连成长期资产。",
+        versions: [{ year: "2025", title: "抖音节气文化 IP 招商方案", dir: "", pages: ["", "", "", ""], labels: ["封面", "节气日历", "内容玩法", "资源包"] }]
+      },
+      {
+        platform: "快手",
+        name: "春节 IP",
+        type: "春节节点 IP",
+        thesis: "围绕 CNY、晚会、互动和站内资源，观察快手如何把春节流量转化为平台招商权益。",
+        versions: [{ year: "2026", title: "快手春节 CNY 招商通案", dir: "", pages: ["", "", "", ""], labels: ["封面", "春节场景", "互动玩法", "权益结构"] }]
+      },
+      {
+        platform: "BILIBILI",
+        name: "拜年纪",
+        type: "春节内容 IP",
+        thesis: "B站代表性春节内容资产，适合观察社区内容、UP主生态与品牌节点合作方式。",
+        versions: [{ year: "2025", title: "拜年纪春节招商方案", dir: "", pages: ["", "", "", ""], labels: ["封面", "内容生态", "UP主共创", "商业化"] }]
+      }
+    ];
+    const platformItems = ["全部", "小红书", "抖音", "快手", "BILIBILI"];
+    let activePlatform = "小红书";
+    let archiveIndex = 0;
+    let versionIndex = 0;
+    let pageIndex = 0;
+    const $ = selector => document.querySelector(selector);
+
+    function filteredArchives() {
+      return archives.filter(item => activePlatform === "全部" || item.platform === activePlatform);
+    }
+    function currentArchive() {
+      return filteredArchives()[archiveIndex] || filteredArchives()[0] || archives[0];
+    }
+    function currentVersion() {
+      return currentArchive().versions[versionIndex] || currentArchive().versions[0];
+    }
+    function imageFor(version, index) {
+      if (!version.dir || !version.pages[index]) return "";
+      return `${version.dir}/page-${version.pages[index]}.webp`;
+    }
+    function allPages() {
+      return currentArchive().versions.flatMap((version, vIndex) => version.pages.map((page, pIndex) => ({
+        vIndex,
+        pIndex,
+        year: version.year,
+        versionTitle: version.title,
+        label: version.labels[pIndex],
+        image: imageFor(version, pIndex)
+      })));
+    }
+    function renderPlatforms() {
+      $("#platformTools").innerHTML = platformItems.map(item => `<button class="${item === activePlatform ? "active" : ""}" data-platform="${item}">${item}</button>`).join("");
+      document.querySelectorAll("[data-platform]").forEach(button => {
+        button.onclick = () => {
+          activePlatform = button.dataset.platform;
+          archiveIndex = 0;
+          versionIndex = 0;
+          pageIndex = 0;
+          renderPlatforms();
+          $("#tableIntro").textContent = activePlatform === "小红书" || activePlatform === "全部"
+            ? "这版先把逻辑明确成三层：先选平台，再选 IP，最后展开该 IP 下面不同年份/版本的方案精选页。图片不是主角本身，图片是证明这个 IP 演进的“证据页”。"
+            : `${activePlatform} 的 IP 档案还未接入真实 PDF 页图。正式落地时，这里会按同样方式铺开展示。`;
+          render();
+        };
+      });
+    }
+    function renderIpShelf() {
+      const list = filteredArchives();
+      $("#ipShelf").innerHTML = list.map((item, index) => `
+        <button class="ip-chip ${index === archiveIndex ? "active" : ""}" data-archive="${index}">
+          <small>${item.platform}</small>
+          <b>${item.name}</b>
+          <span>${item.versions.length} version / ${item.type}</span>
+        </button>
+      `).join("");
+      document.querySelectorAll("[data-archive]").forEach(button => {
+        button.onclick = () => {
+          archiveIndex = Number(button.dataset.archive);
+          versionIndex = 0;
+          pageIndex = 0;
+          render();
+        };
+      });
+    }
+    function renderVersions() {
+      $("#versionStrip").innerHTML = currentArchive().versions.map((version, index) => `
+        <button class="${index === versionIndex ? "active" : ""}" data-version="${index}">
+          <em>${version.year}</em><b>${version.title}</b>
+        </button>
+      `).join("");
+      document.querySelectorAll("[data-version]").forEach(button => {
+        button.onclick = () => {
+          versionIndex = Number(button.dataset.version);
+          pageIndex = 0;
+          render();
+        };
+      });
+    }
+    function renderSheet() {
+      $("#contactSheet").innerHTML = allPages().map((item, index) => {
+        const isActive = item.vIndex === versionIndex && item.pIndex === pageIndex;
+        const imageHtml = item.image
+          ? `<img src="${item.image}" alt="${item.label}">`
+          : `<div class="empty-image"><span>${item.year}</span><strong>${currentArchive().name}</strong><span>${item.label}</span></div>`;
+        return `
+          <button class="frame ${isActive ? "active" : ""}" data-v="${item.vIndex}" data-p="${item.pIndex}">
+            <div class="image">${imageHtml}</div>
+            <div class="frame-meta">
+              <em>${String(index + 1).padStart(2, "0")}</em>
+              <div><b>${item.label}</b><span>${item.year} / ${item.versionTitle}</span></div>
+            </div>
+          </button>
+        `;
+      }).join("");
+      document.querySelectorAll("[data-v][data-p]").forEach(button => {
+        button.onclick = () => {
+          versionIndex = Number(button.dataset.v);
+          pageIndex = Number(button.dataset.p);
+          render();
+        };
+      });
+    }
+    function renderFocus() {
+      const archive = currentArchive();
+      const version = currentVersion();
+      const image = imageFor(version, pageIndex);
+      $("#tableStamp").innerHTML = `${archive.platform}<br>${archive.name}`;
+      $("#ipName").textContent = archive.name;
+      $("#ipThesis").textContent = archive.thesis;
+      $("#focusTitle").textContent = version.labels[pageIndex];
+      $("#focusMeta").textContent = `${version.year} / PAGE ${String(pageIndex + 1).padStart(2, "0")} / ${version.title}`;
+      const flatIndex = allPages().findIndex(item => item.vIndex === versionIndex && item.pIndex === pageIndex) + 1;
+      $("#displayCount").textContent = `${String(flatIndex).padStart(2, "0")} / ${String(allPages().length).padStart(2, "0")}`;
+      $("#focusVisual").innerHTML = image
+        ? `<img src="${image}" alt="${version.labels[pageIndex]}">`
+        : `<div class="focus-placeholder"><span>${archive.platform}</span><strong>${archive.name}</strong><span>${version.labels[pageIndex]} / PDF 待接入</span></div>`;
+      $("#footNote").textContent = `${archive.versions.length} VERSION / ${allPages().length} SELECTED PAGES`;
+    }
+    function render() {
+      if (archiveIndex >= filteredArchives().length) archiveIndex = 0;
+      renderPlatforms();
+      renderIpShelf();
+      renderVersions();
+      renderSheet();
+      renderFocus();
+    }
+    $("#prevPage").onclick = () => {
+      const total = currentVersion().pages.length;
+      pageIndex = (pageIndex - 1 + total) % total;
+      render();
+    };
+    $("#nextPage").onclick = () => {
+      const total = currentVersion().pages.length;
+      pageIndex = (pageIndex + 1) % total;
+      render();
+    };
+    render();
+  </script>
+</body>
+</html>

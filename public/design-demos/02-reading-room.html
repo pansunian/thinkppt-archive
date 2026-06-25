@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThinkPPT Design Demo 02 · Reading Room</title>
+  <!--
+    Huashu-Design assumptions:
+    - 这版把 ThinkPPT 定义为“营销方案阅读室”，不是首页展板。
+    - 用户进入后最重要的动作是：选择平台/IP，快速翻一个 IP 的多个 PDF 方案版本。
+    - 设计目标是降低杂乱感：当前页面只服务一个阅读任务，其它信息折叠在边栏。
+  -->
+  <style>
+    :root {
+      --paper: #f7f3ea;
+      --panel: #fffcf5;
+      --ink: #15130f;
+      --muted: #777168;
+      --line: rgba(21, 19, 15, .13);
+      --red: #a33a2e;
+      --green: #265f52;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --serif: "Songti SC", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+    }
+    button { font: inherit; color: inherit; }
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr) 360px;
+    }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid var(--line);
+      padding: 28px 24px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 26px;
+      background: #f2ede2;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mark {
+      width: 38px;
+      height: 38px;
+      background: var(--ink);
+      color: var(--paper);
+      display: grid;
+      place-items: center;
+      font: 700 24px var(--serif);
+    }
+    .brand span {
+      font: 700 10px var(--mono);
+      letter-spacing: .32em;
+      color: var(--muted);
+    }
+    .brand b {
+      display: block;
+      margin-top: 2px;
+      font-size: 17px;
+    }
+    .intro h1 {
+      margin: 0;
+      font: 700 54px/.92 var(--serif);
+      letter-spacing: -0.05em;
+    }
+    .intro p {
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .platform-set {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .platform-set button,
+    .ip-button,
+    .version-button,
+    .page-button,
+    .nav-button {
+      border: 1px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .platform-set button {
+      padding: 11px 8px;
+      font: 800 10px var(--mono);
+      letter-spacing: .15em;
+    }
+    .platform-set button.active,
+    .platform-set button:hover {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+    .ip-scroll {
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .ip-button {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      margin-bottom: 8px;
+      padding: 15px 0;
+      border-width: 0;
+      border-top: 1px solid var(--line);
+      text-align: left;
+    }
+    .ip-button.active {
+      color: var(--red);
+      border-top-color: var(--red);
+    }
+    .ip-button b { font-size: 17px; }
+    .ip-button span { font: 700 10px var(--mono); letter-spacing: .12em; color: var(--muted); }
+    .sidebar-foot {
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      color: var(--muted);
+      font: 700 10px/1.7 var(--mono);
+      letter-spacing: .15em;
+    }
+
+    .reader {
+      min-width: 0;
+      padding: 26px 34px 40px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 24px;
+    }
+    .reader-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+    }
+    .reader-head small,
+    .meta-label {
+      display: block;
+      font: 800 10px var(--mono);
+      letter-spacing: .28em;
+      color: var(--red);
+      text-transform: uppercase;
+    }
+    .reader-head h2 {
+      margin: 10px 0 0;
+      font-size: clamp(32px, 4vw, 58px);
+      line-height: 1.05;
+      letter-spacing: -0.06em;
+    }
+    .reader-head p {
+      margin: 10px 0 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .status {
+      text-align: right;
+      font: 700 11px/1.8 var(--mono);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .stage {
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 48px 48px;
+      border: 1px solid var(--line);
+    }
+    .pdf-frame {
+      width: min(100%, 1120px);
+      background: #0e0e0d;
+      padding: 22px;
+      box-shadow: 0 30px 70px rgba(21, 19, 15, .14);
+    }
+    .pdf-frame img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: contain;
+      background: #fff;
+    }
+    .placeholder-frame {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--panel);
+      display: grid;
+      align-content: space-between;
+      padding: 28px;
+      border: 1px solid var(--line);
+    }
+    .placeholder-frame b { font: 700 60px/.9 var(--serif); letter-spacing: -0.06em; }
+    .placeholder-frame span { font: 800 10px var(--mono); letter-spacing: .22em; color: var(--red); }
+    .reader-controls {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+    .nav-button {
+      padding: 14px 18px;
+      font: 800 10px var(--mono);
+      letter-spacing: .18em;
+      color: var(--muted);
+    }
+    .nav-button:hover { color: var(--ink); border-color: var(--ink); }
+    .caption {
+      text-align: center;
+    }
+    .caption b {
+      display: block;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+    .caption span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font: 700 10px var(--mono);
+      letter-spacing: .18em;
+    }
+    .meta {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-left: 1px solid var(--line);
+      background: var(--panel);
+      padding: 28px 24px;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 24px;
+    }
+    .meta h3 {
+      margin: 10px 0 0;
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+    .meta p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .version-list,
+    .page-list {
+      display: grid;
+      gap: 8px;
+    }
+    .version-button,
+    .page-button {
+      width: 100%;
+      padding: 14px;
+      text-align: left;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+    .version-button.active,
+    .page-button.active {
+      border-color: var(--red);
+      background: #fff5ea;
+    }
+    .version-button em,
+    .page-button em {
+      font-style: normal;
+      font: 800 10px var(--mono);
+      color: var(--red);
+      letter-spacing: .12em;
+    }
+    .version-button b,
+    .page-button b {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .meta-note {
+      align-self: end;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 1180px) {
+      .shell { grid-template-columns: 260px 1fr; }
+      .meta { position: static; grid-column: 1 / -1; height: auto; border-left: 0; border-top: 1px solid var(--line); }
+    }
+    @media (max-width: 760px) {
+      .shell { display: block; }
+      .sidebar, .meta { position: static; height: auto; }
+      .reader { padding: 22px 16px; }
+      .reader-head { grid-template-columns: 1fr; }
+      .status { text-align: left; }
+      .reader-controls { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">T</div>
+        <div><span>THINKPPT</span><b>方案阅读室</b></div>
+      </div>
+      <div class="intro">
+        <h1>Reading<br>Room</h1>
+        <p>用户不是来刷卡片的，而是来找一个 IP 的方案脉络。当前视口始终保留 PDF 页面、版本索引和页码索引。</p>
+      </div>
+      <div>
+        <div class="platform-set" id="platforms"></div>
+      </div>
+      <div class="ip-scroll" id="ipList"></div>
+      <div class="sidebar-foot">PLATFORM → IP → VERSION → PDF PAGES</div>
+    </aside>
+
+    <section class="reader">
+      <header class="reader-head">
+        <div>
+          <small id="platformLabel">小红书</small>
+          <h2 id="archiveTitle">慢人节</h2>
+          <p id="archiveThesis"></p>
+        </div>
+        <div class="status" id="status"></div>
+      </header>
+      <div class="stage">
+        <div class="pdf-frame" id="pdfFrame"></div>
+      </div>
+      <div class="reader-controls">
+        <button class="nav-button" id="prevPage">上一页</button>
+        <div class="caption"><b id="pageTitle">封面</b><span id="pageNo">PAGE 01 / 04</span></div>
+        <button class="nav-button" id="nextPage">下一页</button>
+      </div>
+    </section>
+
+    <aside class="meta">
+      <div>
+        <span class="meta-label">Current Plan</span>
+        <h3 id="versionTitle"></h3>
+        <p id="versionSummary"></p>
+      </div>
+      <div>
+        <span class="meta-label">Versions</span>
+        <div class="version-list" id="versions"></div>
+      </div>
+      <div>
+        <span class="meta-label">Selected Pages</span>
+        <div class="page-list" id="pages"></div>
+      </div>
+      <div class="meta-note">正式落地时，Notion 只需要维护：平台、IP、年份、方案标题、PDF 原件、精选页码、精选页标题。页面图可以从 PDF 自动生成。</div>
+    </aside>
+  </main>
+
+  <script>
+    const root = "/scheme-pages/xiaohongshu/manrenjie";
+    const archives = [
+      {
+        platform: "小红书",
+        name: "慢人节",
+        type: "生活方式情绪 IP",
+        thesis: "从年度招商走向长线 IP 规划，慢人节适合成为 ThinkPPT 的第一条完整样板：同一个 IP、跨 2024-2025、不同版本方案、不同策展页。",
+        versions: [
+          { year: "2024", title: "2024小红书慢人节招商通案", summary: "年度招商通案，适合看平台如何把慢生活情绪包装为可售卖的招商资源。", dir: `${root}/2024-tongan`, pages: ["001", "003", "012", "033"], labels: ["封面", "慢人心态", "平台级事件", "慢人路线"] },
+          { year: "2024 2.0", title: "小红书2024慢人节2.0营销方案", summary: "2.0 版本更强调人群趋势、H2H 洞察与长线运营，适合对比同年方案迭代。", dir: `${root}/2024-2`, pages: ["001", "005", "008", "023"], labels: ["封面", "慢人群趋势", "核心洞察", "长线运营"] },
+          { year: "2025", title: "小红书慢人节2025年长线IP规划", summary: "长线规划版本，重点看 IP 如何从单次招商延展到全年内容、场景和用户旅程。", dir: `${root}/2025-planning`, pages: ["001", "003", "021", "028"], labels: ["封面", "年度规划", "内容阵地", "用户旅程"] }
+        ]
+      },
+      { platform: "小红书", name: "遛遛生活", type: "城市市集 IP", thesis: "待补充 PDF 页图。作为城市散步、市集、线下体验方向的对照 IP。", versions: [] },
+      { platform: "小红书", name: "闪光青春派", type: "校园开学季 IP", thesis: "待补充 PDF 页图。作为校园场景和开学季营销方向的对照 IP。", versions: [] },
+      { platform: "抖音", name: "节气 IP", type: "传统文化节点 IP", thesis: "待补充 PDF 页图。用于对比传统文化节点如何变成平台内容资产。", versions: [] },
+      { platform: "快手", name: "春节 IP", type: "春节节点 IP", thesis: "待补充 PDF 页图。用于对比春节节点平台招商权益结构。", versions: [] },
+      { platform: "BILIBILI", name: "拜年纪", type: "春节内容 IP", thesis: "待补充 PDF 页图。用于观察社区内容与品牌春节节点合作方式。", versions: [] }
+    ];
+    const platforms = ["全部", ...Array.from(new Set(archives.map(item => item.platform)))];
+    let activePlatform = "全部";
+    let archiveIndex = 0;
+    let versionIndex = 0;
+    let pageIndex = 0;
+    const $ = selector => document.querySelector(selector);
+
+    function filtered() {
+      return archives.filter(item => activePlatform === "全部" || item.platform === activePlatform);
+    }
+    function currentArchive() {
+      return filtered()[archiveIndex] || filtered()[0] || archives[0];
+    }
+    function currentVersions() {
+      const archive = currentArchive();
+      return archive.versions.length ? archive.versions : [{ year: archive.name, title: `${archive.name} PDF 待整理`, summary: archive.thesis, dir: "", pages: ["", "", "", ""], labels: ["封面", "洞察", "主题", "脉络"] }];
+    }
+    function currentVersion() {
+      return currentVersions()[versionIndex] || currentVersions()[0];
+    }
+
+    function renderPlatforms() {
+      $("#platforms").innerHTML = platforms.map(item => `<button class="${item === activePlatform ? "active" : ""}" data-platform="${item}">${item}</button>`).join("");
+      document.querySelectorAll("[data-platform]").forEach(button => {
+        button.onclick = () => {
+          activePlatform = button.dataset.platform;
+          archiveIndex = 0;
+          versionIndex = 0;
+          pageIndex = 0;
+          render();
+        };
+      });
+    }
+
+    function renderIpList() {
+      $("#ipList").innerHTML = filtered().map((item, index) => `
+        <button class="ip-button ${index === archiveIndex ? "active" : ""}" data-archive="${index}">
+          <b>${item.name}</b>
+          <span>${item.versions.length || 1} 份</span>
+        </button>
+      `).join("");
+      document.querySelectorAll("[data-archive]").forEach(button => {
+        button.onclick = () => {
+          archiveIndex = Number(button.dataset.archive);
+          versionIndex = 0;
+          pageIndex = 0;
+          render();
+        };
+      });
+    }
+
+    function renderReader() {
+      const archive = currentArchive();
+      const version = currentVersion();
+      const labels = version.labels;
+      const page = version.pages[pageIndex] || version.pages[0];
+      const image = version.dir && page ? `${version.dir}/page-${page}.webp` : "";
+      $("#platformLabel").textContent = `${archive.platform} / ${archive.type}`;
+      $("#archiveTitle").textContent = archive.name;
+      $("#archiveThesis").textContent = archive.thesis;
+      $("#status").innerHTML = `${activePlatform}<br>${archive.versions.length || 1} versions<br>${labels.length} selected pages`;
+      $("#pdfFrame").innerHTML = image
+        ? `<img src="${image}" alt="${labels[pageIndex]}">`
+        : `<div class="placeholder-frame"><span>${archive.platform}</span><b>${archive.name}</b><span>PDF 页面待转图</span></div>`;
+      $("#pageTitle").textContent = labels[pageIndex] || "精选页";
+      $("#pageNo").textContent = `PAGE ${String(pageIndex + 1).padStart(2, "0")} / ${String(labels.length).padStart(2, "0")}`;
+      $("#versionTitle").textContent = version.title;
+      $("#versionSummary").textContent = version.summary;
+    }
+
+    function renderMeta() {
+      const versions = currentVersions();
+      const version = currentVersion();
+      $("#versions").innerHTML = versions.map((item, index) => `
+        <button class="version-button ${index === versionIndex ? "active" : ""}" data-version="${index}">
+          <em>${item.year}</em><b>${item.title}</b>
+        </button>
+      `).join("");
+      $("#pages").innerHTML = version.labels.map((label, index) => `
+        <button class="page-button ${index === pageIndex ? "active" : ""}" data-page="${index}">
+          <em>${String(index + 1).padStart(2, "0")}</em><b>${label}</b>
+        </button>
+      `).join("");
+      document.querySelectorAll("[data-version]").forEach(button => {
+        button.onclick = () => {
+          versionIndex = Number(button.dataset.version);
+          pageIndex = 0;
+          renderReader();
+          renderMeta();
+        };
+      });
+      document.querySelectorAll("[data-page]").forEach(button => {
+        button.onclick = () => {
+          pageIndex = Number(button.dataset.page);
+          renderReader();
+          renderMeta();
+        };
+      });
+    }
+
+    $("#prevPage").onclick = () => {
+      const total = currentVersion().labels.length;
+      pageIndex = (pageIndex - 1 + total) % total;
+      renderReader();
+      renderMeta();
+    };
+    $("#nextPage").onclick = () => {
+      const total = currentVersion().labels.length;
+      pageIndex = (pageIndex + 1) % total;
+      renderReader();
+      renderMeta();
+    };
+
+    function render() {
+      if (archiveIndex >= filtered().length) archiveIndex = 0;
+      renderPlatforms();
+      renderIpList();
+      renderReader();
+      renderMeta();
+    }
+    render();
+  </script>
+</body>
+</html>
