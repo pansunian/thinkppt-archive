@@ -2,6 +2,9 @@ name: Deploy ThinkPPT to Aliyun OSS
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 concurrency:
   group: deploy-thinkppt-aliyun-oss
