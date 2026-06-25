@@ -373,7 +373,7 @@ const buildCuratedSchemePages = (
 const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
   if (!notionData?.results) return [];
 
-  return notionData.results
+  const rows = notionData.results
     .map((page: any) => {
       const props = page.properties || {};
       const name = getPropText(props, ['IP名称', 'Name', 'Title']);
@@ -394,13 +394,14 @@ const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
       const realPageImages = featuredPageNumbers
         .map(pageNumber => buildPageImageUrl(pageImageDir, pageNumber))
         .filter(Boolean);
+      const resolvedCover = realPageImages[0] || coverImage;
       const archive = {
         id: page.id || `${platform}-${name}`,
         platform,
         name,
         type,
         years,
-        coverImage,
+        coverImage: resolvedCover,
         thesis,
         authorNote: type,
         versions: [
@@ -410,10 +411,10 @@ const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
             phase: status || '精选档案',
             planSummary: thesis,
             materials: ['PDF方案', schemeCount ? `${schemeCount} 份方案` : '方案档案'].filter(Boolean),
-            visuals: [coverImage],
+            visuals: [resolvedCover],
             pageCount: schemeCount ? `${schemeCount} 份档案` : '',
             fileSize: '',
-            schemePages: buildCuratedSchemePages({ name, coverImage, thesis, authorNote: type }, representativePlan, realPageImages, featuredPageTitles, featuredPageNotes),
+            schemePages: buildCuratedSchemePages({ name, coverImage: resolvedCover, thesis, authorNote: type }, representativePlan, realPageImages, featuredPageTitles, featuredPageNotes),
             evidencePoints: [type, status].filter(Boolean),
             sourceTitle: representativePlan,
             sourceUrl: getPropText(props, ['PDF原件OSS', 'PDF OSS', 'PDF原件']),
@@ -426,6 +427,24 @@ const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
       return { archive, isVisible, sort };
     })
     .filter(item => item.archive.name && item.isVisible)
+    .sort((a, b) => a.sort - b.sort);
+
+  const grouped = new Map<string, { archive: IpArchive; sort: number }>();
+  for (const item of rows) {
+    const key = `${item.archive.platform}__${item.archive.name}`;
+    const existing = grouped.get(key);
+    if (!existing) {
+      grouped.set(key, { archive: item.archive, sort: item.sort });
+      continue;
+    }
+
+    existing.archive.versions.push(...item.archive.versions);
+    existing.archive.coverImage = existing.archive.coverImage || item.archive.coverImage;
+    existing.archive.years = uniqueValues(existing.archive.versions.map(version => version.year)).join(' / ');
+    existing.sort = Math.min(existing.sort, item.sort);
+  }
+
+  return Array.from(grouped.values())
     .sort((a, b) => a.sort - b.sort)
     .map(item => item.archive);
 };

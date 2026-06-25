@@ -37,7 +37,9 @@ let mediaDownloadAttempts = 0;
 let mediaSkippedByLimit = 0;
 
 const fallbackIpArchives = [
-  ['慢人节', '小红书', '2024-2025', 3, '小红书生活方式情绪 IP', '围绕慢生活、城市散步、情绪疗愈与线下体验，观察小红书如何把生活态度包装成可招商的长期 IP。', 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80', '慢人节年度招商方案'],
+  ['慢人节', '小红书', '2024', 1, '小红书生活方式情绪 IP', '围绕慢生活、城市散步、情绪疗愈与线下体验，观察小红书如何把生活态度包装成可招商的长期 IP。', '/scheme-pages/xiaohongshu/manrenjie/2024-tongan/page-001.webp', '2024小红书慢人节招商通案', '/scheme-pages/xiaohongshu/manrenjie/2024-tongan', '1,3,12,33', '封面、慢人心态、平台级事件、慢人路线', '方案封面、核心情绪、平台招商逻辑、线下路线规划'],
+  ['慢人节', '小红书', '2024', 1, '小红书生活方式情绪 IP', '围绕慢生活、城市散步、情绪疗愈与线下体验，观察小红书如何把生活态度包装成可招商的长期 IP。', '/scheme-pages/xiaohongshu/manrenjie/2024-2/page-001.webp', '小红书2024慢人节2.0营销方案', '/scheme-pages/xiaohongshu/manrenjie/2024-2', '1,5,8,23', '封面、慢人群趋势、核心洞察、长线运营', '方案封面、人群趋势、H2H 洞察、长线资源阵地'],
+  ['慢人节', '小红书', '2025', 1, '小红书长线生活方式 IP', '从年度招商走向长线 IP 规划，观察慢人节如何扩展为音乐会、市集、路线与内容平台组合。', '/scheme-pages/xiaohongshu/manrenjie/2025-planning/page-001.webp', '小红书慢人节2025年长线IP规划', '/scheme-pages/xiaohongshu/manrenjie/2025-planning', '1,3,21,28', '封面、年度规划、内容阵地、用户旅程', '2025长线规划、全年内容结构、平台内容合作、用户路径设计'],
   ['遛遛生活', '小红书', '2025', 3, '城市市集与本地生活 IP', '把城市散步、社区市集、线下摊位与品牌共创组合成可参与的生活方式场景。', 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1400&q=80', '遛遛生活城市企划招商方案'],
   ['闪光青春派', '小红书', '2025', 2, '小红书校园开学季 IP', '面向大学生开学节点，把内容共创、校园场景和品牌曝光整合成年度校园营销资产。', 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=80', '闪光青春派校园季招商方案'],
   ['我就要这样生活', '小红书', '2025', 4, '小红书文娱生活态度 IP', '用生活主张承接年轻人情绪表达，把文娱内容、社区讨论和品牌合作包装成平台级 IP。', 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=80', '我就要这样生活招商方案'],
@@ -388,7 +390,7 @@ function richTextProp(value) {
 
 function createFallbackIpArchiveData() {
   return {
-    results: fallbackIpArchives.map(([name, platform, years, count, position, summary, cover, plan], index) => ({
+    results: fallbackIpArchives.map(([name, platform, years, count, position, summary, cover, plan, pageDir, pageNumbers, pageTitles, pageNotes], index) => ({
       id: `fallback-ip-${index + 1}`,
       properties: {
         IP名称: titleProp(name),
@@ -401,8 +403,12 @@ function createFallbackIpArchiveData() {
         定位: richTextProp(position),
         策展摘要: richTextProp(summary),
         封面图: { type: 'url', url: cover },
-        封面来源: { type: 'select', select: { name: '临时占位' } },
+        封面来源: { type: 'select', select: { name: pageDir ? 'OSS' : '临时占位' } },
         代表方案: richTextProp(plan),
+        页面图OSS目录: { type: 'url', url: pageDir || '' },
+        精选页码: richTextProp(pageNumbers || ''),
+        精选页标题: richTextProp(pageTitles || ''),
+        精选页说明: richTextProp(pageNotes || ''),
       },
     })),
     next_cursor: null,
