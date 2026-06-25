@@ -1,1319 +1,347 @@
-import React, { useState, useEffect } from 'react';
-import { ArchiveCard } from './components/ArchiveCard';
-import { Archivist } from './components/Archivist';
-import { SchemeDetail } from './components/SchemeDetail';
-import { CATEGORIES as DEFAULT_CATEGORIES, CURATED_IP_ARCHIVES, MOCK_SCHEMES, PALETTE } from './constants';
-import { IpArchive, Scheme } from './types';
-import { mapNotionResultToSchemes } from './utils/notionMapper';
+import React, { useMemo, useState } from 'react';
 
-// --- CONFIGURATION START ---
+type PageVersion = {
+  year: string;
+  title: string;
+  summary: string;
+  dir: string;
+  pages: string[];
+  labels: string[];
+};
 
-interface ResourceLink {
-  label: string;
+type IpAnnual = {
+  platform: string;
+  name: string;
   type: string;
-  href?: string;
-  color: string;
-  id?: string;
-}
-
-const RESOURCE_LINKS: ResourceLink[] = [
-  { 
-    label: 'AI', 
-    type: 'database', 
-    id: process.env.NOTION_DB_AI_ID, 
-    color: '#FFF9E1' 
-  },
-  { 
-    label: '关于', 
-    type: 'page', 
-    id: process.env.NOTION_PAGE_ABOUT_ID, 
-    color: '#F0F0F0' 
-  },
-  { 
-    label: '订阅', 
-    type: 'page', 
-    id: process.env.NOTION_PAGE_SUBSCRIBE_ID, 
-    color: '#E1F0FF' 
-  }
-];
-
-const BRAND_CONFIG = {
-  mode: 'image', 
-  text: 'ThinkPPT',
-  logoUrl: '/logo.png',
-  heightClass: 'h-8' 
+  text: string;
+  versions: PageVersion[];
 };
 
-const STATIC_DATA_ENABLED = process.env.STATIC_DATA_ENABLED === 'true';
-const DEMO_MODE = process.env.VITE_DEMO_MODE === 'true';
-const DATA_CACHE_VERSION = 'ip-archive-v5';
-const IP_ARCHIVE_STATIC_FILE = '/data/databases/ip-archives.json';
+const root = '/scheme-pages/xiaohongshu/manrenjie';
 
-const MEMBERSHIP_PLANS = [
+const annualData: IpAnnual[] = [
   {
-    name: '单份获取',
-    label: '适合临时找方案',
-    details: ['确认目标档案后人工开通', '提供对应资料访问权限', '适合先小额验证需求']
+    platform: '小红书',
+    name: '慢人节',
+    type: '生活方式情绪 IP',
+    text: '年鉴页面的重点不是拆招商权益，而是让用户像翻一本数字方案集一样，快速浏览同一个 IP 在不同年份、不同版本里的 PPT 页面。',
+    versions: [
+      {
+        year: '2024',
+        title: '2024小红书慢人节招商通案',
+        summary: '浏览这份 PDF 的代表页面：封面、情绪、事件、路线等关键页。',
+        dir: `${root}/2024-tongan`,
+        pages: ['001', '003', '012', '033', '001', '003', '012', '033'],
+        labels: ['封面', '慢人心态', '平台级事件', '慢人路线', '封面复看', '情绪复看', '事件复看', '路线复看'],
+      },
+      {
+        year: '2024 2.0',
+        title: '小红书2024慢人节2.0营销方案',
+        summary: '浏览 2.0 版本的代表页面：人群趋势、核心洞察和长线运营等页面。',
+        dir: `${root}/2024-2`,
+        pages: ['001', '005', '008', '023', '001', '005', '008', '023'],
+        labels: ['封面', '慢人群趋势', '核心洞察', '长线运营', '封面复看', '趋势复看', '洞察复看', '运营复看'],
+      },
+      {
+        year: '2025',
+        title: '小红书慢人节2025年长线IP规划',
+        summary: '浏览 2025 长线规划版本的代表页面：年度规划、内容阵地和用户旅程等页面。',
+        dir: `${root}/2025-planning`,
+        pages: ['001', '003', '021', '028', '001', '003', '021', '028'],
+        labels: ['封面', '年度规划', '内容阵地', '用户旅程', '封面复看', '规划复看', '阵地复看', '旅程复看'],
+      },
+    ],
   },
   {
-    name: '年度会员',
-    label: '适合长期查资料',
-    details: ['覆盖站内会员档案库', '新增资料持续更新', '可按需备注行业方向']
+    platform: '小红书',
+    name: '遛遛生活',
+    type: '城市市集 IP',
+    text: '城市散步、市集和线下体验如何变成平台招商项目。后续上传 PDF 后，这里会自动展开完整页面。',
+    versions: [],
   },
   {
-    name: '项目授权',
-    label: '适合团队或商用',
-    details: ['按项目确认使用范围', '可提供授权说明', '适合企业内部参考']
-  }
+    platform: '小红书',
+    name: '闪光青春派',
+    type: '校园 IP',
+    text: '校园开学季如何被包装成年度营销资产。后续上传 PDF 后，这里会自动展开完整页面。',
+    versions: [],
+  },
+  {
+    platform: '抖音',
+    name: '节气 IP',
+    type: '传统文化节点 IP',
+    text: '用二十四节气搭建全年内容日历和品牌种草资产。后续上传 PDF 后，这里会自动展开完整页面。',
+    versions: [],
+  },
+  {
+    platform: '快手',
+    name: '春节 IP',
+    type: '春节节点 IP',
+    text: '春节流量如何变成晚会、互动和品牌资源包。后续上传 PDF 后，这里会自动展开完整页面。',
+    versions: [],
+  },
+  {
+    platform: 'BILIBILI',
+    name: '拜年纪',
+    type: '内容 IP',
+    text: '社区内容、UP 主生态与春节节点合作方式。后续上传 PDF 后，这里会自动展开完整页面。',
+    versions: [],
+  },
 ];
 
-// --- CONFIGURATION END ---
+const fallbackVersion = (archive: IpAnnual): PageVersion => ({
+  year: '待接入',
+  title: `${archive.name} PDF 待接入`,
+  summary: archive.text,
+  dir: '',
+  pages: ['', '', '', ''],
+  labels: ['封面', '洞察', '主题', '脉络'],
+});
 
-const SkeletonCard = () => (
-  <div className="relative w-full aspect-[3/4] lg:aspect-[3/4.2] mx-auto mt-8 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-    <div className="w-full aspect-video bg-gray-200 animate-pulse"></div>
-    <div className="p-5 flex flex-col flex-grow space-y-4">
-      <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-      <div className="space-y-2">
-        <div className="h-3 bg-gray-100 rounded animate-pulse"></div>
-        <div className="h-3 bg-gray-100 rounded w-5/6 animate-pulse"></div>
-      </div>
-      <div className="mt-auto flex gap-2">
-        <div className="h-4 w-12 bg-gray-100 rounded animate-pulse"></div>
-        <div className="h-4 w-12 bg-gray-100 rounded animate-pulse"></div>
-      </div>
-    </div>
-  </div>
-);
-
-const MembershipPanel: React.FC<{ onSubscribe: () => void }> = ({ onSubscribe }) => (
-  <section id="membership" className="px-6 md:px-12 pt-8">
-    <div className="border-y border-black/10 bg-white/70">
-      <div className="grid lg:grid-cols-[1.05fr_2fr]">
-        <div className="p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-black/10">
-          <span className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-widest">MEMBER ACCESS</span>
-          <h2 className="mt-2 text-xl md:text-2xl font-heading font-black tracking-tight text-gray-900">个人试运营收款入口</h2>
-          <p className="mt-3 text-sm leading-relaxed text-gray-600">
-            目前建议采用人工开通：用户提交需求后，通过微信、支付宝或银行卡转账确认，随后开通资料访问权限。正式商户号上线前不做自动扣款。
-          </p>
-          <button
-            onClick={onSubscribe}
-            className="mt-5 inline-flex items-center justify-center rounded-full border-2 border-black bg-black px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white shadow-[3px_3px_0_rgba(0,0,0,0.18)] transition-transform hover:-translate-y-0.5"
-          >
-            申请开通
-          </button>
-        </div>
-        <div className="grid md:grid-cols-3">
-          {MEMBERSHIP_PLANS.map((plan, index) => (
-            <div key={plan.name} className={`p-6 md:p-7 ${index > 0 ? 'border-t md:border-t-0 md:border-l' : ''} border-black/10`}>
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-base font-black text-gray-900">{plan.name}</h3>
-                <span className="rounded-full border border-black/10 bg-[#FDFBF7] px-2 py-1 font-mono text-[9px] font-bold text-gray-500">{plan.label}</span>
-              </div>
-              <ul className="mt-4 space-y-2">
-                {plan.details.map((item) => (
-                  <li key={item} className="flex gap-2 text-xs leading-relaxed text-gray-600">
-                    <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-black/60"></span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="border-t border-black/10 px-6 py-3 font-mono text-[10px] leading-relaxed text-gray-400">
-        个人阶段建议先做“付费意向 + 人工收款 + 人工发放权限”，后续再升级为个体户或公司主体的正式在线支付。
-      </div>
-    </div>
-  </section>
-);
-
-const normalizeStaticId = (id: string) => id.replace(/-/g, '');
-
-const getStaticDatabaseFile = (databaseId: string | null) => {
-  if (databaseId === process.env.NOTION_DB_AI_ID) return '/data/databases/ai.json';
-  return '/data/databases/main.json';
-};
-
-const getStaticPageFile = (pageId: string) => `/data/pages/${normalizeStaticId(pageId)}.json`;
-
-const uniqueValues = (values: string[]) => Array.from(new Set(values.filter(Boolean)));
-
-const FEATURED_DEMO_ARCHIVE_IDS = ['xhs-slow-life', 'xhs-snowman', 'xhs-outsider'];
-const SCHEME_FRAME_LABELS = ['封面', '洞察', '人群', '主题', '玩法', '权益', '脉络', '收束'];
-const NOTION_PLATFORM_ORDER = ['小红书', '快手', '抖音', 'BILIBILI', 'B站', '天猫校园', '知乎', '伊利', '去哪儿'];
-const KNOWN_IP_NAMES = [
-  '慢人节', '雪人节', '外人节', '马路生活节', '夜人节', '闪光青春派', '我就要这样生活', '遛遛生活',
-  '开学季', '拜年纪', '毕业季', '百大UP主盛典', '我们野太会了吧', '生活B修课',
-  '马年星晚', '团圆进行时', '节气文化', '最是人间好时节', '汽水音乐'
-];
-
-const splitField = (value?: string) => (value || '')
-  .split(/[\n,，、/|]+/)
-  .map(item => item.trim())
-  .filter(Boolean);
-
-const getPlatformTheme = (platform: string) => {
-  const normalized = platform.toLowerCase();
-  if (platform.includes('小红书')) return { accent: '#B63C32', soft: '#F4DAD4', paper: '#FFF8EF', ink: '#171412' };
-  if (platform.includes('抖音')) return { accent: '#0B9CA8', soft: '#D5F2F0', paper: '#F7FBF8', ink: '#111111' };
-  if (platform.includes('快手')) return { accent: '#D96A20', soft: '#F5DEC8', paper: '#FFF8ED', ink: '#14100D' };
-  if (normalized.includes('bilibili') || platform.includes('B站')) return { accent: '#3F7EA6', soft: '#D9E8EF', paper: '#F7FAFC', ink: '#10151A' };
-  return { accent: '#8F2F24', soft: '#E8DED0', paper: '#FFFCF5', ink: '#111111' };
-};
-
-const isPlaceholderImage = (image?: string) => {
-  if (!image) return true;
-  return image.includes('images.unsplash.com') || image.includes('photo-1621600411688');
-};
-
-const getSchemeImage = (scheme: Scheme) => scheme.coverOssUrl || scheme.imageUrl;
-
-const getArchiveName = (scheme: Scheme) => {
-  const isCurated = Boolean(scheme.readingStatus || scheme.curationSummary || scheme.editorNote);
-  if (isCurated && scheme.ipName && scheme.ipName !== scheme.title) return scheme.ipName;
-  const title = scheme.title.replace(/\s+/g, '');
-  const matched = KNOWN_IP_NAMES.find(name => title.includes(name));
-  if (matched) return matched;
-  const bracketMatch = title.match(/《([^》]{2,24})》/);
-  if (bracketMatch?.[1]) return bracketMatch[1];
-  return '';
-};
-
-const buildPagesFromScheme = (scheme: Scheme) => {
-  const image = getSchemeImage(scheme);
-  const titleHints = splitField(scheme.featuredPageTitles);
-  const noteHints = splitField(scheme.featuredPageNotes);
-  const pageData = [
-    {
-      label: '封面',
-      title: titleHints[0] || scheme.title,
-      role: scheme.description || `${scheme.ipName} 的年度方案封面。`,
-      note: noteHints[0] || '这里优先展示 PDF 封面；后续接入 PDF 转图后可替换为真实页面图。'
-    },
-    {
-      label: '洞察',
-      title: titleHints[1] || scheme.coreInsight || `${scheme.ipName} / 核心洞察`,
-      role: scheme.coreInsight || scheme.editorNote || '从方案中提取人群、趋势或平台语境，说明这个 IP 为什么成立。',
-      note: noteHints[1] || '建议在 Notion 中补充“核心洞察”，首页弹窗会自动读取。'
-    },
-    {
-      label: '主题',
-      title: titleHints[2] || scheme.annualTheme || scheme.slogan || `${scheme.ipName} / 年度主题`,
-      role: scheme.bigIdea || scheme.slogan || '展示方案如何把洞察翻译成年度主题、Big Idea 或传播主张。',
-      note: noteHints[2] || '主题页不要叠加大段说明，解释文字放在右侧。'
-    },
-    {
-      label: '脉络',
-      title: titleHints[3] || `${scheme.ipName} / 方案脉络`,
-      role: scheme.schemeNarrative || scheme.curationSummary || '梳理从封面、洞察、主题、玩法到权益的阅读路径。',
-      note: noteHints[3] || '如果 Notion 里补充“方案脉络”，这里会优先呈现。'
-    },
-    {
-      label: '玩法',
-      title: titleHints[4] || `${scheme.ipName} / 参与玩法`,
-      role: scheme.resultSummary || scheme.schemeRole || '展示平台资源、内容玩法、达人共创或用户参与机制。',
-      note: noteHints[4] || '适合放 PDF 中的活动机制页、传播节奏页或资源组合页。'
-    },
-    {
-      label: '权益',
-      title: titleHints[5] || `${scheme.ipName} / 招商权益`,
-      role: scheme.rights.length ? scheme.rights.join(' / ') : '展示品牌可购买、可露出、可共创的资源结构。',
-      note: noteHints[5] || '招商权益是营销人最常回看的部分，后续建议抽 1-2 页真实图。'
-    }
-  ];
-
-  return pageData.map(item => ({ ...item, image }));
-};
-
-const buildArchivesFromSchemes = (schemes: Scheme[]): IpArchive[] => {
-  const groups = schemes.reduce((map, scheme) => {
-    const platform = scheme.platform || '未标注平台';
-    const name = getArchiveName(scheme);
-    if (!name) return map;
-    const key = `${platform}__${name}`;
-    const current = map.get(key) || [] as Scheme[];
-    current.push(scheme);
-    map.set(key, current);
-    return map;
-  }, new Map<string, Scheme[]>());
-
-  return Array.from(groups.entries()).map(([key, group]) => {
-    const [platform, name] = key.split('__');
-    const sortedSchemes = group.slice().sort((a, b) => {
-      if (!!a.isFeatured !== !!b.isFeatured) return a.isFeatured ? -1 : 1;
-      return String(b.year || '').localeCompare(String(a.year || ''));
-    });
-    const coverScheme = sortedSchemes[0];
-    const years = uniqueValues(sortedSchemes.map(scheme => scheme.year)).sort();
-    const versions = sortedSchemes.map(scheme => ({
-      year: scheme.year || '未标注',
-      title: scheme.title,
-      phase: scheme.ipStage || scheme.projectType || scheme.category,
-      planSummary: scheme.curationSummary || scheme.schemeNarrative || scheme.description || scheme.editorNote || '待补充方案摘要。',
-      materials: [scheme.archiveType, scheme.projectType, scheme.schemeRole].filter(Boolean),
-      visuals: [getSchemeImage(scheme)].filter(Boolean),
-      pageCount: scheme.pageCount,
-      fileSize: scheme.fileSize,
-      schemePages: buildPagesFromScheme(scheme),
-      evidencePoints: [scheme.coreInsight, scheme.bigIdea, scheme.keyChange, scheme.resultSummary].filter(Boolean),
-      sourceTitle: scheme.title,
-      sourceUrl: scheme.pdfOssUrl || scheme.downloadUrl,
-      downloadUrl: scheme.pdfOssUrl || scheme.downloadUrl,
-      execution: scheme.editorNote || scheme.resultSummary || '适合用于平台 IP 招商方案研究。'
-    }));
-
-    return {
-      id: key,
-      platform,
-      name,
-      type: coverScheme.projectType || coverScheme.category || 'IP 方案',
-      years: years.length > 1 ? `${years[0]}-${years[years.length - 1]}` : (years[0] || '持续更新'),
-      coverImage: getSchemeImage(coverScheme),
-      thesis: coverScheme.curationSummary || coverScheme.ipPosition || coverScheme.description || coverScheme.editorNote || `${name} 的平台 IP 方案档案。`,
-      authorNote: coverScheme.editorNote || coverScheme.keyChange || '待补充站长观察。',
-      versions
-    };
-  }).sort((a, b) => {
-    const aRank = NOTION_PLATFORM_ORDER.includes(a.platform) ? NOTION_PLATFORM_ORDER.indexOf(a.platform) : 99;
-    const bRank = NOTION_PLATFORM_ORDER.includes(b.platform) ? NOTION_PLATFORM_ORDER.indexOf(b.platform) : 99;
-    if (aRank !== bRank) return aRank - bRank;
-    return b.versions.length - a.versions.length;
-  });
-};
-
-const getNotionProp = (props: Record<string, any>, keys: string[]) => {
-  for (const key of keys) {
-    if (props[key]) return props[key];
-  }
-
-  const allKeys = Object.keys(props);
-  for (const key of keys) {
-    const normalizedKey = key.toLowerCase().replace(/\s/g, '');
-    const found = allKeys.find(item => item.toLowerCase().replace(/\s/g, '') === normalizedKey);
-    if (found) return props[found];
-  }
-
-  return null;
-};
-
-const getPropText = (props: Record<string, any>, keys: string[]) => {
-  const prop = getNotionProp(props, keys);
-  if (!prop) return '';
-  if (prop.type === 'title') return prop.title?.map((item: any) => item.plain_text).join('') || '';
-  if (prop.type === 'rich_text') return prop.rich_text?.map((item: any) => item.plain_text).join('') || '';
-  if (prop.type === 'select') return prop.select?.name || '';
-  if (prop.type === 'url') return prop.url || '';
-  if (prop.type === 'number') return prop.number !== null ? String(prop.number) : '';
-  return '';
-};
-
-const getPropNumber = (props: Record<string, any>, keys: string[]) => {
-  const prop = getNotionProp(props, keys);
-  if (prop?.type === 'number') return prop.number ?? 0;
-  const text = getPropText(props, keys);
-  const parsed = Number.parseFloat(text);
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-const getPropCheckbox = (props: Record<string, any>, keys: string[]) => {
-  const prop = getNotionProp(props, keys);
-  return prop?.type === 'checkbox' ? prop.checkbox : false;
-};
-
-const buildPageImageUrl = (dir: string, pageNumber: string) => {
-  if (!dir || !pageNumber) return '';
-  const cleanDir = dir.replace(/\/+$/, '');
-  const cleanPage = pageNumber.replace(/[^\d]/g, '');
-  if (!cleanPage) return '';
-  return `${cleanDir}/page-${cleanPage.padStart(3, '0')}.webp`;
-};
-
-const buildCuratedSchemePages = (
-  archive: Pick<IpArchive, 'name' | 'coverImage' | 'thesis' | 'authorNote'>,
-  representativePlan: string,
-  realPageImages: string[] = [],
-  pageTitleHints: string[] = [],
-  pageNoteHints: string[] = []
-) => {
-  const planTitle = representativePlan || `${archive.name} 代表方案`;
-  return [
-    {
-      label: '封面',
-      title: pageTitleHints[0] || planTitle,
-      role: `${archive.name} 的代表方案封面。`,
-      image: realPageImages[0] || archive.coverImage,
-      note: pageNoteHints[0] || '方案封面页。'
-    },
-    {
-      label: '洞察',
-      title: pageTitleHints[1] || `${archive.name} / 策展摘要`,
-      role: archive.thesis,
-      image: realPageImages[1] || archive.coverImage,
-      note: pageNoteHints[1] || '从 PDF 中抽取核心洞察页。'
-    },
-    {
-      label: '主题',
-      title: pageTitleHints[2] || `${archive.name} / 年度主题`,
-      role: archive.authorNote,
-      image: realPageImages[2] || archive.coverImage,
-      note: pageNoteHints[2] || '展示主题页、Big Idea 页或主视觉页。'
-    },
-    {
-      label: '脉络',
-      title: pageTitleHints[3] || `${archive.name} / 方案脉络`,
-      role: '从封面、洞察、主题到招商权益，保留完整 PDF 下载入口，同时抽取关键页作为展览阅读。',
-      image: realPageImages[3] || archive.coverImage,
-      note: pageNoteHints[3] || '展示方案结构、玩法或招商权益。'
-    }
-  ];
-};
-
-const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
-  if (!notionData?.results) return [];
-
-  const rows = notionData.results
-    .map((page: any) => {
-      const props = page.properties || {};
-      const name = getPropText(props, ['IP名称', 'Name', 'Title']);
-      const platform = getPropText(props, ['平台', 'Platform']) || '未标注平台';
-      const coverImage = getPropText(props, ['封面图', 'Cover', 'Cover URL']) || 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?auto=format&fit=crop&w=1200&q=80';
-      const years = getPropText(props, ['年份跨度', 'Years', '年份']) || '持续更新';
-      const type = getPropText(props, ['定位', 'IP定位', 'Type']) || '平台 IP 方案';
-      const thesis = getPropText(props, ['策展摘要', '摘要', 'Summary']) || `${name} 的平台 IP 方案档案。`;
-      const representativePlan = getPropText(props, ['代表方案', 'Representative Plan']) || `${name} 代表方案`;
-      const schemeCount = getPropNumber(props, ['方案数', 'Scheme Count']);
-      const isVisible = getPropCheckbox(props, ['前端展示', '上线', 'Visible']);
-      const status = getPropText(props, ['整理状态', 'Status']);
-      const sort = getPropNumber(props, ['排序', 'Sort']);
-      const pageImageDir = getPropText(props, ['页面图OSS目录', 'Page Images OSS', '页面图目录']);
-      const featuredPageNumbers = splitField(getPropText(props, ['精选页码', 'Featured Pages']));
-      const featuredPageTitles = splitField(getPropText(props, ['精选页标题', 'Featured Page Titles']));
-      const featuredPageNotes = splitField(getPropText(props, ['精选页说明', 'Featured Page Notes']));
-      const realPageImages = featuredPageNumbers
-        .map(pageNumber => buildPageImageUrl(pageImageDir, pageNumber))
-        .filter(Boolean);
-      const resolvedCover = realPageImages[0] || coverImage;
-      const archive = {
-        id: page.id || `${platform}-${name}`,
-        platform,
-        name,
-        type,
-        years,
-        coverImage: resolvedCover,
-        thesis,
-        authorNote: type,
-        versions: [
-          {
-            year: years,
-            title: representativePlan,
-            phase: status || '精选档案',
-            planSummary: thesis,
-            materials: ['PDF方案', schemeCount ? `${schemeCount} 份方案` : '方案档案'].filter(Boolean),
-            visuals: [resolvedCover],
-            pageCount: schemeCount ? `${schemeCount} 份档案` : '',
-            fileSize: '',
-            schemePages: buildCuratedSchemePages({ name, coverImage: resolvedCover, thesis, authorNote: type }, representativePlan, realPageImages, featuredPageTitles, featuredPageNotes),
-            evidencePoints: [type, status].filter(Boolean),
-            sourceTitle: representativePlan,
-            sourceUrl: getPropText(props, ['PDF原件OSS', 'PDF OSS', 'PDF原件']),
-            downloadUrl: getPropText(props, ['PDF原件OSS', 'PDF OSS', 'PDF原件']),
-            execution: '先以 IP 为入口呈现方案展，PDF 下载和真实页面图会在后续接入。'
-          }
-        ]
-      };
-
-      return { archive, isVisible, sort };
-    })
-    .filter(item => item.archive.name && item.isVisible)
-    .sort((a, b) => a.sort - b.sort);
-
-  const grouped = new Map<string, { archive: IpArchive; sort: number }>();
-  for (const item of rows) {
-    const key = `${item.archive.platform}__${item.archive.name}`;
-    const existing = grouped.get(key);
-    if (!existing) {
-      grouped.set(key, { archive: item.archive, sort: item.sort });
-      continue;
-    }
-
-    existing.archive.versions.push(...item.archive.versions);
-    existing.archive.coverImage = existing.archive.coverImage || item.archive.coverImage;
-    existing.archive.years = uniqueValues(existing.archive.versions.map(version => version.year)).join(' / ');
-    existing.sort = Math.min(existing.sort, item.sort);
-  }
-
-  return Array.from(grouped.values())
-    .sort((a, b) => a.sort - b.sort)
-    .map(item => item.archive);
-};
-
-const SchemePageFrame: React.FC<{
-  archive: Pick<IpArchive, 'platform' | 'name' | 'type' | 'years' | 'thesis'>;
-  title: string;
-  label: string;
-  index?: number;
-  compact?: boolean;
-}> = ({ archive, title, label, index = 0, compact = false }) => {
-  const theme = getPlatformTheme(archive.platform);
-  const pageNo = String(index + 1).padStart(2, '0');
-  const shortTitle = title.replace(/\s+/g, ' ').trim();
-
-  return (
-    <div
-      className={`relative aspect-video w-full overflow-hidden border border-black/10 ${compact ? 'p-3' : 'p-5'}`}
-      style={{ backgroundColor: theme.paper }}
-    >
-      <div className="absolute inset-0 opacity-[0.22]" style={{ backgroundImage: `linear-gradient(${theme.accent} 1px, transparent 1px), linear-gradient(90deg, ${theme.accent} 1px, transparent 1px)`, backgroundSize: compact ? '34px 34px' : '48px 48px' }}></div>
-      <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-80" style={{ backgroundColor: theme.soft }}></div>
-      <div className="absolute bottom-0 left-0 h-2 w-full" style={{ backgroundColor: theme.accent }}></div>
-      <div className="relative z-10 flex h-full flex-col justify-between">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="font-mono text-[9px] font-bold uppercase tracking-[0.28em]" style={{ color: theme.accent }}>{archive.platform}</div>
-            <div className={`${compact ? 'mt-2 text-[11px]' : 'mt-3 text-sm'} font-black text-black/72`}>{label}</div>
-          </div>
-          <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">PAGE {pageNo}</div>
-        </div>
-        <div>
-          <div className={`${compact ? 'text-2xl' : 'text-5xl md:text-6xl'} font-heading font-black leading-[0.95] tracking-tight`} style={{ color: theme.ink }}>
-            {archive.name}
-          </div>
-          <div className={`${compact ? 'mt-2 line-clamp-1 text-xs' : 'mt-4 max-w-[72%] text-lg'} font-black leading-tight`} style={{ color: theme.ink }}>
-            {shortTitle}
-          </div>
-        </div>
-        <div className="grid grid-cols-[1fr_auto] items-end gap-4 border-t border-black/10 pt-3">
-          <div className="line-clamp-2 text-xs leading-5 text-black/48">{archive.type || archive.thesis}</div>
-          <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">{archive.years}</div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SchemeVisual: React.FC<{
-  archive: Pick<IpArchive, 'platform' | 'name' | 'type' | 'years' | 'thesis'>;
-  title: string;
-  label: string;
-  image?: string;
-  index?: number;
-  compact?: boolean;
-}> = ({ archive, title, label, image, index = 0, compact = false }) => {
-  if (!isPlaceholderImage(image)) {
-    return (
-      <div className="aspect-video w-full border border-black/10 bg-white">
-        <img src={image} alt={title} className="h-full w-full object-contain" loading="lazy" decoding="async" />
-      </div>
-    );
-  }
-
-  return <SchemePageFrame archive={archive} title={title} label={label} index={index} compact={compact} />;
-};
-
-const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean; curatedArchives?: IpArchive[] }> = ({ schemes, loading, curatedArchives = [] }) => {
-  const notionArchives = buildArchivesFromSchemes(schemes);
-  const demoArchives = CURATED_IP_ARCHIVES.filter(archive => FEATURED_DEMO_ARCHIVE_IDS.includes(archive.id));
-  const archivesSource = curatedArchives.length > 0 ? curatedArchives : (notionArchives.length > 0 ? notionArchives : demoArchives);
-  const isUsingNotion = curatedArchives.length > 0 || notionArchives.length > 0;
-  const platforms = ['全部', ...uniqueValues(archivesSource.map(archive => archive.platform))];
-  const [activePlatform, setActivePlatform] = useState('全部');
-  const [selectedArchive, setSelectedArchive] = useState<IpArchive | null>(null);
-  const [activeYear, setActiveYear] = useState('');
-  const [activePageIndex, setActivePageIndex] = useState(0);
-  const archives = archivesSource.filter(archive => activePlatform === '全部' || archive.platform === activePlatform);
-  const selectedVersion = selectedArchive?.versions.find(version => version.year === activeYear) || selectedArchive?.versions[0];
-  const schemeCount = archivesSource.reduce((sum, archive) => sum + archive.versions.length, 0);
-
-  const getSchemePages = (archive: IpArchive, version: NonNullable<typeof selectedVersion>) => {
-    if (version.schemePages?.length) return version.schemePages;
-    const fallbackImages = [archive.coverImage, ...version.visuals];
-    return SCHEME_FRAME_LABELS.map((label, index) => ({
-      label,
-      title: label === '封面' ? version.title : `${archive.name} / ${label}`,
-      role: label === '洞察' ? archive.thesis : version.planSummary,
-      image: fallbackImages[index % fallbackImages.length],
-      note: '待 PDF 转图后替换为真实方案页。'
-    }));
-  };
-
-  const selectedPages = selectedArchive && selectedVersion ? getSchemePages(selectedArchive, selectedVersion) : [];
-  const activePage = selectedPages[activePageIndex] || selectedPages[0];
-  const chapterLabels = uniqueValues(selectedPages.map(page => page.label));
-
-  const openArchive = (archive: IpArchive) => {
-    setSelectedArchive(archive);
-    setActiveYear(archive.versions[0]?.year || '');
-    setActivePageIndex(0);
-  };
-
-  const closeArchive = () => setSelectedArchive(null);
-
-  const jumpToChapter = (label: string) => {
-    const nextIndex = selectedPages.findIndex(page => page.label === label);
-    if (nextIndex >= 0) setActivePageIndex(nextIndex);
-  };
-
-  return (
-    <section className="bg-[#F4F0E8]">
-      <div className="border-b border-black/10 px-6 py-10 md:px-12 lg:py-12">
-        <div className="grid gap-10 lg:grid-cols-[1fr_420px]">
-          <div>
-            <div className="font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-[#8F2F24]">THINKPPT / IP SCHEME EXHIBITION</div>
-            <h1 className="mt-6 max-w-3xl text-[42px] font-heading font-black leading-[1.04] text-[#111111] md:text-[68px]">
-              互联网平台<br />IP 方案大赏
-            </h1>
-            <p className="mt-6 max-w-2xl text-[15px] leading-8 text-[#4D4A45]">
-              {isUsingNotion
-                ? '已接入 Notion 方案库：以平台为线索，以 IP 为入口，把每一份 PDF 方案整理成可浏览、可下载、可理解的方案展览。'
-                : '正在等待 Notion 数据；加载完成前先显示 3 个小红书 IP 样板，便于确认页面形式。'}
-            </p>
-          </div>
-          <div className="border-y border-black/10 py-5 lg:border-l lg:border-y-0 lg:pl-10">
-            <div className="grid grid-cols-3 divide-x divide-black/10 border-b border-black/10 pb-5">
-              <div className="pr-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">平台</div>
-                <div className="mt-2 text-3xl font-black">{platforms.length - 1}</div>
-              </div>
-              <div className="px-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">IP</div>
-                <div className="mt-2 text-3xl font-black">{archivesSource.length}</div>
-              </div>
-              <div className="pl-4">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">方案</div>
-                <div className="mt-2 text-3xl font-black">{schemeCount}</div>
-              </div>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {platforms.map(platform => (
-                <button
-                  key={platform}
-                  onClick={() => setActivePlatform(platform)}
-                  className={`border px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${activePlatform === platform ? 'border-[#111111] bg-[#111111] text-[#F4F0E8]' : 'border-black/15 text-black/55 hover:border-black/60 hover:text-black'}`}
-                >
-                  {platform}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-6 py-8 md:px-12">
-        <div className="mb-6 flex items-end justify-between gap-4 border-b border-black/10 pb-4">
-          <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-black/35">Scheme Index</div>
-            <h2 className="mt-2 text-2xl font-heading font-black">选择一个 IP 方案</h2>
-          </div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">{isUsingNotion ? 'Notion 已同步' : loading ? 'Notion 加载中' : '样板库'} / {archives.length} 个 IP</div>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {archives.map(archive => {
-            const coverVersion = archive.versions[0];
-            return (
-              <button
-                key={archive.id}
-                onClick={() => openArchive(archive)}
-                className="group border border-black/10 bg-[#FFFCF5] text-left transition-all hover:-translate-y-0.5 hover:border-[#8F2F24] hover:shadow-[0_14px_36px_rgba(0,0,0,0.08)]"
-              >
-                <div className="p-4">
-                  <div className="relative overflow-hidden border border-black/10 bg-[#111111] transition-transform duration-700 group-hover:scale-[1.015]">
-                    <SchemeVisual archive={archive} title={coverVersion?.title || archive.name} label="封面" image={archive.coverImage} compact />
-                    <div className="absolute left-3 top-3 bg-[#F8F4EC] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-[#111111]">{archive.platform}</div>
-                  </div>
-                  <div className="mt-5 flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-3xl font-heading font-black leading-tight text-[#111111]">{archive.name}</h3>
-                      <p className="mt-3 line-clamp-2 text-sm leading-7 text-black/56">{archive.thesis}</p>
-                    </div>
-                    <div className="shrink-0 text-right font-mono text-[10px] uppercase tracking-widest text-black/35">
-                      <div>{archive.versions.length} 份</div>
-                      <div>{archive.years}</div>
-                    </div>
-                  </div>
-                  <div className="mt-5 grid grid-cols-4 gap-2 border-t border-black/10 pt-4">
-                    {SCHEME_FRAME_LABELS.slice(0, 4).map(label => (
-                      <div key={label} className="border border-black/10 py-2 text-center font-mono text-[9px] font-bold uppercase tracking-widest text-black/45">{label}</div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-widest text-[#8F2F24]">
-                    <span>{coverVersion?.title || '打开方案'}</span>
-                    <span className="text-black/35">{coverVersion?.pageCount || '8'} 页导览</span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {selectedArchive && selectedVersion && activePage && (
-        <div className="fixed inset-0 z-[6000] flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm md:p-8">
-          <button className="absolute inset-0 cursor-default" onClick={closeArchive} aria-label="关闭方案"></button>
-          <div className="relative flex max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden border border-black bg-[#F8F4EC] shadow-2xl">
-            <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
-              <div>
-                <div className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-[#8F2F24]">Scheme Exhibition</div>
-                <div className="mt-1 text-xs text-black/45">精选页导览：图片干净展示，文字说明移到右侧</div>
-              </div>
-              <button onClick={closeArchive} className="border border-black/20 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-black/60 hover:border-black hover:text-black">关闭</button>
-            </div>
-            <div className="overflow-y-auto p-5 md:p-8">
-              <div className="grid gap-8 lg:grid-cols-[270px_1fr]">
-                <aside>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-black/35">{selectedArchive.platform}</div>
-                  <h2 className="mt-3 text-4xl font-heading font-black leading-tight text-[#111111]">{selectedArchive.name}</h2>
-                  <p className="mt-4 text-sm leading-7 text-black/58">{selectedArchive.thesis}</p>
-                  <div className="mt-6 border-y border-black/10">
-                    {selectedArchive.versions.map(version => (
-                      <button
-                        key={version.year}
-                        onClick={() => {
-                          setActiveYear(version.year);
-                          setActivePageIndex(0);
-                        }}
-                        className={`grid w-full grid-cols-[48px_1fr] gap-3 border-b border-black/10 py-4 text-left last:border-b-0 ${selectedVersion.year === version.year ? 'text-[#8F2F24]' : 'text-black/55 hover:text-black'}`}
-                      >
-                        <span className="font-mono text-xs font-bold">{version.year}</span>
-                        <span className="text-sm font-black leading-5">{version.title}</span>
-                      </button>
-                    ))}
-                  </div>
-                  <div className="mt-6 border border-black/10 bg-[#FFFCF5] p-4">
-                    <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">PDF 文件</div>
-                    <div className="mt-2 text-sm font-black text-black/75">{selectedVersion.pageCount || '待补'} 页 / {selectedVersion.fileSize || '待补'}</div>
-                    <div className="mt-2 text-xs leading-5 text-black/45">{selectedVersion.downloadUrl ? '已接入下载' : '原 PDF 待上传 OSS 后接入下载'}</div>
-                  </div>
-                </aside>
-
-                <section>
-                  <div className="mb-4 flex flex-wrap items-center gap-2">
-                    {chapterLabels.map(label => (
-                      <button
-                        key={label}
-                        onClick={() => jumpToChapter(label)}
-                        className={`border px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${activePage.label === label ? 'border-[#111111] bg-[#111111] text-[#F8F4EC]' : 'border-black/15 text-black/45 hover:border-black/50 hover:text-black'}`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                    <div className="ml-auto font-mono text-[10px] uppercase tracking-widest text-black/35">PAGE {String(activePageIndex + 1).padStart(2, '0')} / {String(selectedPages.length).padStart(2, '0')}</div>
-                  </div>
-                  <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_310px]">
-                    <div className="border border-black bg-[#111111] p-3">
-                      <div className="bg-[#FDFBF7] p-3">
-                        <SchemeVisual archive={selectedArchive} title={activePage.title} label={activePage.label} image={activePage.image} index={activePageIndex} />
-                      </div>
-                      <div className="mt-3 flex items-center justify-between gap-3 text-[#F8F4EC]">
-                        <button
-                          onClick={() => setActivePageIndex(index => Math.max(0, index - 1))}
-                          disabled={activePageIndex === 0}
-                          className="border border-white/20 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-white/60 disabled:opacity-25"
-                        >
-                          上一页
-                        </button>
-                        <div className="font-mono text-[10px] uppercase tracking-widest text-white/35">Clean PDF Frame / 16:9</div>
-                        <button
-                          onClick={() => setActivePageIndex(index => Math.min(selectedPages.length - 1, index + 1))}
-                          disabled={activePageIndex === selectedPages.length - 1}
-                          className="border border-white/20 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-white/60 disabled:opacity-25"
-                        >
-                          下一页
-                        </button>
-                      </div>
-                    </div>
-                    <aside className="border border-black/10 bg-[#FFFCF5] p-5">
-                      <div className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#8F2F24]">{activePage.label}</div>
-                      <h3 className="mt-4 text-3xl font-heading font-black leading-tight text-[#111111]">{activePage.title}</h3>
-                      <p className="mt-5 text-sm leading-7 text-black/64">{activePage.role}</p>
-                      <div className="mt-6 border-t border-black/10 pt-4">
-                        <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">策展备注</div>
-                        <p className="mt-2 text-xs leading-6 text-black/48">{activePage.note}</p>
-                      </div>
-                      <div className="mt-6 border-t border-black/10 pt-4">
-                        <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">方案脉络</div>
-                        <p className="mt-2 text-xs leading-6 text-black/48">{selectedVersion.planSummary}</p>
-                      </div>
-                    </aside>
-                  </div>
-                  <div className="mt-5 grid gap-3 md:grid-cols-4">
-                    {selectedPages.map((page, index) => (
-                      <button
-                        key={`${page.label}-${page.title}`}
-                        onClick={() => setActivePageIndex(index)}
-                        className={`overflow-hidden border text-left transition-all ${activePageIndex === index ? 'border-[#8F2F24] bg-[#FFFCF5]' : 'border-black/10 bg-[#F4F0E8] hover:border-black/35'}`}
-                      >
-                        <SchemeVisual archive={selectedArchive} title={page.title} label={page.label} image={page.image} index={index} compact />
-                        <div className="p-3">
-                          <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">PAGE {String(index + 1).padStart(2, '0')} / {page.label}</div>
-                          <div className="mt-1 line-clamp-1 text-sm font-black text-[#111111]">{page.title}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                  <div className="mt-6 border-t border-black/10 pt-5">
-                    <h3 className="text-2xl font-black text-[#111111]">{selectedVersion.title}</h3>
-                    <p className="mt-3 max-w-3xl text-sm leading-7 text-black/62">{selectedVersion.planSummary}</p>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </section>
-  );
-};
-
-const CuratedHomeIntro: React.FC<{ schemes: Scheme[]; onOpenScheme: (scheme: Scheme) => void }> = ({ schemes, onOpenScheme }) => {
-  const platforms = uniqueValues(schemes.map(scheme => scheme.platform).filter(value => value !== '未标注平台'));
-  const [activePlatform, setActivePlatform] = useState<string>('全部');
-  const ipGroups = Array.from(
-    schemes.reduce((map, scheme) => {
-      const key = `${scheme.platform || '未标注平台'}__${scheme.ipName || scheme.title}`;
-      const current = map.get(key) || {
-        platform: scheme.platform || '未标注平台',
-        ipName: scheme.ipName || scheme.title,
-        years: new Set<string>(),
-        count: 0,
-        type: scheme.projectType || scheme.category,
-        schemes: [] as Scheme[],
-      };
-      current.years.add(scheme.year);
-      current.count += 1;
-      current.schemes.push(scheme);
-      map.set(key, current);
-      return map;
-    }, new Map<string, { platform: string; ipName: string; years: Set<string>; count: number; type: string; schemes: Scheme[] }>())
-  ).sort((a, b) => b[1].count - a[1].count);
-  const visibleIpGroups = ipGroups.filter(([, group]) => activePlatform === '全部' || group.platform === activePlatform).slice(0, 6);
-  const heroGroup = visibleIpGroups[0]?.[1];
-  const heroSchemes = heroGroup?.schemes.slice().sort((a, b) => String(a.year).localeCompare(String(b.year))) || [];
-
-  const years = uniqueValues(schemes.map(scheme => scheme.year)).sort();
-  const yearLabel = years.length > 1 ? `${years[0]}-${years[years.length - 1]}` : (years[0] || '持续更新');
-
-  return (
-    <section className="border-b border-black/10 bg-[#F4F0E8]">
-      <div className="grid min-h-[620px] lg:grid-cols-[0.88fr_1.12fr]">
-        <div className="relative border-b border-black/10 px-6 py-10 md:px-12 lg:border-b-0 lg:border-r lg:py-14">
-          <div className="absolute left-6 top-8 hidden h-[calc(100%-4rem)] w-px bg-black/10 md:block"></div>
-          <div className="md:pl-8">
-            <div className="flex items-center justify-between gap-4 border-b border-black/10 pb-4">
-              <span className="font-mono text-[10px] font-bold text-[#8F2F24] uppercase tracking-[0.32em]">THINKPPT ANNUAL</span>
-              <span className="font-mono text-[10px] text-black/35">VOL. {yearLabel}</span>
-            </div>
-            <h1 className="mt-10 max-w-xl text-[44px] font-heading font-black leading-[0.98] tracking-normal text-[#111111] md:text-[72px]">
-              平台 IP<br />营销观察库
-            </h1>
-            <p className="mt-7 max-w-xl text-[15px] leading-8 text-[#4D4A45]">
-              一本面向策划人与品牌市场部的数字年鉴。持续追踪互联网平台 IP 项目的招商方案、视觉物料、商业权益与年度演进。
-            </p>
-            <div className="mt-10 grid grid-cols-3 border-y border-black/10">
-              {[
-                ['平台', platforms.length || '—'],
-                ['IP档案', ipGroups.length || '—'],
-                ['年份跨度', yearLabel],
-              ].map(([label, value], index) => (
-                <div key={label} className={`py-5 ${index > 0 ? 'border-l border-black/10 pl-4' : 'pr-4'}`}>
-                  <div className="font-mono text-[10px] uppercase tracking-widest text-black/35">{label}</div>
-                  <div className="mt-2 text-2xl font-black text-[#111111]">{value}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-10 flex flex-wrap gap-2">
-              {['全部', ...platforms.slice(0, 8)].map(platform => (
-                <button
-                  key={platform}
-                  onClick={() => setActivePlatform(platform)}
-                  className={`border px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${activePlatform === platform ? 'border-[#111111] bg-[#111111] text-[#F4F0E8]' : 'border-black/15 text-black/55 hover:border-black/60 hover:text-black'}`}
-                >
-                  {platform}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-[#111111] text-[#F4F0E8]">
-          <div className="grid h-full lg:grid-rows-[auto_1fr]">
-            <div className="border-b border-white/10 px-6 py-5 md:px-10">
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/40">Curated Focus</span>
-                <span className="font-mono text-[10px] text-white/35">{activePlatform}</span>
-              </div>
-            </div>
-            <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
-              <div className="border-b border-white/10 px-6 py-8 md:px-10 lg:border-b-0 lg:border-r">
-                {heroGroup ? (
-                  <>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#C9694C]">{heroGroup.platform}</div>
-                    <h2 className="mt-5 text-3xl font-heading font-black leading-tight md:text-5xl">{heroGroup.ipName}</h2>
-                    <div className="mt-6 flex flex-wrap gap-2">
-                      {[heroGroup.type, `${heroGroup.count} 份档案`, Array.from(heroGroup.years).sort().join(' / ')].map(item => (
-                        <span key={item} className="border border-white/15 px-3 py-1.5 font-mono text-[10px] text-white/55">{item}</span>
-                      ))}
-                    </div>
-                    <p className="mt-8 text-sm leading-8 text-white/62">
-                      {heroSchemes[0]?.editorNote || '选择一个平台，查看其连续 IP 的年度招商逻辑、权益变化和物料演进。'}
-                    </p>
-                    {heroSchemes[0] && (
-                      <button
-                        onClick={() => onOpenScheme(heroSchemes[0])}
-                        className="mt-8 border border-[#C9694C] px-5 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#F4F0E8] transition-colors hover:bg-[#C9694C] hover:text-[#111111]"
-                      >
-                        打开代表档案
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-sm leading-8 text-white/55">在 Notion 增加“平台”和“IP名称”字段后，这里会自动形成可切换的 IP 聚焦面板。</p>
-                )}
-              </div>
-              <div className="px-6 py-8 md:px-10">
-                <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/35">Annual Timeline</div>
-                <div className="mt-8 space-y-0 border-y border-white/10">
-                  {heroSchemes.map((scheme, index) => (
-                    <button
-                      key={scheme.id}
-                      onClick={() => onOpenScheme(scheme)}
-                      className="grid w-full grid-cols-[64px_1fr] gap-4 border-b border-white/10 py-4 text-left last:border-b-0"
-                    >
-                      <span className="font-mono text-xs text-[#C9694C]">{scheme.year}</span>
-                      <span>
-                        <span className="block text-sm font-bold leading-6 text-[#F4F0E8]">{scheme.title}</span>
-                        <span className="mt-1 block font-mono text-[10px] uppercase tracking-widest text-white/35">{scheme.archiveType || scheme.projectType} / {String(index + 1).padStart(2, '0')}</span>
-                      </span>
-                    </button>
-                  ))}
-                  {heroSchemes.length === 0 && (
-                    <div className="py-5 text-sm text-white/45">暂无可展示时间线。</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-black/10 px-6 py-8 md:px-12">
-        <div className="grid gap-8 lg:grid-cols-[0.82fr_2.18fr]">
-          <div>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.24em] text-black/35">Index of Records</span>
-            <p className="mt-3 text-sm leading-7 text-black/55">以平台为索引，以 IP 为单元，让每一份方案进入长期观察序列。</p>
-          </div>
-          <div className="grid gap-x-8 gap-y-0 md:grid-cols-2">
-            {visibleIpGroups.slice(0, 6).map(([, group]) => (
-              <button key={`${group.platform}-${group.ipName}`} onClick={() => onOpenScheme(group.schemes[0])} className="grid grid-cols-[1fr_auto] gap-4 border-t border-black/10 py-5 text-left transition-colors hover:text-[#8F2F24]">
-                <div>
-                  <div className="text-base font-black text-current">{group.ipName}</div>
-                  <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-black/35">{group.platform} / {group.type}</div>
-                </div>
-                <div className="text-right font-mono text-[10px] leading-5 text-black/45">
-                  <div>{Array.from(group.years).sort().join(' / ')}</div>
-                  <div>{group.count} 份档案</div>
-                </div>
-              </button>
-            ))}
-            {visibleIpGroups.length === 0 && (
-              <div className="py-4 text-sm text-black/45">待补充 IP 字段后自动生成。</div>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+const imageFor = (version: PageVersion, pageIndex: number) => {
+  if (!version.dir || !version.pages[pageIndex]) return '';
+  return `${version.dir}/page-${version.pages[pageIndex]}.webp`;
 };
 
 export default function App() {
-  const [logoError, setLogoError] = useState(false);
-  
-  const [activeCategory, setActiveCategory] = useState('全部');
-  const [categories, setCategories] = useState<string[]>(['全部']);
-  const [currentDatabaseId, setCurrentDatabaseId] = useState<string | null>(null);
-  const [currentDatabaseLabel, setCurrentDatabaseLabel] = useState('方案');
-  
-  const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
-  const [schemes, setSchemes] = useState<Scheme[]>([]);
-  const [ipArchives, setIpArchives] = useState<IpArchive[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [useMock, setUseMock] = useState(false);
+  const platforms = useMemo(() => ['全部', ...Array.from(new Set(annualData.map(item => item.platform)))], []);
+  const [activePlatform, setActivePlatform] = useState('全部');
+  const [activeIp, setActiveIp] = useState(0);
+  const [activeVersion, setActiveVersion] = useState(0);
+  const [activePage, setActivePage] = useState(0);
 
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const filtered = annualData.filter(item => activePlatform === '全部' || item.platform === activePlatform);
+  const archive = filtered[activeIp] || filtered[0] || annualData[0];
+  const versions = archive.versions.length ? archive.versions : [fallbackVersion(archive)];
+  const version = versions[activeVersion] || versions[0];
+  const activeImage = imageFor(version, activePage);
+  const totalPages = versions.reduce((sum, item) => sum + item.labels.length, 0);
 
-  // 初始化时检查本地缓存实现秒开
-  useEffect(() => {
-if (DEMO_MODE) {
-  localStorage.removeItem('thinkppt_schemes_cache');
-  localStorage.removeItem('thinkppt_categories_cache');
-  localStorage.removeItem('thinkppt_schemes_cache_time');
-  localStorage.removeItem('thinkppt_schemes_cache_version');
-  return;
-}
-const cachedVersion = localStorage.getItem('thinkppt_schemes_cache_version');
-if (cachedVersion !== DATA_CACHE_VERSION) {
-  localStorage.removeItem('thinkppt_schemes_cache');
-  localStorage.removeItem('thinkppt_categories_cache');
-  localStorage.removeItem('thinkppt_schemes_cache_time');
-  localStorage.setItem('thinkppt_schemes_cache_version', DATA_CACHE_VERSION);
-}
-const cachedData = localStorage.getItem('thinkppt_schemes_cache');
-const cachedCats = localStorage.getItem('thinkppt_categories_cache');
-const cachedTime = localStorage.getItem('thinkppt_schemes_cache_time');
-const cacheAge = cachedTime ? Date.now() - parseInt(cachedTime) : Infinity;
-
-if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
-  try {
-    const parsed = JSON.parse(cachedData);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      setSchemes(parsed);
-      setLoading(false);
-      if (cachedCats) setCategories(JSON.parse(cachedCats));
-    }
-  } catch (e) {
-    console.warn("Failed to load local cache");
-  }
-}
-  }, []);
-
-  const getDrawerNumber = () => {
-    if (currentDatabaseId === process.env.NOTION_DB_AI_ID) return '02';
-    const idx = categories.indexOf(activeCategory);
-    if (idx === -1) return '01';
-    return (idx + 1).toString().padStart(2, '0');
+  const selectPlatform = (platform: string) => {
+    setActivePlatform(platform);
+    setActiveIp(0);
+    setActiveVersion(0);
+    setActivePage(0);
   };
 
-  const fetchSchemes = async (cursor: string | null = null, categoryOverride?: string, dbIdOverride?: string | null) => {
-    try {
-      if (DEMO_MODE) {
-        const currentCategory = categoryOverride !== undefined ? categoryOverride : activeCategory;
-        const demoSchemes = currentCategory && currentCategory !== '全部'
-          ? MOCK_SCHEMES.filter(scheme => scheme.category === currentCategory)
-          : MOCK_SCHEMES;
-        setSchemes(demoSchemes);
-        setCategories(['全部', ...uniqueValues(MOCK_SCHEMES.map(scheme => scheme.category))]);
-        setUseMock(true);
-        setNextCursor(null);
-        setHasMore(false);
-        return;
-      }
-
-      const currentCategory = categoryOverride !== undefined ? categoryOverride : activeCategory;
-      const targetDbId = dbIdOverride !== undefined ? dbIdOverride : currentDatabaseId;
-      
-      if (!cursor && schemes.length === 0) setLoading(true);
-      if (cursor) setLoadingMore(true);
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const isForceRefresh = urlParams.get('refresh') === 'true';
-
-      if (STATIC_DATA_ENABLED) {
-        const res = await fetch(getStaticDatabaseFile(targetDbId), { cache: isForceRefresh ? 'reload' : 'default' });
-        if (!res.ok) throw new Error('Static database not found');
-
-        const data = await res.json();
-        const filteredData = currentCategory && currentCategory !== '全部'
-          ? {
-              ...data,
-              results: (data.results || []).filter((page: any) => {
-                const mapped = mapNotionResultToSchemes({ results: [page] })[0];
-                return mapped?.category === currentCategory;
-              })
-            }
-          : data;
-        const mappedData = mapNotionResultToSchemes(filteredData);
-
-        setCategories(data.categories || DEFAULT_CATEGORIES);
-        if (cursor) {
-          setSchemes(prev => [...prev, ...mappedData]);
-        } else {
-          setSchemes(mappedData);
-          setUseMock(false);
-          if (!targetDbId && currentCategory === '全部') {
-            localStorage.setItem('thinkppt_schemes_cache', JSON.stringify(mappedData));
-            localStorage.setItem('thinkppt_categories_cache', JSON.stringify(data.categories || DEFAULT_CATEGORIES));
-            localStorage.setItem('thinkppt_schemes_cache_time', Date.now().toString());
-            localStorage.setItem('thinkppt_schemes_cache_version', DATA_CACHE_VERSION);
-          }
-        }
-        setNextCursor(null);
-        setHasMore(false);
-        return;
-      }
-
-      let url = `/api/schemes`;
-      const params = new URLSearchParams();
-      if (cursor) params.append('cursor', cursor);
-      if (currentCategory && currentCategory !== '全部') params.append('category', currentCategory);
-      if (targetDbId) params.append('db_id', targetDbId);
-      if (isForceRefresh) params.append('refresh', 'true');
-
-      const res = await fetch(`${url}?${params.toString()}`);
-      if (!res.ok) {
-           if (schemes.length === 0) {
-             setSchemes(MOCK_SCHEMES); 
-             setCategories(DEFAULT_CATEGORIES); 
-             setUseMock(true);
-           }
-      } else {
-           const data = await res.json();
-           const mappedData = mapNotionResultToSchemes(data);
-           
-           if (!cursor && data.categories) {
-             setCategories(data.categories);
-             if (!targetDbId) localStorage.setItem('thinkppt_categories_cache', JSON.stringify(data.categories));
-           }
-
-           if (cursor) {
-             setSchemes(prev => [...prev, ...mappedData]);
-           } else {
-             setSchemes(mappedData);
-             setUseMock(false);
-             // 仅缓存主页“全部”内容，避免缓存过大
-             if (!targetDbId && currentCategory === '全部') {
-               localStorage.setItem('thinkppt_schemes_cache', JSON.stringify(mappedData));
-               localStorage.setItem('thinkppt_schemes_cache_time', Date.now().toString());
-               localStorage.setItem('thinkppt_schemes_cache_version', DATA_CACHE_VERSION);
-             }
-           }
-           setNextCursor(data.next_cursor);
-           setHasMore(data.has_more);
-      }
-    } catch (error) {
-      if (schemes.length === 0) {
-        setSchemes(MOCK_SCHEMES); 
-        setCategories(DEFAULT_CATEGORIES); 
-        setUseMock(true);
-      }
-    } finally { 
-      setLoading(false); 
-      setLoadingMore(false); 
-    }
+  const selectIp = (index: number) => {
+    setActiveIp(index);
+    setActiveVersion(0);
+    setActivePage(0);
   };
 
-  const fetchIpArchives = async () => {
-    if (DEMO_MODE || !STATIC_DATA_ENABLED) return;
-
-    try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const isForceRefresh = urlParams.get('refresh') === 'true';
-      const res = await fetch(IP_ARCHIVE_STATIC_FILE, { cache: isForceRefresh ? 'reload' : 'default' });
-      if (!res.ok) return;
-
-      const data = await res.json();
-      setIpArchives(mapNotionResultToIpArchives(data));
-    } catch (error) {
-      console.warn('Failed to load IP archive database', error);
-    }
+  const selectVersion = (index: number) => {
+    setActiveVersion(index);
+    setActivePage(0);
   };
-
-  const fetchAndOpenPage = async (pageId: string) => {
-      try {
-          const pageUrl = STATIC_DATA_ENABLED ? getStaticPageFile(pageId) : `/api/page?id=${pageId}`;
-          const res = await fetch(pageUrl);
-          if (res.ok) {
-              const pageData = await res.json();
-              const mapped = mapNotionResultToSchemes({ results: [pageData] });
-              if (mapped.length > 0) setSelectedScheme(mapped[0]);
-          }
-      } catch (e) { console.error(e); }
-  };
-
-  const handleSubscribeClick = () => {
-      const subscribePage = RESOURCE_LINKS.find(link => link.label === '订阅' && link.id);
-      if (subscribePage?.id) {
-          fetchAndOpenPage(subscribePage.id);
-      }
-  };
-
-  useEffect(() => {
-    fetchSchemes();
-    fetchIpArchives();
-  }, []);
-
-  const handleCategoryChange = (category: string) => {
-      if (category === '全部' && currentDatabaseId !== null) { handleReturnToMainDb(); return; }
-      if (activeCategory === category) return;
-      setActiveCategory(category);
-      setNextCursor(null); setHasMore(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      fetchSchemes(null, category);
-  };
-
-  const handleReturnToMainDb = () => {
-     setCurrentDatabaseId(null); setCurrentDatabaseLabel('方案');
-     setActiveCategory('全部'); setNextCursor(null); setHasMore(false);
-     window.scrollTo({ top: 0, behavior: 'smooth' });
-     fetchSchemes(null, '全部', null);
-  };
-  
-  const handleResourceClick = (resource: ResourceLink) => {
-      if (resource.type === 'database' && resource.id) {
-          setCurrentDatabaseId(resource.id); setCurrentDatabaseLabel(resource.label); 
-          setActiveCategory('全部'); setSchemes([]); setNextCursor(null);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          fetchSchemes(null, '全部', resource.id);
-      } else if (resource.type === 'page' && resource.id) {
-          fetchAndOpenPage(resource.id);
-      }
-  };
-
-  // Base list of schemes
-  const baseSchemes = useMock 
-    ? (activeCategory === '全部' ? schemes : schemes.filter(s => s.category === activeCategory))
-    : schemes;
-
-  // Sort: Featured items first
-  const displayedSchemes = [...baseSchemes].sort((a, b) => {
-    // Treat undefined/null as false
-    const aFeatured = !!a.isFeatured;
-    const bFeatured = !!b.isFeatured;
-    if (aFeatured && !bFeatured) return -1;
-    if (!aFeatured && bFeatured) return 1;
-    return 0; 
-  });
-  const isHome = currentDatabaseId === null && activeCategory === '全部';
-  const showProductDemo = isHome;
 
   return (
-    <div className="min-h-[100dvh] bg-[#FDFBF7] lg:bg-[#e8e4da] font-sans text-black relative selection:bg-[#A2D2FF] selection:text-black overflow-x-hidden flex flex-col">
-      
-      <style>{`
-        ::-webkit-scrollbar { display: none; }
-      `}</style>
+    <main className="annual-app">
+      <style>{styles}</style>
 
-      {/* 侧边导航 (移动端) - 更新背景色为 #FDFBF7 */}
-      {!showProductDemo && <nav className="lg:hidden fixed left-0 top-0 bottom-0 z-50 flex flex-col justify-start items-start pointer-events-auto pb-4 pt-0 w-12 bg-[#FDFBF7] border-r border-black/5">
-        <div className="flex flex-col gap-1 pointer-events-auto items-start">
-            <button onClick={() => handleCategoryChange('全部')} className={`relative h-20 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 bg-[#FDFBF7] ${activeCategory === '全部' && currentDatabaseId === null ? 'translate-x-0 w-10 shadow-md z-30' : '-translate-x-1 hover:translate-x-0 opacity-90 z-20'}`}>
-                 {BRAND_CONFIG.mode === 'image' && !logoError ? (
-                     <div className="w-8 h-20 flex items-center justify-center overflow-hidden">
-                         <img src={BRAND_CONFIG.logoUrl} alt={BRAND_CONFIG.text} className="h-4 w-auto max-w-[64px] object-contain rotate-90" onError={() => setLogoError(true)} />
-                     </div>
-                 ) : (
-                    <span className="block [writing-mode:vertical-rl] font-black text-[10px] tracking-widest text-black py-2 uppercase">{BRAND_CONFIG.text}</span>
-                 )}
-            </button>
-            {categories.filter(c => c !== '全部').map((category, idx) => {
-                const isActive = activeCategory === category;
-                // Updated Palette: Closer shades of beige/kraft
-                const paletteColors = [PALETTE.KRAFT_INNER, '#E5DCCB', '#DFD5C4', PALETTE.KRAFT_OUTER];
-                const tabColor = paletteColors[categories.indexOf(category) % paletteColors.length];
-                return (
-                    <button key={category} onClick={() => handleCategoryChange(category)} className={`relative h-16 w-8 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-all duration-300 ${isActive ? 'translate-x-0 w-10 shadow-md z-20' : '-translate-x-1 hover:translate-x-0 opacity-90 z-10'}`} style={{ backgroundColor: tabColor }}>
-                        <span className={`block [writing-mode:vertical-rl] font-mono text-[10px] font-bold tracking-widest ${isActive ? 'text-black' : 'text-black/80'}`}>{category}</span>
-                    </button>
-                );
-            })}
-            <div className="h-2"></div>
-            {RESOURCE_LINKS.map((link) => {
-                const isCurrentDB = link.type === 'database' && link.id === currentDatabaseId;
-                return (
-                <button key={link.label} onClick={() => handleResourceClick(link)} className={`relative h-12 w-7 rounded-r-md border-y border-r border-black/10 shadow-sm flex items-center justify-center transition-transform duration-200 -translate-x-1 hover:translate-x-0 bg-[#FDFBF7] ${isCurrentDB ? 'translate-x-0 w-9 font-bold shadow-md' : ''}`} style={{ backgroundColor: link.color }}>
-                    <span className={`block [writing-mode:vertical-rl] font-mono text-[9px] font-bold text-black/60 tracking-tight ${isCurrentDB ? 'text-black' : ''}`}>{link.label}</span>
-                </button>
-             )})}
+      <header className="top">
+        <div className="brand">
+          <div className="mark">T</div>
+          <div>
+            <small>THINKPPT</small>
+            <b>PPT Marketing Annual</b>
+          </div>
         </div>
-      </nav>}
-
-      {/* 顶部导航 (桌面端) */}
-      <header className="hidden lg:block relative z-40 px-8 py-5 pointer-events-auto">
-        <div className="mx-auto flex max-w-7xl items-center justify-between border-b border-black/10 pb-5">
-            <button onClick={() => handleCategoryChange('全部')} className="group flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center border border-black bg-[#111111] text-[#F4F0E8]">
-                    <span className="font-heading text-xl font-black">T</span>
-                </div>
-                <div className="text-left">
-                    <div className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-black/35">ThinkPPT</div>
-                    <div className="text-sm font-black text-[#111111]">Platform IP Marketing Annual</div>
-                </div>
+        <nav className="chapters" aria-label="平台筛选">
+          {platforms.map(platform => (
+            <button
+              key={platform}
+              className={platform === activePlatform ? 'active' : ''}
+              onClick={() => selectPlatform(platform)}
+            >
+              {platform}
             </button>
-            {showProductDemo && (
-              <div className="border border-[#8F2F24]/30 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#8F2F24]">
-                Scheme Exhibition V1
-              </div>
-            )}
-            {!showProductDemo && <div className="flex items-center gap-1">
-                {categories.slice(0, 7).map((category) => {
-                    const isActive = activeCategory === category;
-                    return (
-                        <button
-                          key={category}
-                          onClick={() => handleCategoryChange(category)}
-                          className={`px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${isActive ? 'bg-[#111111] text-[#F4F0E8]' : 'text-black/45 hover:bg-black/5 hover:text-black'}`}
-                        >
-                          {category}
-                        </button>
-                    );
-                })}
-            </div>}
-            {!showProductDemo && <div className="flex items-center gap-2">
-                {RESOURCE_LINKS.map((link) => {
-                    const isCurrentDB = link.type === 'database' && ((link.id === currentDatabaseId) || (currentDatabaseId === null && link.id === process.env.NOTION_DATABASE_ID));
-                    return (
-                     <button
-                       key={link.label}
-                       onClick={() => handleResourceClick(link)}
-                       className={`border px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-widest transition-colors ${isCurrentDB ? 'border-[#8F2F24] text-[#8F2F24]' : 'border-black/10 text-black/45 hover:border-black/40 hover:text-black'}`}
-                     >
-                        {link.label}
-                     </button>
-                )})}
-            </div>}
-        </div>
+          ))}
+        </nav>
+        <div className="meta">2024-2026<br />IP SCHEME ANNUAL</div>
       </header>
 
-      {/* 主内容区 - 移动端背景色改为 #FDFBF7 */}
-      <main className={`flex-grow z-20 pt-0 ${showProductDemo ? 'px-0 lg:px-8 lg:pb-12' : 'pl-12 lg:px-8 lg:pb-12'}`}>
-        <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] rounded-none shadow-none relative border border-black/10">
-            {isHome ? (
-              showProductDemo ? <IpArchiveProductDemo schemes={displayedSchemes} loading={loading && ipArchives.length === 0} curatedArchives={ipArchives} /> : <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
-            ) : (
-              <div className="px-6 md:px-12 pt-12 pb-8 border-b border-black/10 bg-[#F8F5EE]">
-                  <div>
-                      <span className="font-mono text-[10px] font-bold text-gray-400 mb-2 block uppercase tracking-widest">// ARCHIVE_DRAWER_{getDrawerNumber()} / {currentDatabaseLabel}</span>
-                      <h1 className="text-2xl md:text-4xl font-heading font-black uppercase tracking-tight text-gray-900 mb-2">
-                          {activeCategory === '全部' ? `${currentDatabaseLabel} 库` : activeCategory}
-                      </h1>
-                  </div>
-              </div>
-            )}
+      <nav className="shelf" aria-label="IP 年鉴目录">
+        {filtered.map((item, index) => (
+          <button
+            key={`${item.platform}-${item.name}`}
+            className={`ip-card ${index === activeIp ? 'active' : ''}`}
+            onClick={() => selectIp(index)}
+          >
+            <small>{String(index + 1).padStart(2, '0')}</small>
+            <b>{item.name}</b>
+            <span>{item.platform} / {item.type}</span>
+          </button>
+        ))}
+      </nav>
 
-            {!showProductDemo && (
-            <div className="px-6 md:px-12 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[62px] md:gap-y-16">
-                    {loading ? (
-                        Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)
-                    ) : (
-                        displayedSchemes.map(scheme => (
-                            <ArchiveCard key={scheme.id} scheme={scheme} onClick={() => setSelectedScheme(scheme)} />
-                        ))
-                    )}
+      <section className="spread">
+        <aside className="story">
+          <div>
+            <div className="eyebrow">Annual Feature</div>
+            <h1>{archive.name}</h1>
+            <p>{archive.text}</p>
+          </div>
+          <div />
+          <div className="info-grid">
+            <div><b>{platforms.length - 1}</b><span>PLATFORM</span></div>
+            <div><b>{versions.length}</b><span>VERSIONS</span></div>
+            <div><b>{totalPages}</b><span>PAGES</span></div>
+          </div>
+        </aside>
+
+        <section className="feature">
+          <div className="feature-head">
+            <div>
+              <div className="eyebrow">{archive.platform} / {archive.type}</div>
+              <h2>{version.title}</h2>
+              <p>{version.summary}</p>
+            </div>
+            <div className="count">
+              {String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}
+              <br />
+              {version.year}
+            </div>
+          </div>
+
+          <div className="stage">
+            <div className="main-image">
+              {activeImage ? (
+                <img src={activeImage} alt={version.labels[activePage]} />
+              ) : (
+                <div className="placeholder">
+                  <span>{archive.platform}</span>
+                  <strong>{archive.name}</strong>
+                  <span>{version.labels[activePage]} / PDF 待接入</span>
                 </div>
-                {loadingMore && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[62px] md:gap-y-16 mt-16">{Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)}</div>}
-                
-                {hasMore && !loading && (
-                  <div className="mt-20 flex justify-center">
-                    <button onClick={() => fetchSchemes(nextCursor)} disabled={loadingMore} className="px-8 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition-all shadow-lg active:scale-95 disabled:opacity-50">
-                      {loadingMore ? '检索中...' : '加载更多档案'}
-                    </button>
-                  </div>
-                )}
+              )}
             </div>
-            )}
 
-            <div className="relative h-16 bg-[#FDFBF7] lg:bg-[#FDFBF7] lg:rounded-b-lg rounded-none border-t border-black/5 mt-auto flex items-center justify-center">
-                <span className="px-4 text-center font-mono text-[10px] text-gray-400 uppercase tracking-widest"><a className="text-color" href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号</a> © ThinkPPT.COM Power by Notion / 个人试运营阶段人工确认开通</span>
+            <div className="thumbs" aria-label="PDF 页面缩略图">
+              {version.labels.map((label, index) => {
+                const thumb = imageFor(version, index);
+                return (
+                  <button
+                    key={`${version.year}-${label}-${index}`}
+                    className={index === activePage ? 'active' : ''}
+                    onClick={() => setActivePage(index)}
+                  >
+                    {thumb ? (
+                      <img src={thumb} alt={label} />
+                    ) : (
+                      <div className="placeholder thumb-placeholder">
+                        <span>{label}</span>
+                        <strong>{archive.name}</strong>
+                      </div>
+                    )}
+                    <span>{String(index + 1).padStart(2, '0')} / {label}</span>
+                  </button>
+                );
+              })}
             </div>
-        </div>
-      </main>
+          </div>
 
-      {!DEMO_MODE && <Archivist schemes={schemes} onOpenScheme={setSelectedScheme} />}
-      {selectedScheme && <SchemeDetail scheme={selectedScheme} onClose={() => setSelectedScheme(null)} isResourceDb={currentDatabaseId === process.env.NOTION_DB_AI_ID} onSubscribe={handleSubscribeClick} staticDataMode={STATIC_DATA_ENABLED} />}
-    </div>
+          <div className="caption">
+            <div>
+              <b>{version.labels[activePage]}</b>
+              <span>{version.year} / {version.title}</span>
+            </div>
+            <div className="version">
+              {versions.map((item, index) => (
+                <button
+                  key={`${item.year}-${item.title}`}
+                  className={index === activeVersion ? 'active' : ''}
+                  onClick={() => selectVersion(index)}
+                >
+                  {item.year}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
   );
 }
+
+const styles = `
+:root{
+  --paper:#eee7da;
+  --sheet:#fffaf0;
+  --ink:#11100e;
+  --muted:#746d63;
+  --line:rgba(17,16,14,.14);
+  --red:#9d382e;
+  --dark:#12110f;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --serif:Georgia,"Songti SC",serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);letter-spacing:0}
+button{font:inherit;color:inherit}
+.annual-app{min-height:100vh;padding:22px;display:grid;grid-template-rows:auto auto 1fr;gap:16px;background:var(--paper)}
+.top{display:grid;grid-template-columns:260px 1fr auto;gap:24px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:16px}
+.brand{display:flex;align-items:center;gap:13px}
+.mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px var(--serif)}
+.eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
+.brand small{color:var(--muted);display:block}
+.brand b{display:block;margin-top:3px;font-size:17px}
+.chapters{display:flex;gap:8px;overflow:auto}
+.chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
+.chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.meta{color:var(--muted);text-align:right;line-height:1.6}
+.shelf{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;border-bottom:1px solid var(--line);padding-bottom:14px}
+.ip-card{border:1px solid var(--line);background:rgba(255,250,240,.72);padding:12px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;transition:.18s ease}
+.ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(-2px)}
+.ip-card small{color:var(--red)}
+.ip-card b{font:700 24px/.92 var(--serif);letter-spacing:-.05em}
+.ip-card span{color:var(--muted);font-size:12px;line-height:1.5}
+.spread{min-height:0;display:grid;grid-template-columns:.9fr 1.7fr;gap:18px}
+.story{background:var(--sheet);border:1px solid var(--line);padding:28px;display:grid;grid-template-rows:auto 1fr auto;gap:24px;min-width:0}
+.story .eyebrow{color:var(--red)}
+.story h1{margin:12px 0 0;font:700 clamp(58px,9vw,138px)/.78 var(--serif);letter-spacing:-.08em}
+.story p{margin:20px 0 0;color:var(--muted);font-size:15px;line-height:1.9;max-width:560px}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.info-grid div{padding:14px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.info-grid b{display:block;font-size:28px}
+.info-grid span{display:block;margin-top:8px;color:var(--muted);font:800 10px var(--mono);letter-spacing:.16em}
+.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:18px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:14px;min-width:0}
+.feature-head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
+.feature h2{margin:7px 0 0;font:700 clamp(38px,4.5vw,76px)/.88 var(--serif);letter-spacing:-.07em}
+.feature p{margin:10px 0 0;color:rgba(255,250,240,.62);font-size:13px;line-height:1.75;max-width:720px}
+.count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
+.stage{min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:14px}
+.main-image{min-width:0;border:1px solid rgba(255,250,240,.16);display:grid;place-items:center;padding:16px;background:#0a0a09}
+.main-image img{width:100%;max-height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
+.thumbs{display:grid;grid-template-columns:repeat(8,minmax(112px,1fr));gap:8px;overflow:auto;padding-bottom:2px}
+.thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:5px;cursor:pointer;min-width:112px;position:relative}
+.thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
+.thumbs img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
+.thumbs span{display:block;margin-top:5px;color:rgba(255,250,240,.48);font:800 9px var(--mono);letter-spacing:.1em;text-align:left}
+.thumbs button.active span{color:var(--dark)}
+.caption{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.caption b{font-size:20px}
+.caption span{display:block;margin-top:5px;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em}
+.version{display:flex;gap:8px;overflow:auto}
+.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:112px}
+.version button.active,.version button:hover{background:var(--sheet);color:var(--dark);border-color:var(--sheet)}
+.placeholder{width:100%;aspect-ratio:16/9;background:var(--sheet);color:var(--ink);display:grid;align-content:space-between;padding:22px}
+.placeholder strong{font:700 52px/.85 var(--serif);letter-spacing:-.07em}
+.placeholder span{color:var(--red);font:800 10px var(--mono);letter-spacing:.2em;text-transform:uppercase}
+.thumb-placeholder{padding:10px}
+.thumb-placeholder strong{font-size:24px}
+@media(max-width:1100px){
+  .top,.spread{grid-template-columns:1fr}
+  .shelf{grid-template-columns:repeat(2,1fr)}
+  .thumbs{grid-template-columns:repeat(4,minmax(112px,1fr))}
+}
+@media(max-width:680px){
+  .annual-app{padding:14px}
+  .story,.feature{padding:16px}
+  .shelf{grid-template-columns:1fr}
+  .story h1{font-size:64px}
+  .feature-head,.caption{grid-template-columns:1fr}
+  .meta{text-align:left}
+}
+`;
