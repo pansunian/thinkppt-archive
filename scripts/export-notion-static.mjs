@@ -36,6 +36,21 @@ const retryableStatuses = new Set([408, 409, 425, 429, 500, 502, 503, 504]);
 let mediaDownloadAttempts = 0;
 let mediaSkippedByLimit = 0;
 
+const fallbackIpArchives = [
+  ['慢人节', '小红书', '2024-2025', 3, '小红书生活方式情绪 IP', '围绕慢生活、城市散步、情绪疗愈与线下体验，观察小红书如何把生活态度包装成可招商的长期 IP。', 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80', '慢人节年度招商方案'],
+  ['遛遛生活', '小红书', '2025', 3, '城市市集与本地生活 IP', '把城市散步、社区市集、线下摊位与品牌共创组合成可参与的生活方式场景。', 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1400&q=80', '遛遛生活城市企划招商方案'],
+  ['闪光青春派', '小红书', '2025', 2, '小红书校园开学季 IP', '面向大学生开学节点，把内容共创、校园场景和品牌曝光整合成年度校园营销资产。', 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=80', '闪光青春派校园季招商方案'],
+  ['我就要这样生活', '小红书', '2025', 4, '小红书文娱生活态度 IP', '用生活主张承接年轻人情绪表达，把文娱内容、社区讨论和品牌合作包装成平台级 IP。', 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=80', '我就要这样生活招商方案'],
+  ['雪人节', '小红书', '2024-2025', 1, '小红书冬季节点 IP', '以雪、旅行、礼赠和冬日情绪为入口，适合观察年末节点如何从氛围感转化为招商权益。', 'https://images.unsplash.com/photo-1483664852095-d6cc6870702d?auto=format&fit=crop&w=1400&q=80', '雪人节冬季营销招商方案'],
+  ['外人节', '小红书', '2024', 1, '小红书户外生活方式 IP', '以走到户外、成为外人为核心主张，持续追踪小红书户外生活方式 IP 的招商演进。', 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80', '外人节户外生活方式招商方案'],
+  ['拜年纪', 'bilibili', '2025-2026', 2, 'B站春节内容 IP', 'B站最具代表性的春节内容资产，适合观察二次元社区、UP主内容与品牌春节节点合作方式。', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1400&q=80', '拜年纪春节招商方案'],
+  ['百大UP主盛典', 'bilibili', '2024', 1, 'B站年度创作者盛典 IP', '围绕头部 UP 主和社区荣誉体系，展示 B站如何把创作者生态包装为品牌赞助场景。', 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1400&q=80', '百大UP主盛典品牌合作方案'],
+  ['我们野太会了吧', 'bilibili', '2025', 1, 'B站户外综艺 IP', '聚焦山野、徒步与年轻人的户外兴趣，适合观察垂类内容 IP 的招商价值。', 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1400&q=80', '我们野太会了吧招商方案'],
+  ['校园IP生活B修课', 'bilibili', '2025', 1, 'B站校园生活 IP', '从大学生日常场景切入，连接宿舍、食堂、学习和社交，适合校园消费品牌。', 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1400&q=80', '校园IP生活B修课招商方案'],
+  ['抖音节气 IP', '抖音', '2025', 1, '抖音传统文化节点 IP', '用二十四节气作为全年内容日历，把传统文化、达人内容和品牌种草连成长期资产。', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80', '抖音节气文化 IP 招商方案'],
+  ['快手春节 IP', '快手', '2026', 5, '快手春节节点 IP', '围绕 CNY、晚会、互动和站内资源，观察快手如何把春节流量转化为平台招商权益。', 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1400&q=80', '快手春节 CNY 招商通案'],
+];
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -363,6 +378,56 @@ async function exportDatabase(key, databaseId) {
   };
 }
 
+function titleProp(value) {
+  return { type: 'title', title: [{ plain_text: value }] };
+}
+
+function richTextProp(value) {
+  return { type: 'rich_text', rich_text: [{ plain_text: value }] };
+}
+
+function createFallbackIpArchiveData() {
+  return {
+    results: fallbackIpArchives.map(([name, platform, years, count, position, summary, cover, plan], index) => ({
+      id: `fallback-ip-${index + 1}`,
+      properties: {
+        IP名称: titleProp(name),
+        平台: { type: 'select', select: { name: platform } },
+        前端展示: { type: 'checkbox', checkbox: true },
+        整理状态: { type: 'select', select: { name: '精选' } },
+        排序: { type: 'number', number: (index + 1) * 10 },
+        年份跨度: richTextProp(years),
+        方案数: { type: 'number', number: count },
+        定位: richTextProp(position),
+        策展摘要: richTextProp(summary),
+        封面图: { type: 'url', url: cover },
+        封面来源: { type: 'select', select: { name: '临时占位' } },
+        代表方案: richTextProp(plan),
+      },
+    })),
+    next_cursor: null,
+    has_more: false,
+    categories: ['全部'],
+  };
+}
+
+async function exportOptionalIpArchiveDatabase(databaseId) {
+  try {
+    return await exportDatabase('ip-archives', databaseId);
+  } catch (error) {
+    console.warn(`IP archive database export failed, using fallback data: ${error.message}`);
+    const data = createFallbackIpArchiveData();
+    await writeJson(path.join(databaseDir, 'ip-archives.json'), data);
+    return {
+      id: normalizeId(databaseId),
+      file: '/data/databases/ip-archives.json',
+      count: data.results.length,
+      categories: data.categories,
+      fallback: true,
+    };
+  }
+}
+
 async function exportPage(key, pageId) {
   if (!pageId) return null;
 
@@ -409,7 +474,7 @@ async function main() {
 
   manifest.databases.main = await exportDatabase('main', mainDatabaseId);
   manifest.databases.ai = await exportDatabase('ai', aiDatabaseId);
-  manifest.databases.ipArchives = await exportDatabase('ip-archives', ipArchiveDatabaseId);
+  manifest.databases.ipArchives = await exportOptionalIpArchiveDatabase(ipArchiveDatabaseId);
   manifest.pages.about = await exportPage('about', aboutPageId);
   manifest.pages.subscribe = await exportPage('subscribe', subscribePageId);
 
