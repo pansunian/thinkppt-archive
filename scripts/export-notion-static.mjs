@@ -15,6 +15,7 @@ const mediaDir = path.join(dataDir, 'media');
 const notionApiKey = process.env.NOTION_API_KEY;
 const mainDatabaseId = process.env.NOTION_DATABASE_ID;
 const aiDatabaseId = process.env.NOTION_DB_AI_ID;
+const ipArchiveDatabaseId = process.env.NOTION_IP_ARCHIVE_DATABASE_ID || '1d61fef3c4414a1e8870240cda37935f';
 const aboutPageId = process.env.NOTION_PAGE_ABOUT_ID;
 const subscribePageId = process.env.NOTION_PAGE_SUBSCRIBE_ID;
 const mediaMode = process.env.NOTION_MEDIA_MODE || 'all';
@@ -408,6 +409,7 @@ async function main() {
 
   manifest.databases.main = await exportDatabase('main', mainDatabaseId);
   manifest.databases.ai = await exportDatabase('ai', aiDatabaseId);
+  manifest.databases.ipArchives = await exportDatabase('ip-archives', ipArchiveDatabaseId);
   manifest.pages.about = await exportPage('about', aboutPageId);
   manifest.pages.subscribe = await exportPage('subscribe', subscribePageId);
 

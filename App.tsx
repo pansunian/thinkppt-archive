@@ -46,7 +46,8 @@ const BRAND_CONFIG = {
 
 const STATIC_DATA_ENABLED = process.env.STATIC_DATA_ENABLED === 'true';
 const DEMO_MODE = process.env.VITE_DEMO_MODE === 'true';
-const DATA_CACHE_VERSION = 'ip-archive-v4';
+const DATA_CACHE_VERSION = 'ip-archive-v5';
+const IP_ARCHIVE_STATIC_FILE = '/data/databases/ip-archives.json';
 
 const MEMBERSHIP_PLANS = [
   {
@@ -268,11 +269,137 @@ const buildArchivesFromSchemes = (schemes: Scheme[]): IpArchive[] => {
   });
 };
 
-const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean }> = ({ schemes, loading }) => {
+const getNotionProp = (props: Record<string, any>, keys: string[]) => {
+  for (const key of keys) {
+    if (props[key]) return props[key];
+  }
+
+  const allKeys = Object.keys(props);
+  for (const key of keys) {
+    const normalizedKey = key.toLowerCase().replace(/\s/g, '');
+    const found = allKeys.find(item => item.toLowerCase().replace(/\s/g, '') === normalizedKey);
+    if (found) return props[found];
+  }
+
+  return null;
+};
+
+const getPropText = (props: Record<string, any>, keys: string[]) => {
+  const prop = getNotionProp(props, keys);
+  if (!prop) return '';
+  if (prop.type === 'title') return prop.title?.map((item: any) => item.plain_text).join('') || '';
+  if (prop.type === 'rich_text') return prop.rich_text?.map((item: any) => item.plain_text).join('') || '';
+  if (prop.type === 'select') return prop.select?.name || '';
+  if (prop.type === 'url') return prop.url || '';
+  if (prop.type === 'number') return prop.number !== null ? String(prop.number) : '';
+  return '';
+};
+
+const getPropNumber = (props: Record<string, any>, keys: string[]) => {
+  const prop = getNotionProp(props, keys);
+  if (prop?.type === 'number') return prop.number ?? 0;
+  const text = getPropText(props, keys);
+  const parsed = Number.parseFloat(text);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const getPropCheckbox = (props: Record<string, any>, keys: string[]) => {
+  const prop = getNotionProp(props, keys);
+  return prop?.type === 'checkbox' ? prop.checkbox : false;
+};
+
+const buildCuratedSchemePages = (archive: Pick<IpArchive, 'name' | 'coverImage' | 'thesis' | 'authorNote'>, representativePlan: string) => {
+  const planTitle = representativePlan || `${archive.name} 代表方案`;
+  return [
+    {
+      label: '封面',
+      title: planTitle,
+      role: `${archive.name} 的代表方案封面。`,
+      image: archive.coverImage,
+      note: '后续可替换为 PDF 转出的真实 16:9 封面图。'
+    },
+    {
+      label: '洞察',
+      title: `${archive.name} / 策展摘要`,
+      role: archive.thesis,
+      image: archive.coverImage,
+      note: '这里承接站长对 IP 的一句话判断，不压在方案图上。'
+    },
+    {
+      label: '主题',
+      title: `${archive.name} / 年度主题`,
+      role: archive.authorNote,
+      image: archive.coverImage,
+      note: '适合放主题页、Big Idea 页或主视觉页。'
+    },
+    {
+      label: '脉络',
+      title: `${archive.name} / 方案脉络`,
+      role: '从封面、洞察、主题到招商权益，保留完整 PDF 下载入口，同时抽取关键页作为展览阅读。',
+      image: archive.coverImage,
+      note: '第一版先呈现 IP 和方案关系，下一步再接入真实 PDF 页面图。'
+    }
+  ];
+};
+
+const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
+  if (!notionData?.results) return [];
+
+  return notionData.results
+    .map((page: any) => {
+      const props = page.properties || {};
+      const name = getPropText(props, ['IP名称', 'Name', 'Title']);
+      const platform = getPropText(props, ['平台', 'Platform']) || '未标注平台';
+      const coverImage = getPropText(props, ['封面图', 'Cover', 'Cover URL']) || 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?auto=format&fit=crop&w=1200&q=80';
+      const years = getPropText(props, ['年份跨度', 'Years', '年份']) || '持续更新';
+      const type = getPropText(props, ['定位', 'IP定位', 'Type']) || '平台 IP 方案';
+      const thesis = getPropText(props, ['策展摘要', '摘要', 'Summary']) || `${name} 的平台 IP 方案档案。`;
+      const representativePlan = getPropText(props, ['代表方案', 'Representative Plan']) || `${name} 代表方案`;
+      const schemeCount = getPropNumber(props, ['方案数', 'Scheme Count']);
+      const isVisible = getPropCheckbox(props, ['前端展示', '上线', 'Visible']);
+      const status = getPropText(props, ['整理状态', 'Status']);
+      const sort = getPropNumber(props, ['排序', 'Sort']);
+      const archive = {
+        id: page.id || `${platform}-${name}`,
+        platform,
+        name,
+        type,
+        years,
+        coverImage,
+        thesis,
+        authorNote: type,
+        versions: [
+          {
+            year: years,
+            title: representativePlan,
+            phase: status || '精选档案',
+            planSummary: thesis,
+            materials: ['PDF方案', schemeCount ? `${schemeCount} 份方案` : '方案档案'].filter(Boolean),
+            visuals: [coverImage],
+            pageCount: schemeCount ? `${schemeCount} 份档案` : '',
+            fileSize: '',
+            schemePages: buildCuratedSchemePages({ name, coverImage, thesis, authorNote: type }, representativePlan),
+            evidencePoints: [type, status].filter(Boolean),
+            sourceTitle: representativePlan,
+            sourceUrl: '',
+            downloadUrl: '',
+            execution: '先以 IP 为入口呈现方案展，PDF 下载和真实页面图会在后续接入。'
+          }
+        ]
+      };
+
+      return { archive, isVisible, sort };
+    })
+    .filter(item => item.archive.name && item.isVisible)
+    .sort((a, b) => a.sort - b.sort)
+    .map(item => item.archive);
+};
+
+const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean; curatedArchives?: IpArchive[] }> = ({ schemes, loading, curatedArchives = [] }) => {
   const notionArchives = buildArchivesFromSchemes(schemes);
   const demoArchives = CURATED_IP_ARCHIVES.filter(archive => FEATURED_DEMO_ARCHIVE_IDS.includes(archive.id));
-  const archivesSource = notionArchives.length > 0 ? notionArchives : demoArchives;
-  const isUsingNotion = notionArchives.length > 0;
+  const archivesSource = curatedArchives.length > 0 ? curatedArchives : (notionArchives.length > 0 ? notionArchives : demoArchives);
+  const isUsingNotion = curatedArchives.length > 0 || notionArchives.length > 0;
   const platforms = ['全部', ...uniqueValues(archivesSource.map(archive => archive.platform))];
   const [activePlatform, setActivePlatform] = useState('全部');
   const [selectedArchive, setSelectedArchive] = useState<IpArchive | null>(null);
@@ -693,6 +820,7 @@ export default function App() {
   
   const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
   const [schemes, setSchemes] = useState<Scheme[]>([]);
+  const [ipArchives, setIpArchives] = useState<IpArchive[]>([]);
   const [loading, setLoading] = useState(true);
   const [useMock, setUseMock] = useState(false);
 
@@ -850,6 +978,22 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
     }
   };
 
+  const fetchIpArchives = async () => {
+    if (DEMO_MODE || !STATIC_DATA_ENABLED) return;
+
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isForceRefresh = urlParams.get('refresh') === 'true';
+      const res = await fetch(IP_ARCHIVE_STATIC_FILE, { cache: isForceRefresh ? 'reload' : 'default' });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      setIpArchives(mapNotionResultToIpArchives(data));
+    } catch (error) {
+      console.warn('Failed to load IP archive database', error);
+    }
+  };
+
   const fetchAndOpenPage = async (pageId: string) => {
       try {
           const pageUrl = STATIC_DATA_ENABLED ? getStaticPageFile(pageId) : `/api/page?id=${pageId}`;
@@ -869,7 +1013,10 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       }
   };
 
-  useEffect(() => { fetchSchemes(); }, []);
+  useEffect(() => {
+    fetchSchemes();
+    fetchIpArchives();
+  }, []);
 
   const handleCategoryChange = (category: string) => {
       if (category === '全部' && currentDatabaseId !== null) { handleReturnToMainDb(); return; }
@@ -1007,7 +1154,7 @@ if (cachedData && !currentDatabaseId && cacheAge < 40 * 60 * 1000) {
       <main className={`flex-grow z-20 pt-0 ${showProductDemo ? 'px-0 lg:px-8 lg:pb-12' : 'pl-12 lg:px-8 lg:pb-12'}`}>
         <div className="max-w-7xl mx-auto min-h-[100dvh] lg:min-h-[85vh] bg-[#FDFBF7] lg:bg-[#FDFBF7] rounded-none shadow-none relative border border-black/10">
             {isHome ? (
-              showProductDemo ? <IpArchiveProductDemo schemes={displayedSchemes} loading={loading} /> : <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
+              showProductDemo ? <IpArchiveProductDemo schemes={displayedSchemes} loading={loading && ipArchives.length === 0} curatedArchives={ipArchives} /> : <CuratedHomeIntro schemes={displayedSchemes} onOpenScheme={setSelectedScheme} />
             ) : (
               <div className="px-6 md:px-12 pt-12 pb-8 border-b border-black/10 bg-[#F8F5EE]">
                   <div>
