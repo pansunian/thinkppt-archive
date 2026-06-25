@@ -154,6 +154,20 @@ const splitField = (value?: string) => (value || '')
   .map(item => item.trim())
   .filter(Boolean);
 
+const getPlatformTheme = (platform: string) => {
+  const normalized = platform.toLowerCase();
+  if (platform.includes('小红书')) return { accent: '#B63C32', soft: '#F4DAD4', paper: '#FFF8EF', ink: '#171412' };
+  if (platform.includes('抖音')) return { accent: '#0B9CA8', soft: '#D5F2F0', paper: '#F7FBF8', ink: '#111111' };
+  if (platform.includes('快手')) return { accent: '#D96A20', soft: '#F5DEC8', paper: '#FFF8ED', ink: '#14100D' };
+  if (normalized.includes('bilibili') || platform.includes('B站')) return { accent: '#3F7EA6', soft: '#D9E8EF', paper: '#F7FAFC', ink: '#10151A' };
+  return { accent: '#8F2F24', soft: '#E8DED0', paper: '#FFFCF5', ink: '#111111' };
+};
+
+const isPlaceholderImage = (image?: string) => {
+  if (!image) return true;
+  return image.includes('images.unsplash.com') || image.includes('photo-1621600411688');
+};
+
 const getSchemeImage = (scheme: Scheme) => scheme.coverOssUrl || scheme.imageUrl;
 
 const getArchiveName = (scheme: Scheme) => {
@@ -308,36 +322,50 @@ const getPropCheckbox = (props: Record<string, any>, keys: string[]) => {
   return prop?.type === 'checkbox' ? prop.checkbox : false;
 };
 
-const buildCuratedSchemePages = (archive: Pick<IpArchive, 'name' | 'coverImage' | 'thesis' | 'authorNote'>, representativePlan: string) => {
+const buildPageImageUrl = (dir: string, pageNumber: string) => {
+  if (!dir || !pageNumber) return '';
+  const cleanDir = dir.replace(/\/+$/, '');
+  const cleanPage = pageNumber.replace(/[^\d]/g, '');
+  if (!cleanPage) return '';
+  return `${cleanDir}/page-${cleanPage.padStart(3, '0')}.webp`;
+};
+
+const buildCuratedSchemePages = (
+  archive: Pick<IpArchive, 'name' | 'coverImage' | 'thesis' | 'authorNote'>,
+  representativePlan: string,
+  realPageImages: string[] = [],
+  pageTitleHints: string[] = [],
+  pageNoteHints: string[] = []
+) => {
   const planTitle = representativePlan || `${archive.name} 代表方案`;
   return [
     {
       label: '封面',
-      title: planTitle,
+      title: pageTitleHints[0] || planTitle,
       role: `${archive.name} 的代表方案封面。`,
-      image: archive.coverImage,
-      note: '后续可替换为 PDF 转出的真实 16:9 封面图。'
+      image: realPageImages[0] || archive.coverImage,
+      note: pageNoteHints[0] || '方案封面页。'
     },
     {
       label: '洞察',
-      title: `${archive.name} / 策展摘要`,
+      title: pageTitleHints[1] || `${archive.name} / 策展摘要`,
       role: archive.thesis,
-      image: archive.coverImage,
-      note: '这里承接站长对 IP 的一句话判断，不压在方案图上。'
+      image: realPageImages[1] || archive.coverImage,
+      note: pageNoteHints[1] || '从 PDF 中抽取核心洞察页。'
     },
     {
       label: '主题',
-      title: `${archive.name} / 年度主题`,
+      title: pageTitleHints[2] || `${archive.name} / 年度主题`,
       role: archive.authorNote,
-      image: archive.coverImage,
-      note: '适合放主题页、Big Idea 页或主视觉页。'
+      image: realPageImages[2] || archive.coverImage,
+      note: pageNoteHints[2] || '展示主题页、Big Idea 页或主视觉页。'
     },
     {
       label: '脉络',
-      title: `${archive.name} / 方案脉络`,
+      title: pageTitleHints[3] || `${archive.name} / 方案脉络`,
       role: '从封面、洞察、主题到招商权益，保留完整 PDF 下载入口，同时抽取关键页作为展览阅读。',
-      image: archive.coverImage,
-      note: '第一版先呈现 IP 和方案关系，下一步再接入真实 PDF 页面图。'
+      image: realPageImages[3] || archive.coverImage,
+      note: pageNoteHints[3] || '展示方案结构、玩法或招商权益。'
     }
   ];
 };
@@ -359,6 +387,13 @@ const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
       const isVisible = getPropCheckbox(props, ['前端展示', '上线', 'Visible']);
       const status = getPropText(props, ['整理状态', 'Status']);
       const sort = getPropNumber(props, ['排序', 'Sort']);
+      const pageImageDir = getPropText(props, ['页面图OSS目录', 'Page Images OSS', '页面图目录']);
+      const featuredPageNumbers = splitField(getPropText(props, ['精选页码', 'Featured Pages']));
+      const featuredPageTitles = splitField(getPropText(props, ['精选页标题', 'Featured Page Titles']));
+      const featuredPageNotes = splitField(getPropText(props, ['精选页说明', 'Featured Page Notes']));
+      const realPageImages = featuredPageNumbers
+        .map(pageNumber => buildPageImageUrl(pageImageDir, pageNumber))
+        .filter(Boolean);
       const archive = {
         id: page.id || `${platform}-${name}`,
         platform,
@@ -378,11 +413,11 @@ const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
             visuals: [coverImage],
             pageCount: schemeCount ? `${schemeCount} 份档案` : '',
             fileSize: '',
-            schemePages: buildCuratedSchemePages({ name, coverImage, thesis, authorNote: type }, representativePlan),
+            schemePages: buildCuratedSchemePages({ name, coverImage, thesis, authorNote: type }, representativePlan, realPageImages, featuredPageTitles, featuredPageNotes),
             evidencePoints: [type, status].filter(Boolean),
             sourceTitle: representativePlan,
-            sourceUrl: '',
-            downloadUrl: '',
+            sourceUrl: getPropText(props, ['PDF原件OSS', 'PDF OSS', 'PDF原件']),
+            downloadUrl: getPropText(props, ['PDF原件OSS', 'PDF OSS', 'PDF原件']),
             execution: '先以 IP 为入口呈现方案展，PDF 下载和真实页面图会在后续接入。'
           }
         ]
@@ -393,6 +428,69 @@ const mapNotionResultToIpArchives = (notionData: any): IpArchive[] => {
     .filter(item => item.archive.name && item.isVisible)
     .sort((a, b) => a.sort - b.sort)
     .map(item => item.archive);
+};
+
+const SchemePageFrame: React.FC<{
+  archive: Pick<IpArchive, 'platform' | 'name' | 'type' | 'years' | 'thesis'>;
+  title: string;
+  label: string;
+  index?: number;
+  compact?: boolean;
+}> = ({ archive, title, label, index = 0, compact = false }) => {
+  const theme = getPlatformTheme(archive.platform);
+  const pageNo = String(index + 1).padStart(2, '0');
+  const shortTitle = title.replace(/\s+/g, ' ').trim();
+
+  return (
+    <div
+      className={`relative aspect-video w-full overflow-hidden border border-black/10 ${compact ? 'p-3' : 'p-5'}`}
+      style={{ backgroundColor: theme.paper }}
+    >
+      <div className="absolute inset-0 opacity-[0.22]" style={{ backgroundImage: `linear-gradient(${theme.accent} 1px, transparent 1px), linear-gradient(90deg, ${theme.accent} 1px, transparent 1px)`, backgroundSize: compact ? '34px 34px' : '48px 48px' }}></div>
+      <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-80" style={{ backgroundColor: theme.soft }}></div>
+      <div className="absolute bottom-0 left-0 h-2 w-full" style={{ backgroundColor: theme.accent }}></div>
+      <div className="relative z-10 flex h-full flex-col justify-between">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="font-mono text-[9px] font-bold uppercase tracking-[0.28em]" style={{ color: theme.accent }}>{archive.platform}</div>
+            <div className={`${compact ? 'mt-2 text-[11px]' : 'mt-3 text-sm'} font-black text-black/72`}>{label}</div>
+          </div>
+          <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">PAGE {pageNo}</div>
+        </div>
+        <div>
+          <div className={`${compact ? 'text-2xl' : 'text-5xl md:text-6xl'} font-heading font-black leading-[0.95] tracking-tight`} style={{ color: theme.ink }}>
+            {archive.name}
+          </div>
+          <div className={`${compact ? 'mt-2 line-clamp-1 text-xs' : 'mt-4 max-w-[72%] text-lg'} font-black leading-tight`} style={{ color: theme.ink }}>
+            {shortTitle}
+          </div>
+        </div>
+        <div className="grid grid-cols-[1fr_auto] items-end gap-4 border-t border-black/10 pt-3">
+          <div className="line-clamp-2 text-xs leading-5 text-black/48">{archive.type || archive.thesis}</div>
+          <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">{archive.years}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SchemeVisual: React.FC<{
+  archive: Pick<IpArchive, 'platform' | 'name' | 'type' | 'years' | 'thesis'>;
+  title: string;
+  label: string;
+  image?: string;
+  index?: number;
+  compact?: boolean;
+}> = ({ archive, title, label, image, index = 0, compact = false }) => {
+  if (!isPlaceholderImage(image)) {
+    return (
+      <div className="aspect-video w-full border border-black/10 bg-white">
+        <img src={image} alt={title} className="h-full w-full object-contain" loading="lazy" decoding="async" />
+      </div>
+    );
+  }
+
+  return <SchemePageFrame archive={archive} title={title} label={label} index={index} compact={compact} />;
 };
 
 const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean; curatedArchives?: IpArchive[] }> = ({ schemes, loading, curatedArchives = [] }) => {
@@ -502,8 +600,8 @@ const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean; cura
                 className="group border border-black/10 bg-[#FFFCF5] text-left transition-all hover:-translate-y-0.5 hover:border-[#8F2F24] hover:shadow-[0_14px_36px_rgba(0,0,0,0.08)]"
               >
                 <div className="p-4">
-                  <div className="relative overflow-hidden border border-black/10 bg-[#111111]">
-                    <img src={archive.coverImage} alt={archive.name} className="aspect-video w-full object-cover opacity-82 transition-transform duration-700 group-hover:scale-105" />
+                  <div className="relative overflow-hidden border border-black/10 bg-[#111111] transition-transform duration-700 group-hover:scale-[1.015]">
+                    <SchemeVisual archive={archive} title={coverVersion?.title || archive.name} label="封面" image={archive.coverImage} compact />
                     <div className="absolute left-3 top-3 bg-[#F8F4EC] px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-[#111111]">{archive.platform}</div>
                   </div>
                   <div className="mt-5 flex items-start justify-between gap-4">
@@ -587,7 +685,7 @@ const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean; cura
                   <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_310px]">
                     <div className="border border-black bg-[#111111] p-3">
                       <div className="bg-[#FDFBF7] p-3">
-                        <img src={activePage.image} alt={activePage.title} className="aspect-video w-full border border-black/10 object-cover" />
+                        <SchemeVisual archive={selectedArchive} title={activePage.title} label={activePage.label} image={activePage.image} index={activePageIndex} />
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3 text-[#F8F4EC]">
                         <button
@@ -628,7 +726,7 @@ const IpArchiveProductDemo: React.FC<{ schemes: Scheme[]; loading: boolean; cura
                         onClick={() => setActivePageIndex(index)}
                         className={`overflow-hidden border text-left transition-all ${activePageIndex === index ? 'border-[#8F2F24] bg-[#FFFCF5]' : 'border-black/10 bg-[#F4F0E8] hover:border-black/35'}`}
                       >
-                        <img src={page.image} alt={`${page.label}缩略图`} className="aspect-video w-full object-cover" />
+                        <SchemeVisual archive={selectedArchive} title={page.title} label={page.label} image={page.image} index={index} compact />
                         <div className="p-3">
                           <div className="font-mono text-[9px] uppercase tracking-widest text-black/35">PAGE {String(index + 1).padStart(2, '0')} / {page.label}</div>
                           <div className="mt-1 line-clamp-1 text-sm font-black text-[#111111]">{page.title}</div>
