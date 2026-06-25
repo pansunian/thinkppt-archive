@@ -27,28 +27,28 @@ const annualData: IpAnnual[] = [
     text: '年鉴页面的重点不是拆招商权益，而是让用户像翻一本数字方案集一样，快速浏览同一个 IP 在不同年份、不同版本里的 PPT 页面。',
     versions: [
       {
-        year: '2024',
+        year: '2024 1.0',
         title: '2024小红书慢人节招商通案',
-        summary: '浏览这份 PDF 的代表页面：封面、情绪、事件、路线等关键页。',
+        summary: '从完整 PDF 自动提取的真实页面：先看封面、叙事开篇、趋势和核心页。',
         dir: `${root}/2024-tongan`,
-        pages: ['001', '003', '012', '033', '001', '003', '012', '033'],
-        labels: ['封面', '慢人心态', '平台级事件', '慢人路线', '封面复看', '情绪复看', '事件复看', '路线复看'],
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008'],
+        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构'],
       },
       {
         year: '2024 2.0',
         title: '小红书2024慢人节2.0营销方案',
-        summary: '浏览 2.0 版本的代表页面：人群趋势、核心洞察和长线运营等页面。',
+        summary: '从 2.0 版本 PDF 自动提取的真实页面：用于对比 IP 叙事如何迭代。',
         dir: `${root}/2024-2`,
-        pages: ['001', '005', '008', '023', '001', '005', '008', '023'],
-        labels: ['封面', '慢人群趋势', '核心洞察', '长线运营', '封面复看', '趋势复看', '洞察复看', '运营复看'],
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008'],
+        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构'],
       },
       {
-        year: '2025',
+        year: '2025 3.0',
         title: '小红书慢人节2025年长线IP规划',
-        summary: '浏览 2025 长线规划版本的代表页面：年度规划、内容阵地和用户旅程等页面。',
+        summary: '从 2025 长线规划 PDF 自动提取的真实页面：用于观察一个 IP 如何延展成年度资产。',
         dir: `${root}/2025-planning`,
-        pages: ['001', '003', '021', '028', '001', '003', '021', '028'],
-        labels: ['封面', '年度规划', '内容阵地', '用户旅程', '封面复看', '规划复看', '阵地复看', '旅程复看'],
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008'],
+        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构'],
       },
     ],
   },
@@ -100,7 +100,7 @@ const fallbackVersion = (archive: IpAnnual): PageVersion => ({
 
 const imageFor = (version: PageVersion, pageIndex: number) => {
   if (!version.dir || !version.pages[pageIndex]) return '';
-  return `${version.dir}/page-${version.pages[pageIndex]}.webp`;
+  return `${version.dir}/page-${version.pages[pageIndex]}.jpg`;
 };
 
 export default function App() {
@@ -187,6 +187,11 @@ export default function App() {
             <div><b>{platforms.length - 1}</b><span>PLATFORM</span></div>
             <div><b>{versions.length}</b><span>VERSIONS</span></div>
             <div><b>{totalPages}</b><span>PAGES</span></div>
+          </div>
+          <div className="site-note">
+            <b>THINKPPT</b>
+            <span>Platform IP Scheme Annual</span>
+            <p>一个面向策划人和品牌市场部的互联网平台 IP 方案年鉴。后续每个 IP 可以接入 PDF 下载、版本记录和 Notion 数据。</p>
           </div>
         </aside>
 
@@ -307,6 +312,10 @@ button{font:inherit;color:inherit}
 .info-grid div{padding:12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .info-grid b{display:block;font-size:24px}
 .info-grid span{display:block;margin-top:6px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.12em}
+.site-note{border:1px solid var(--line);padding:14px;margin-top:-4px;background:rgba(238,231,218,.35)}
+.site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
+.site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
+.site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
 .feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:16px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;min-width:0}
 .feature-head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
 .feature h2{margin:6px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--sans);letter-spacing:0;max-width:820px}
