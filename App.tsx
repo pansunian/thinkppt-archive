@@ -688,7 +688,7 @@ button{font:inherit;color:inherit}
   .reader-top span{font-size:9px;letter-spacing:.14em}
   .reader-top b{font-size:20px;line-height:1.15}
   .reader-top button{padding:10px 13px;white-space:nowrap}
-  .reader img{align-self:start;justify-self:center;width:100%;max-width:100%;max-height:calc(100svh - 190px);margin-top:28px;box-shadow:none}
+  .reader img{align-self:center;justify-self:center;width:100%;max-width:100%;max-height:calc(100svh - 190px);box-shadow:none}
   .reader-nav{display:none}
   .reader-bottom{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
   .reader-bottom button{display:block;padding:12px 10px}
