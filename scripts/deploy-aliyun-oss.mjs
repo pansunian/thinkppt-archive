@@ -67,12 +67,25 @@ function toObjectUrl(filePath) {
   return `oss://${bucket}/${objectKey}`;
 }
 
+const forceUploadExtensions = new Set([
+  '.css',
+  '.html',
+  '.ico',
+  '.js',
+  '.json',
+  '.map',
+  '.svg',
+  '.txt',
+  '.webmanifest',
+  '.xml',
+]);
+
 const forcedFiles = listFiles(distDir).filter((filePath) => {
   const relativePath = path.relative(distDir, filePath).split(path.sep).join('/');
-  return !relativePath.startsWith('data/media/');
+  return !relativePath.startsWith('data/media/') && forceUploadExtensions.has(path.extname(relativePath));
 });
 
-console.log(`Force uploading ${forcedFiles.length} non-media files.`);
+console.log(`Force uploading ${forcedFiles.length} app shell files.`);
 for (const filePath of forcedFiles) {
   const cpArgs = ['cp', '-f', filePath, toObjectUrl(filePath)];
   if (endpoint) {
