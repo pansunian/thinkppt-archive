@@ -23,6 +23,7 @@ type IpAnnual = {
 };
 
 const root = '/scheme-pages/xiaohongshu/manrenjie';
+const snowRoot = '/scheme-pages/xiaohongshu/xuerenjie';
 
 const annualData: IpAnnual[] = [
   {
@@ -68,6 +69,44 @@ const annualData: IpAnnual[] = [
         dir: `${root}/2025-planning`,
         pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
         labels: ['封面', '项目数据', '活动总览', 'Slow Rock', '趋势数据', '音乐现场', '看山看海', '情绪出口', '山海音乐会', '五行场景', '海中之音', '落洞音乐会'],
+      },
+    ],
+  },
+  {
+    platform: '小红书',
+    name: '雪人节',
+    type: '冰雪生活方式 IP',
+    text: '把滑雪、玩雪和冬季情绪包装成可招商、可打卡、可持续运营的冬季平台 IP。',
+    thesis: '它的价值在于把“冰雪热”从运动项目转译成生活方式事件：用人群洞察承接冬季情绪，用雪场/城市/内容任务组织品牌参与，并逐年升级成更完整的冬季营销资产。',
+    metrics: [
+      { label: '版本谱系', value: '2' },
+      { label: '精选页面', value: '24' },
+      { label: '观察跨度', value: '2023-2024' },
+    ],
+    studyNotes: ['从冰雪热到人群热：先证明冬季生活方式正在升温，再定义可参与人群。', '从雪场到内容场：把线下目的地、社区内容和品牌任务串成闭环。', '从活动到年度资产：2024 版本已经出现“遇雪/滑雪/玩雪”的阶段化运营结构。'],
+    audience: ['户外运动品牌', '冬季服饰', '文旅雪场', '饮品与出行品牌'],
+    framework: [
+      { step: '01', title: '洞察', text: '用冰雪热和年轻人冬季兴趣证明 IP 的情绪与消费土壤。' },
+      { step: '02', title: '主题', text: '用“雪人节”把滑雪、玩雪和冬日社交收束成节日化入口。' },
+      { step: '03', title: '结构', text: '从社区共创、赛场承包、城市/雪场路线构建参与路径。' },
+      { step: '04', title: '落地', text: '用雪人路线、滑雪团、玩雪赛和站内传播放大品牌参与感。' },
+    ],
+    versions: [
+      {
+        year: '2023',
+        title: '2023小红书雪人节招商方案',
+        summary: '精选封面、人群洞察、社区共创、雪人路线、创意玩法和参与路径等关键页。',
+        dir: `${snowRoot}/2023`,
+        pages: ['001', '002', '003', '005', '006', '009', '010', '011', '015', '018', '027', '028'],
+        labels: ['封面', '冰雪热趋势', '爱雪人群', '年度大事件', '社区共创', '雪人路线', '雪圈大事件', '雪圈表情集', '雪球之路', '滑雪团', '参与路径', '时间链路'],
+      },
+      {
+        year: '2024',
+        title: '2024小红书雪人节招商方案',
+        summary: '精选成果回顾、趋势洞察、三阶段玩法、关键创意、主会场流程和用户路径等关键页。',
+        dir: `${snowRoot}/2024`,
+        pages: ['001', '002', '004', '010', '011', '015', '019', '021', '022', '024', '030', '036'],
+        labels: ['封面', '成果回顾', '趋势洞察', '方案概览', '遇雪阶段', '滑雪阶段', '玩雪阶段', '限玩雪体验', '玩雪PK赛', '市集摊位', '传播节奏', '参与路径'],
       },
     ],
   },
@@ -384,7 +423,7 @@ export default function App() {
                       onClick={() => selectVersion(index)}
                     >
                       <b>{item.year}</b>
-                      <small>{item.title.replace(/^小红书|^2024小红书/, '')}</small>
+                      <small>{item.title.replace(/^\d{4}小红书|^小红书/, '')}</small>
                     </button>
                   ))}
                 </div>
@@ -587,7 +626,7 @@ button{font:inherit;color:inherit}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
-.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:14px 16px 12px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;min-width:0;min-height:0;overflow:hidden}
+.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:14px 16px 12px;display:grid;grid-template-rows:auto auto;gap:10px;align-self:start;min-width:0;min-height:0;overflow:hidden}
 .feature-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(430px,42vw);gap:20px;align-items:start}
 .feature-head>div{min-width:0}
 .feature h2{margin:4px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px;overflow-wrap:anywhere;word-break:break-word}
@@ -596,18 +635,18 @@ button{font:inherit;color:inherit}
 .version-switch{display:grid;grid-template-columns:78px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;max-width:620px}
 .version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 10px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{min-height:0;display:grid;grid-template-columns:118px minmax(0,1fr) 330px;gap:12px;overflow:hidden}
-.main-image{height:auto;width:100%;max-width:100%;justify-self:center;align-self:center;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:block;padding:10px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
-.main-image img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff}
+.stage{--preview-height:350px;min-height:0;display:grid;grid-template-columns:118px minmax(0,1fr) 330px;gap:12px;align-items:start;overflow:hidden}
+.main-image{height:var(--preview-height);width:auto;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:start;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:block;padding:10px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
+.main-image img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.thumbs{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:7px;overflow:hidden;padding-right:0}
-.thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:4px;cursor:pointer;min-width:0;position:relative}
+.thumbs{height:var(--preview-height);min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));align-content:stretch;gap:7px;overflow:hidden;padding-right:0}
+.thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto}
 .thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
-.thumbs img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
+.thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .thumbs span{display:block;margin-top:4px;color:rgba(255,250,240,.48);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--dark)}
-.caption{display:flex;align-items:end;min-width:0;min-height:0}
+.caption{height:var(--preview-height);display:flex;align-items:end;min-width:0;min-height:0}
 .caption>div{display:grid;gap:12px;align-content:end;width:100%;min-width:0}
 .caption b{font-size:18px}
 .caption span{display:block;margin-top:5px;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em}
@@ -657,8 +696,11 @@ button{font:inherit;color:inherit}
   .feature-side{justify-items:start}
   .shelf{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stage{grid-template-columns:1fr}
+  .stage{--preview-height:auto}
   .caption{align-items:start}
+  .caption{height:auto}
   .thumbs{grid-template-columns:repeat(4,minmax(112px,1fr))}
+  .thumbs{height:auto}
   .thumbs{overflow:auto}
   .thumbs button{min-width:112px}
   .tools{flex-wrap:wrap}

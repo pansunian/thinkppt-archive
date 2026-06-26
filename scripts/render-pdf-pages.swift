@@ -8,12 +8,12 @@ func fail(_ message: String) -> Never {
 
 let args = CommandLine.arguments
 guard args.count >= 3 else {
-  fail("Usage: swift render-pdf-pages.swift <input.pdf> <output-dir> [page-count]")
+  fail("Usage: swift render-pdf-pages.swift <input.pdf> <output-dir> [page-count|page-list]")
 }
 
 let inputURL = URL(fileURLWithPath: args[1])
 let outputURL = URL(fileURLWithPath: args[2], isDirectory: true)
-let maxPages = args.count >= 4 ? (Int(args[3]) ?? 8) : 8
+let pageArgument = args.count >= 4 ? args[3] : "8"
 
 guard let document = PDFDocument(url: inputURL) else {
   fail("Could not open PDF: \(inputURL.path)")
@@ -23,7 +23,21 @@ try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectori
 let thumbsURL = outputURL.appendingPathComponent("thumbs", isDirectory: true)
 try FileManager.default.createDirectory(at: thumbsURL, withIntermediateDirectories: true)
 
-let pagesToRender = min(maxPages, document.pageCount)
+let pagesToRender: [Int]
+if pageArgument.contains(",") {
+  pagesToRender = pageArgument
+    .split(separator: ",")
+    .compactMap { Int($0.trimmingCharacters(in: .whitespacesAndNewlines)) }
+    .filter { $0 >= 1 && $0 <= document.pageCount }
+} else {
+  let maxPages = Int(pageArgument) ?? 8
+  pagesToRender = Array(1...min(maxPages, document.pageCount))
+}
+
+guard !pagesToRender.isEmpty else {
+  fail("No valid pages to render.")
+}
+
 let targetWidth: CGFloat = 1800
 let thumbWidth: CGFloat = 520
 
@@ -51,7 +65,7 @@ func resizedImage(from image: NSImage, targetWidth: CGFloat) -> NSImage {
   return resized
 }
 
-for pageNumber in 1...pagesToRender {
+for pageNumber in pagesToRender {
   guard let page = document.page(at: pageNumber - 1) else { continue }
 
   let bounds = page.bounds(for: .mediaBox)
@@ -90,4 +104,4 @@ for pageNumber in 1...pagesToRender {
   try thumbJpg.write(to: thumbsURL.appendingPathComponent(filename), options: .atomic)
 }
 
-print("Rendered \(pagesToRender) pages and thumbnails to \(outputURL.path)")
+print("Rendered \(pagesToRender.count) pages and thumbnails to \(outputURL.path)")
