@@ -578,7 +578,7 @@ const styles = `
 html,body,#root{height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0}
 button{font:inherit;color:inherit}
-.annual-app{height:100svh;padding:18px;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:12px;background:var(--paper);overflow:hidden}
+.annual-app{height:100svh;padding:18px;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:10px;background:var(--paper);overflow:hidden}
 .top{display:grid;grid-template-columns:250px 1fr auto;gap:22px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
 .brand{display:flex;align-items:center;gap:13px}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px var(--display)}
@@ -589,14 +589,14 @@ button{font:inherit;color:inherit}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .meta{color:var(--muted);text-align:right;line-height:1.6}
-.shelf{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;border-bottom:1px solid var(--line);padding-bottom:12px}
-.ip-card{min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:10px 12px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center;transition:.18s ease}
+.shelf{display:flex;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
+.ip-card{flex:0 0 210px;min-height:54px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:8px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;row-gap:3px;align-items:center;transition:.18s ease}
 .ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(-2px)}
 .ip-card.coming{opacity:.68}
 .ip-card.coming:not(.active){border-style:dashed}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
-.ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
-.ip-card span{grid-column:2;color:var(--muted);font-size:11px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ip-card b{font:800 18px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
+.ip-card span{grid-column:2;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spread{min-height:0;display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;overflow:hidden}
 .story{background:var(--sheet);border:1px solid var(--line);padding:22px;display:grid;grid-template-rows:auto auto auto auto;align-content:start;gap:18px;min-width:0;min-height:0;overflow:auto}
 .story .eyebrow{color:var(--red)}
@@ -635,22 +635,22 @@ button{font:inherit;color:inherit}
 .version-switch{display:grid;grid-template-columns:78px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;max-width:620px}
 .version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 10px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{--preview-height:350px;min-height:0;display:grid;grid-template-columns:118px minmax(0,1fr) 330px;gap:12px;align-items:start;overflow:hidden}
-.main-image{height:var(--preview-height);width:auto;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:start;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:block;padding:10px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
+.stage{--preview-height:410px;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;grid-template-areas:"preview thumbs" "caption caption";gap:12px;align-items:start;overflow:hidden}
+.main-image{grid-area:preview;height:var(--preview-height);width:auto;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:start;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:block;padding:10px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
 .main-image img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.thumbs{height:var(--preview-height);min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));align-content:stretch;gap:7px;overflow:hidden;padding-right:0}
+.thumbs{grid-area:thumbs;height:var(--preview-height);min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));align-content:stretch;gap:7px;overflow:hidden;padding-right:0}
 .thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto}
 .thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
 .thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .thumbs span{display:block;margin-top:4px;color:rgba(255,250,240,.48);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--dark)}
-.caption{height:var(--preview-height);display:flex;align-items:end;min-width:0;min-height:0}
-.caption>div{display:grid;gap:12px;align-content:end;width:100%;min-width:0}
+.caption{grid-area:caption;height:auto;min-width:0;min-height:0;border-top:1px solid rgba(255,250,240,.14);padding-top:10px}
+.caption>div{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:14px;align-items:center;width:100%;min-width:0}
 .caption b{font-size:18px}
-.caption span{display:block;margin-top:5px;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em}
-.tools{display:grid;gap:8px;min-width:0}
+.caption span{display:block;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
+.tools{display:flex;justify-content:flex-end;gap:8px;min-width:0}
 .tools>button{border:1px solid rgba(255,250,240,.22);background:transparent;color:rgba(255,250,240,.76);padding:11px 10px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em;text-align:center}
 .tools>button:hover{background:var(--sheet);color:var(--dark)}
 .version{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:visible}
@@ -694,22 +694,21 @@ button{font:inherit;color:inherit}
   .story,.feature,.stage{overflow:visible}
   .feature-head{grid-template-columns:1fr}
   .feature-side{justify-items:start}
-  .shelf{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .stage{grid-template-columns:1fr}
+  .stage{grid-template-columns:1fr;grid-template-areas:"preview" "caption" "thumbs"}
   .stage{--preview-height:auto}
-  .caption{align-items:start}
   .caption{height:auto}
+  .caption>div{grid-template-columns:1fr}
   .thumbs{grid-template-columns:repeat(4,minmax(112px,1fr))}
   .thumbs{height:auto}
   .thumbs{overflow:auto}
   .thumbs button{min-width:112px}
-  .tools{flex-wrap:wrap}
+  .tools{justify-content:flex-start;flex-wrap:wrap}
 }
 @media(max-width:680px){
   .annual-app{padding:14px}
   .story,.feature{padding:16px}
-  .shelf{display:flex;overflow:auto;padding-bottom:10px}
-  .ip-card{min-width:210px}
+  .shelf{overflow:auto;padding-bottom:10px}
+  .ip-card{flex-basis:190px}
   .feature{order:1}
   .story{order:2}
   .story h1{font-size:64px}
@@ -717,7 +716,6 @@ button{font:inherit;color:inherit}
   .feature p{max-width:100%}
   .feature-head,.version-switch{grid-template-columns:1fr}
   .version{grid-template-columns:1fr}
-  .caption>div{display:grid;grid-template-columns:1fr;gap:12px}
   .meta{text-align:left}
   .stage{gap:12px}
   .main-image{width:100%;height:auto}
