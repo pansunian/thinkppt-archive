@@ -20,9 +20,36 @@ guard let document = PDFDocument(url: inputURL) else {
 }
 
 try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
+let thumbsURL = outputURL.appendingPathComponent("thumbs", isDirectory: true)
+try FileManager.default.createDirectory(at: thumbsURL, withIntermediateDirectories: true)
 
 let pagesToRender = min(maxPages, document.pageCount)
 let targetWidth: CGFloat = 1800
+let thumbWidth: CGFloat = 520
+
+func jpegData(from image: NSImage, quality: CGFloat) -> Data? {
+  guard
+    let tiff = image.tiffRepresentation,
+    let bitmap = NSBitmapImageRep(data: tiff)
+  else {
+    return nil
+  }
+
+  return bitmap.representation(using: .jpeg, properties: [.compressionFactor: quality])
+}
+
+func resizedImage(from image: NSImage, targetWidth: CGFloat) -> NSImage {
+  let ratio = targetWidth / max(image.size.width, 1)
+  let targetSize = NSSize(width: targetWidth, height: image.size.height * ratio)
+  let resized = NSImage(size: targetSize)
+
+  resized.lockFocus()
+  NSGraphicsContext.current?.imageInterpolation = .high
+  image.draw(in: NSRect(origin: .zero, size: targetSize), from: NSRect(origin: .zero, size: image.size), operation: .copy, fraction: 1)
+  resized.unlockFocus()
+
+  return resized
+}
 
 for pageNumber in 1...pagesToRender {
   guard let page = document.page(at: pageNumber - 1) else { continue }
@@ -49,16 +76,18 @@ for pageNumber in 1...pagesToRender {
 
   image.unlockFocus()
 
-  guard
-    let tiff = image.tiffRepresentation,
-    let bitmap = NSBitmapImageRep(data: tiff),
-    let jpg = bitmap.representation(using: .jpeg, properties: [.compressionFactor: 0.86])
-  else {
+  guard let jpg = jpegData(from: image, quality: 0.86) else {
     fail("Could not encode page \(pageNumber)")
   }
 
   let filename = String(format: "page-%03d.jpg", pageNumber)
   try jpg.write(to: outputURL.appendingPathComponent(filename), options: .atomic)
+
+  let thumbImage = resizedImage(from: image, targetWidth: thumbWidth)
+  guard let thumbJpg = jpegData(from: thumbImage, quality: 0.78) else {
+    fail("Could not encode thumbnail \(pageNumber)")
+  }
+  try thumbJpg.write(to: thumbsURL.appendingPathComponent(filename), options: .atomic)
 }
 
-print("Rendered \(pagesToRender) pages to \(outputURL.path)")
+print("Rendered \(pagesToRender) pages and thumbnails to \(outputURL.path)")

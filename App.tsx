@@ -18,6 +18,7 @@ type IpAnnual = {
   metrics: { label: string; value: string }[];
   studyNotes: string[];
   audience: string[];
+  framework: { step: string; title: string; text: string }[];
   versions: PageVersion[];
 };
 
@@ -32,35 +33,41 @@ const annualData: IpAnnual[] = [
     thesis: '它的价值不在单次活动，而在小红书把一种生活情绪做成年度品牌资源：从人群共鸣、内容场景到线下目的地，形成可持续售卖的 IP 资产。',
     metrics: [
       { label: '版本谱系', value: '3' },
-      { label: '已提取页面', value: '24' },
+      { label: '已提取页面', value: '36' },
       { label: '观察跨度', value: '2024-2025' },
     ],
     studyNotes: ['情绪先行：先定义“慢人”人群，再推导活动表达。', '平台资产化：把内容趋势包装成品牌可买的年度资源。', '版本迭代：从通案到 2.0 再到长线规划，能看到 IP 如何被长期经营。'],
     audience: ['生活方式品牌', '文旅目的地', '城市商业体', '饮品与户外品牌'],
+    framework: [
+      { step: '01', title: '洞察', text: '把“慢”从生活状态转译成可被认同的人群情绪。' },
+      { step: '02', title: 'Big Idea', text: '用「慢人节」命名，让情绪具备节日化传播入口。' },
+      { step: '03', title: '策略系统', text: '把人群、内容、场景和目的地串成年度品牌资源。' },
+      { step: '04', title: '创意落地', text: '用线下目的地和内容共创，让品牌参与不止停留在露出。' },
+    ],
     versions: [
       {
         year: '2024 1.0',
         title: '2024小红书慢人节招商通案',
         summary: '从完整 PDF 自动提取的真实页面：先看封面、叙事开篇、趋势和核心页。',
         dir: `${root}/2024-tongan`,
-        pages: ['001', '002', '003', '004', '005', '006', '007', '008'],
-        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构'],
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构', '玩法', '资源', '传播', '收束'],
       },
       {
         year: '2024 2.0',
         title: '小红书2024慢人节2.0营销方案',
         summary: '从 2.0 版本 PDF 自动提取的真实页面：用于对比 IP 叙事如何迭代。',
         dir: `${root}/2024-2`,
-        pages: ['001', '002', '003', '004', '005', '006', '007', '008'],
-        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构'],
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构', '玩法', '资源', '传播', '收束'],
       },
       {
         year: '2025 3.0',
         title: '小红书慢人节2025年长线IP规划',
         summary: '从 2025 长线规划 PDF 自动提取的真实页面：用于观察一个 IP 如何延展成年度资产。',
         dir: `${root}/2025-planning`,
-        pages: ['001', '002', '003', '004', '005', '006', '007', '008'],
-        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构'],
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '开篇', '趋势', '洞察', '主题', '场景', '路径', '结构', '玩法', '资源', '传播', '收束'],
       },
     ],
   },
@@ -77,6 +84,12 @@ const annualData: IpAnnual[] = [
     ],
     studyNotes: ['适合拆解城市散步、社区生活和品牌快闪的连接方式。', '后续可补充线下动线、品牌摊位和内容传播结构。'],
     audience: ['城市商业', '本地生活', '咖啡酒饮', '户外休闲'],
+    framework: [
+      { step: '01', title: '洞察', text: '城市漫游正在成为年轻人的低门槛生活方式。' },
+      { step: '02', title: '场景', text: '把散步、市集、社区店铺组合成可参与路线。' },
+      { step: '03', title: '招商', text: '适合本地生活和线下体验型品牌接入。' },
+      { step: '04', title: '待补', text: 'PDF 接入后补充真实页面和版本变化。' },
+    ],
     versions: [],
   },
   {
@@ -92,6 +105,12 @@ const annualData: IpAnnual[] = [
     ],
     studyNotes: ['重点看人群语言、校园场景和品牌权益如何组合。', '后续可沉淀“开学季 IP”的通用方案结构。'],
     audience: ['3C 数码', '美妆个护', '饮料零食', '校园服务'],
+    framework: [
+      { step: '01', title: '节点', text: '开学季天然带有身份变化和社交表达需求。' },
+      { step: '02', title: '人群', text: '围绕大学生内容共创和校园场景建立沟通语言。' },
+      { step: '03', title: '权益', text: '适合品牌做开学装备、内容任务和校园触点。' },
+      { step: '04', title: '待补', text: 'PDF 接入后补充真实页面和版本变化。' },
+    ],
     versions: [],
   },
   {
@@ -107,6 +126,12 @@ const annualData: IpAnnual[] = [
     ],
     studyNotes: ['适合拆解节令话题、达人内容和品牌种草之间的组合。', '后续可按春夏秋冬做时间线导航。'],
     audience: ['食品饮料', '美妆护肤', '新中式品牌', '文旅商家'],
+    framework: [
+      { step: '01', title: '日历', text: '用二十四节气建立全年稳定的营销时间表。' },
+      { step: '02', title: '内容', text: '节令话题天然适合生活方式表达和达人种草。' },
+      { step: '03', title: '品牌', text: '适合新中式、饮食、护肤和文旅品牌持续借势。' },
+      { step: '04', title: '待补', text: 'PDF 接入后补充真实页面和版本变化。' },
+    ],
     versions: [],
   },
   {
@@ -122,6 +147,12 @@ const annualData: IpAnnual[] = [
     ],
     studyNotes: ['重点看平台大节点如何承接品牌曝光和用户互动。', '后续可补充晚会、红包、任务玩法等模块。'],
     audience: ['大众消费', '电商平台', '游戏娱乐', '本地生活'],
+    framework: [
+      { step: '01', title: '节点', text: '春节是平台全年最大规模的用户注意力窗口。' },
+      { step: '02', title: '互动', text: '晚会、红包、任务和内容共创共同承接品牌需求。' },
+      { step: '03', title: '转化', text: '适合品牌把曝光、互动和交易线索打通。' },
+      { step: '04', title: '待补', text: 'PDF 接入后补充真实页面和版本变化。' },
+    ],
     versions: [],
   },
   {
@@ -137,6 +168,12 @@ const annualData: IpAnnual[] = [
     ],
     studyNotes: ['适合拆解内容社区的品牌合作边界。', '后续可补充 UP 主、节目单和内容商业化结构。'],
     audience: ['游戏动漫', '数码科技', '年轻消费', '内容品牌'],
+    framework: [
+      { step: '01', title: '社区', text: '以 B 站用户文化和 UP 主生态作为内容基础。' },
+      { step: '02', title: '节目', text: '把春节节点包装成社区共同参与的内容事件。' },
+      { step: '03', title: '合作', text: '品牌需要融入内容语境，而不是简单露出。' },
+      { step: '04', title: '待补', text: 'PDF 接入后补充真实页面和版本变化。' },
+    ],
     versions: [],
   },
 ];
@@ -153,6 +190,11 @@ const fallbackVersion = (archive: IpAnnual): PageVersion => ({
 const imageFor = (version: PageVersion, pageIndex: number) => {
   if (!version.dir || !version.pages[pageIndex]) return '';
   return `${version.dir}/page-${version.pages[pageIndex]}.jpg`;
+};
+
+const thumbFor = (version: PageVersion, pageIndex: number) => {
+  if (!version.dir || !version.pages[pageIndex]) return '';
+  return `${version.dir}/thumbs/page-${version.pages[pageIndex]}.jpg`;
 };
 
 export default function App() {
@@ -191,7 +233,6 @@ export default function App() {
   const versions = archive.versions.length ? archive.versions : [fallbackVersion(archive)];
   const version = versions[activeVersion] || versions[0];
   const activeImage = imageFor(version, activePage);
-  const totalPages = versions.reduce((sum, item) => sum + item.labels.length, 0);
   const shareUrl = typeof window === 'undefined'
     ? ''
     : `${window.location.origin}${window.location.pathname}?ip=${encodeURIComponent(archive.name)}&version=${encodeURIComponent(version.year)}&page=${activePage + 1}`;
@@ -265,12 +306,12 @@ export default function App() {
         {filtered.map((item, index) => (
           <button
             key={`${item.platform}-${item.name}`}
-            className={`ip-card ${index === activeIp ? 'active' : ''}`}
+            className={`ip-card ${index === activeIp ? 'active' : ''} ${item.versions.length ? '' : 'coming'}`}
             onClick={() => selectIp(index)}
           >
             <small>{String(index + 1).padStart(2, '0')}</small>
             <b>{item.name}</b>
-            <span>{item.platform} / {item.type}</span>
+            <span>{item.versions.length ? `${item.platform} / ${item.type}` : '即将收录 / PDF 待接入'}</span>
           </button>
         ))}
       </nav>
@@ -287,6 +328,16 @@ export default function App() {
               <ul>
                 {archive.studyNotes.map(note => <li key={note}>{note}</li>)}
               </ul>
+            </div>
+            <div className="framework">
+              <span>策划路径</span>
+              {archive.framework.map(item => (
+                <div key={`${item.step}-${item.title}`}>
+                  <small>{item.step}</small>
+                  <b>{item.title}</b>
+                  <p>{item.text}</p>
+                </div>
+              ))}
             </div>
           </div>
           <div />
@@ -338,7 +389,7 @@ export default function App() {
 
             <div className="thumbs" aria-label="PDF 页面缩略图">
               {version.labels.map((label, index) => {
-                const thumb = imageFor(version, index);
+                const thumb = thumbFor(version, index);
                 return (
                   <button
                     key={`${version.year}-${label}-${index}`}
@@ -346,7 +397,7 @@ export default function App() {
                     onClick={() => setActivePage(index)}
                   >
                     {thumb ? (
-                      <img src={thumb} alt={label} />
+                      <img src={thumbFor(version, index)} alt={label} loading="lazy" />
                     ) : (
                       <div className="placeholder thumb-placeholder">
                         <span>{label}</span>
@@ -449,6 +500,8 @@ button{font:inherit;color:inherit}
 .shelf{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;border-bottom:1px solid var(--line);padding-bottom:12px}
 .ip-card{min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:10px 12px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center;transition:.18s ease}
 .ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(-2px)}
+.ip-card.coming{opacity:.68}
+.ip-card.coming:not(.active){border-style:dashed}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
 .ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:11px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -464,6 +517,12 @@ button{font:inherit;color:inherit}
 .research-card ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:9px}
 .research-card li{position:relative;padding-left:14px;color:var(--muted);font-size:12px;line-height:1.6}
 .research-card li:before{content:"";position:absolute;left:0;top:.72em;width:5px;height:1px;background:var(--red)}
+.framework{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;display:grid;gap:8px}
+.framework>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.framework div{display:grid;grid-template-columns:32px 64px 1fr;gap:8px;align-items:start;border-bottom:1px solid rgba(17,16,14,.08);padding:6px 0}
+.framework small{color:var(--red);font:800 10px var(--mono);letter-spacing:.08em;padding-top:2px}
+.framework b{font-size:12px}
+.framework p{margin:0;color:var(--muted);font-size:11px;line-height:1.55}
 .info-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
 .info-grid div{padding:12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .info-grid b{display:block;font-size:24px}
@@ -477,15 +536,16 @@ button{font:inherit;color:inherit}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
 .feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:16px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;min-width:0;min-height:0;overflow:hidden}
 .feature-head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
-.feature h2{margin:6px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px}
-.feature p{margin:8px 0 0;color:rgba(255,250,240,.58);font-size:12px;line-height:1.55;max-width:720px}
+.feature-head>div{min-width:0}
+.feature h2{margin:6px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px;overflow-wrap:anywhere;word-break:break-word}
+.feature p{margin:8px 0 0;color:rgba(255,250,240,.58);font-size:12px;line-height:1.55;max-width:720px;overflow-wrap:anywhere;word-break:break-word}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;overflow:hidden}
+.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px;overflow:hidden}
 .main-image{height:100%;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:center;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:grid;place-items:center;padding:12px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
 .main-image img{width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.thumbs{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;overflow:auto;padding-right:2px}
+.thumbs{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:8px;overflow:auto;padding-right:2px}
 .thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:5px;cursor:pointer;min-width:0;position:relative}
 .thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
 .thumbs img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
@@ -530,10 +590,19 @@ button{font:inherit;color:inherit}
 @media(max-width:680px){
   .annual-app{padding:14px}
   .story,.feature{padding:16px}
-  .shelf{grid-template-columns:1fr}
+  .shelf{display:flex;overflow:auto;padding-bottom:10px}
+  .ip-card{min-width:210px}
+  .feature{order:1}
+  .story{order:2}
   .story h1{font-size:64px}
+  .feature h2{font-size:28px;line-height:1.12;max-width:100%}
+  .feature p{max-width:100%}
   .feature-head,.caption{grid-template-columns:1fr}
   .meta{text-align:left}
+  .stage{gap:12px}
+  .main-image{width:100%;height:auto}
+  .thumbs{display:flex;overflow:auto}
+  .thumbs button{min-width:130px}
   .tools{display:grid;grid-template-columns:1fr 1fr}
   .tools .version{grid-column:1/-1}
   .reader-nav{position:static;transform:none}
