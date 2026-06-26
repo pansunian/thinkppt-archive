@@ -405,6 +405,20 @@ export default function App() {
 }
 
 const styles = `
+@font-face{
+  font-family:"EarlySummerTitle";
+  src:url("/fonts/EarlySummerSerif-Regular.woff") format("woff");
+  font-weight:400 900;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"EarlySummerText";
+  src:url("/fonts/EarlySummerSerif-light.woff") format("woff");
+  font-weight:300 600;
+  font-style:normal;
+  font-display:swap;
+}
 :root{
   --paper:#eee7da;
   --sheet:#fffaf0;
@@ -414,16 +428,16 @@ const styles = `
   --red:#9d382e;
   --dark:#12110f;
   --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
-  --serif:Georgia,"Songti SC",serif;
+  --text:"EarlySummerText","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --display:"EarlySummerTitle","Songti SC","STSong",Georgia,serif;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);letter-spacing:0}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0}
 button{font:inherit;color:inherit}
 .annual-app{min-height:100vh;padding:18px;display:grid;grid-template-rows:auto auto 1fr;gap:12px;background:var(--paper)}
 .top{display:grid;grid-template-columns:250px 1fr auto;gap:22px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
 .brand{display:flex;align-items:center;gap:13px}
-.mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px var(--serif)}
+.mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px var(--display)}
 .eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block}
 .brand b{display:block;margin-top:3px;font-size:17px}
@@ -435,12 +449,12 @@ button{font:inherit;color:inherit}
 .ip-card{min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:10px 12px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center;transition:.18s ease}
 .ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(-2px)}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
-.ip-card b{font:800 20px/1.05 var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
+.ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:11px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .spread{min-height:0;display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px}
 .story{background:var(--sheet);border:1px solid var(--line);padding:22px;display:grid;grid-template-rows:auto auto;align-content:space-between;gap:18px;min-width:0}
 .story .eyebrow{color:var(--red)}
-.story h1{margin:12px 0 0;font:800 52px/1.02 var(--sans);letter-spacing:0}
+.story h1{margin:12px 0 0;font:800 52px/1.02 var(--display);letter-spacing:0}
 .story p{margin:16px 0 0;color:var(--muted);font-size:14px;line-height:1.75;max-width:560px}
 .story>div:nth-child(2){display:none}
 .research-card{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
@@ -462,7 +476,7 @@ button{font:inherit;color:inherit}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
 .feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:16px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;min-width:0}
 .feature-head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
-.feature h2{margin:6px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--sans);letter-spacing:0;max-width:820px}
+.feature h2{margin:6px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px}
 .feature p{margin:8px 0 0;color:rgba(255,250,240,.58);font-size:12px;line-height:1.55;max-width:720px}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
 .stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
@@ -487,7 +501,7 @@ button{font:inherit;color:inherit}
 .version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:112px}
 .version button.active,.version button:hover{background:var(--sheet);color:var(--dark);border-color:var(--sheet)}
 .placeholder{width:100%;aspect-ratio:16/9;background:var(--sheet);color:var(--ink);display:grid;align-content:space-between;padding:22px}
-.placeholder strong{font:700 52px/.85 var(--serif);letter-spacing:-.07em}
+.placeholder strong{font:700 52px/.85 var(--display);letter-spacing:0}
 .placeholder span{color:var(--red);font:800 10px var(--mono);letter-spacing:.2em;text-transform:uppercase}
 .thumb-placeholder{padding:10px}
 .thumb-placeholder strong{font-size:24px}
