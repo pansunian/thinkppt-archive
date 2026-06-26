@@ -430,13 +430,13 @@ export default function App() {
 
           <div className="caption">
             <div>
-              <b>{version.labels[activePage]}</b>
-              <span>{version.year} / {version.title}</span>
-            </div>
-            <div className="tools">
-              <button onClick={() => activeImage && setReaderOpen(true)}>全屏阅读</button>
-              <button onClick={copyShareLink}>{copyState}</button>
-              <button onClick={() => setResearchOpen(true)}>研究资料</button>
+              <b>{String(activePage + 1).padStart(2, '0')} / {version.labels[activePage]}</b>
+              <span>当前页</span>
+              <div className="tools">
+                <button onClick={() => activeImage && setReaderOpen(true)}>全屏阅读</button>
+                <button onClick={copyShareLink}>{copyState}</button>
+                <button onClick={() => setResearchOpen(true)}>研究资料</button>
+              </div>
             </div>
           </div>
         </section>
@@ -552,7 +552,7 @@ button{font:inherit;color:inherit}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
 .ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:11px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.spread{min-height:0;display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px;overflow:hidden}
+.spread{min-height:0;display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;overflow:hidden}
 .story{background:var(--sheet);border:1px solid var(--line);padding:22px;display:grid;grid-template-rows:auto auto auto auto;align-content:start;gap:18px;min-width:0;min-height:0;overflow:auto}
 .story .eyebrow{color:var(--red)}
 .story h1{margin:12px 0 0;font:800 52px/1.02 var(--display);letter-spacing:0}
@@ -581,33 +581,34 @@ button{font:inherit;color:inherit}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
-.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:16px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;min-width:0;min-height:0;overflow:hidden}
+.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:14px 16px 12px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;min-width:0;min-height:0;overflow:hidden}
 .feature-head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
 .feature-head>div{min-width:0}
-.feature h2{margin:6px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px;overflow-wrap:anywhere;word-break:break-word}
+.feature h2{margin:4px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px;overflow-wrap:anywhere;word-break:break-word}
 .feature p{margin:8px 0 0;color:rgba(255,250,240,.58);font-size:12px;line-height:1.55;max-width:720px;overflow-wrap:anywhere;word-break:break-word}
-.version-switch{margin-top:14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:stretch;max-width:880px}
+.version-switch{margin-top:10px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:stretch;max-width:880px}
 .version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 12px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;overflow:hidden}
-.main-image{height:100%;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:center;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:grid;place-items:center;padding:12px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
+.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px;overflow:hidden}
+.main-image{width:100%;aspect-ratio:16/9;max-width:100%;max-height:100%;justify-self:center;align-self:center;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:grid;place-items:center;padding:10px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
 .main-image img{width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.thumbs{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;overflow:auto;padding-right:2px}
-.thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:5px;cursor:pointer;min-width:0;position:relative}
+.thumbs{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:7px;overflow:hidden;padding-right:0}
+.thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:4px;cursor:pointer;min-width:0;position:relative}
 .thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
 .thumbs img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
-.thumbs span{display:block;margin-top:5px;color:rgba(255,250,240,.48);font:800 9px var(--mono);letter-spacing:.1em;text-align:left}
+.thumbs span{display:block;margin-top:4px;color:rgba(255,250,240,.48);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--dark)}
-.caption{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.caption{display:block}
+.caption>div{display:flex;align-items:center;justify-content:flex-start;gap:12px;min-width:0}
 .caption b{font-size:18px}
 .caption span{display:block;margin-top:5px;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em}
-.tools{display:flex;align-items:center;gap:8px;min-width:0}
+.tools{display:flex;align-items:center;gap:8px;min-width:0;margin-left:12px}
 .tools>button{border:1px solid rgba(255,250,240,.22);background:transparent;color:rgba(255,250,240,.76);padding:10px 12px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em}
 .tools>button:hover{background:var(--sheet);color:var(--dark)}
 .version{display:flex;gap:8px;overflow:auto}
-.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:148px;text-align:left;padding:10px 12px;background:rgba(255,250,240,.03)}
+.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:148px;text-align:left;padding:8px 11px;background:rgba(255,250,240,.03)}
 .version button b,.version button small{display:block}
 .version button small{margin-top:6px;color:rgba(255,250,240,.42);font-size:11px;line-height:1.35;white-space:normal}
 .version button.active,.version button:hover{background:var(--sheet);color:var(--dark);border-color:var(--sheet)}
@@ -647,6 +648,7 @@ button{font:inherit;color:inherit}
   .shelf{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stage{grid-template-columns:1fr}
   .thumbs{grid-template-columns:repeat(4,minmax(112px,1fr))}
+  .thumbs{overflow:auto}
   .thumbs button{min-width:112px}
   .tools{flex-wrap:wrap}
 }
@@ -660,13 +662,14 @@ button{font:inherit;color:inherit}
   .story h1{font-size:64px}
   .feature h2{font-size:28px;line-height:1.12;max-width:100%}
   .feature p{max-width:100%}
-  .feature-head,.caption,.version-switch{grid-template-columns:1fr}
+  .feature-head,.version-switch{grid-template-columns:1fr}
+  .caption>div{display:grid;grid-template-columns:1fr;gap:12px}
   .meta{text-align:left}
   .stage{gap:12px}
   .main-image{width:100%;height:auto}
   .thumbs{display:flex;overflow:auto}
   .thumbs button{min-width:130px}
-  .tools{display:grid;grid-template-columns:1fr 1fr}
+  .tools{display:grid;grid-template-columns:1fr 1fr;margin-left:0}
   .research-sections{grid-template-columns:1fr}
   .reader-nav{position:static;transform:none}
 }
