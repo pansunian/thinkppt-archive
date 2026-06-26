@@ -367,6 +367,13 @@ export default function App() {
               <div className="eyebrow">{archive.platform} / {archive.type}</div>
               <h2>{version.title}</h2>
               <p>{version.summary}</p>
+            </div>
+            <div className="feature-side">
+              <div className="count">
+                {String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}
+                <br />
+                {version.year}
+              </div>
               <div className="version-switch" aria-label="方案版本切换">
                 <span>方案版本</span>
                 <div className="version">
@@ -383,14 +390,21 @@ export default function App() {
                 </div>
               </div>
             </div>
-            <div className="count">
-              {String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}
-              <br />
-              {version.year}
-            </div>
           </div>
 
           <div className="stage">
+            <div className="caption">
+              <div>
+                <b>{String(activePage + 1).padStart(2, '0')} / {version.labels[activePage]}</b>
+                <span>当前页</span>
+                <div className="tools">
+                  <button onClick={() => activeImage && setReaderOpen(true)}>全屏阅读</button>
+                  <button onClick={copyShareLink}>{copyState}</button>
+                  <button onClick={() => setResearchOpen(true)}>研究资料</button>
+                </div>
+              </div>
+            </div>
+
             <button className="main-image" onClick={() => activeImage && setReaderOpen(true)}>
               {activeImage ? (
                 <img src={activeImage} alt={version.labels[activePage]} />
@@ -425,18 +439,6 @@ export default function App() {
                   </button>
                 );
               })}
-            </div>
-          </div>
-
-          <div className="caption">
-            <div>
-              <b>{String(activePage + 1).padStart(2, '0')} / {version.labels[activePage]}</b>
-              <span>当前页</span>
-              <div className="tools">
-                <button onClick={() => activeImage && setReaderOpen(true)}>全屏阅读</button>
-                <button onClick={copyShareLink}>{copyState}</button>
-                <button onClick={() => setResearchOpen(true)}>研究资料</button>
-              </div>
             </div>
           </div>
         </section>
@@ -581,15 +583,16 @@ button{font:inherit;color:inherit}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
-.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:14px 16px 12px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;min-width:0;min-height:0;overflow:hidden}
-.feature-head{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
+.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:14px 16px 12px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;min-width:0;min-height:0;overflow:hidden}
+.feature-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(430px,42vw);gap:20px;align-items:start}
 .feature-head>div{min-width:0}
 .feature h2{margin:4px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px;overflow-wrap:anywhere;word-break:break-word}
 .feature p{margin:8px 0 0;color:rgba(255,250,240,.58);font-size:12px;line-height:1.55;max-width:720px;overflow-wrap:anywhere;word-break:break-word}
-.version-switch{margin-top:10px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:stretch;max-width:880px}
-.version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 12px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
+.feature-side{display:grid;gap:9px;justify-items:end;min-width:0}
+.version-switch{display:grid;grid-template-columns:78px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;max-width:620px}
+.version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 10px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px;overflow:hidden}
+.stage{min-height:0;display:grid;grid-template-columns:118px minmax(0,1fr) 330px;gap:12px;overflow:hidden}
 .main-image{height:100%;width:auto;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:center;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:grid;place-items:center;padding:10px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
 .main-image img{width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
@@ -600,15 +603,15 @@ button{font:inherit;color:inherit}
 .thumbs img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .thumbs span{display:block;margin-top:4px;color:rgba(255,250,240,.48);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--dark)}
-.caption{display:block}
-.caption>div{display:flex;align-items:center;justify-content:flex-start;gap:12px;min-width:0}
+.caption{display:flex;align-items:end;min-width:0;min-height:0}
+.caption>div{display:grid;gap:12px;align-content:end;width:100%;min-width:0}
 .caption b{font-size:18px}
 .caption span{display:block;margin-top:5px;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em}
-.tools{display:flex;align-items:center;gap:8px;min-width:0;margin-left:12px}
-.tools>button{border:1px solid rgba(255,250,240,.22);background:transparent;color:rgba(255,250,240,.76);padding:10px 12px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em}
+.tools{display:grid;gap:8px;min-width:0}
+.tools>button{border:1px solid rgba(255,250,240,.22);background:transparent;color:rgba(255,250,240,.76);padding:11px 10px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em;text-align:center}
 .tools>button:hover{background:var(--sheet);color:var(--dark)}
-.version{display:flex;gap:8px;overflow:auto}
-.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:148px;text-align:left;padding:8px 11px;background:rgba(255,250,240,.03)}
+.version{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;overflow:visible}
+.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:0;text-align:left;padding:8px 10px;background:rgba(255,250,240,.03)}
 .version button b,.version button small{display:block}
 .version button small{margin-top:6px;color:rgba(255,250,240,.42);font-size:11px;line-height:1.35;white-space:normal}
 .version button.active,.version button:hover{background:var(--sheet);color:var(--dark);border-color:var(--sheet)}
@@ -645,8 +648,11 @@ button{font:inherit;color:inherit}
   .top,.spread{grid-template-columns:1fr}
   .spread{overflow:visible}
   .story,.feature,.stage{overflow:visible}
+  .feature-head{grid-template-columns:1fr}
+  .feature-side{justify-items:start}
   .shelf{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stage{grid-template-columns:1fr}
+  .caption{align-items:start}
   .thumbs{grid-template-columns:repeat(4,minmax(112px,1fr))}
   .thumbs{overflow:auto}
   .thumbs button{min-width:112px}
@@ -663,13 +669,14 @@ button{font:inherit;color:inherit}
   .feature h2{font-size:28px;line-height:1.12;max-width:100%}
   .feature p{max-width:100%}
   .feature-head,.version-switch{grid-template-columns:1fr}
+  .version{grid-template-columns:1fr}
   .caption>div{display:grid;grid-template-columns:1fr;gap:12px}
   .meta{text-align:left}
   .stage{gap:12px}
   .main-image{width:100%;height:auto}
   .thumbs{display:flex;overflow:auto}
   .thumbs button{min-width:130px}
-  .tools{display:grid;grid-template-columns:1fr 1fr;margin-left:0}
+  .tools{display:grid;grid-template-columns:1fr 1fr}
   .research-sections{grid-template-columns:1fr}
   .reader-nav{position:static;transform:none}
 }
