@@ -273,6 +273,10 @@ export default function App() {
   const versions = archive.versions.length ? archive.versions : [fallbackVersion(archive)];
   const version = versions[activeVersion] || versions[0];
   const activeImage = imageFor(version, activePage);
+  const thumbIndexes = version.labels.map((_, index) => index).slice(0, 10);
+  if (activePage >= 10 && !thumbIndexes.includes(activePage)) {
+    thumbIndexes[thumbIndexes.length - 1] = activePage;
+  }
   const shareUrl = typeof window === 'undefined'
     ? ''
     : `${window.location.origin}${window.location.pathname}?ip=${encodeURIComponent(archive.name)}&version=${encodeURIComponent(version.year)}&page=${activePage + 1}`;
@@ -458,7 +462,8 @@ export default function App() {
             </button>
 
             <div className="thumbs" aria-label="PDF 页面缩略图">
-              {version.labels.map((label, index) => {
+              {thumbIndexes.map((index) => {
+                const label = version.labels[index];
                 const thumb = thumbFor(version, index);
                 return (
                   <button
@@ -635,18 +640,18 @@ button{font:inherit;color:inherit}
 .version-switch{display:grid;grid-template-columns:78px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;max-width:620px}
 .version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 10px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{--preview-height:410px;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 330px;grid-template-areas:"preview thumbs" "caption caption";gap:12px;align-items:start;overflow:hidden}
+.stage{--preview-height:450px;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 250px;grid-template-areas:"preview thumbs" "caption caption";gap:12px;align-items:start;overflow:hidden}
 .main-image{grid-area:preview;height:var(--preview-height);width:auto;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:start;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:block;padding:10px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
 .main-image img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.thumbs{grid-area:thumbs;height:var(--preview-height);min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));align-content:stretch;gap:7px;overflow:hidden;padding-right:0}
+.thumbs{grid-area:thumbs;height:var(--preview-height);min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));align-content:stretch;gap:7px;overflow:hidden;padding-right:0}
 .thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto}
 .thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
 .thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .thumbs span{display:block;margin-top:4px;color:rgba(255,250,240,.48);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--dark)}
-.caption{grid-area:caption;height:auto;min-width:0;min-height:0;border-top:1px solid rgba(255,250,240,.14);padding-top:10px}
+.caption{grid-area:caption;height:auto;min-width:0;min-height:0;border-top:1px solid rgba(255,250,240,.14);padding-top:14px}
 .caption>div{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:14px;align-items:center;width:100%;min-width:0}
 .caption b{font-size:18px}
 .caption span{display:block;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
