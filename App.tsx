@@ -456,7 +456,11 @@ export default function App() {
           <button className="reader-nav prev" onClick={() => setActivePage(page => Math.max(page - 1, 0))}>上一页</button>
           <img src={activeImage} alt={`${version.title} ${version.labels[activePage]}`} />
           <button className="reader-nav next" onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}>下一页</button>
-          <div className="reader-bottom">{String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}</div>
+          <div className="reader-bottom">
+            <button onClick={() => setActivePage(page => Math.max(page - 1, 0))}>上一页</button>
+            <span>{String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}</span>
+            <button onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}>下一页</button>
+          </div>
         </section>
       )}
 
@@ -625,12 +629,13 @@ button{font:inherit;color:inherit}
 .reader-top{width:100%;display:flex;justify-content:space-between;align-items:start;gap:18px}
 .reader-top span{display:block;color:rgba(255,250,240,.48);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .reader-top b{display:block;margin-top:6px;font-size:24px}
-.reader-top button,.reader-nav{border:1px solid rgba(255,250,240,.24);background:transparent;color:var(--sheet);padding:11px 14px;cursor:pointer;font-weight:800}
+.reader-top button,.reader-nav,.reader-bottom button{border:1px solid rgba(255,250,240,.24);background:transparent;color:var(--sheet);padding:11px 14px;cursor:pointer;font-weight:800}
 .reader img{max-width:min(92vw,1680px);max-height:76vh;object-fit:contain;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.42)}
 .reader-nav{position:absolute;top:50%;transform:translateY(-50%)}
 .reader-nav.prev{left:22px}
 .reader-nav.next{right:22px}
-.reader-bottom{color:rgba(255,250,240,.48);font:800 11px var(--mono);letter-spacing:.18em}
+.reader-bottom{display:flex;align-items:center;justify-content:center;gap:16px;color:rgba(255,250,240,.48);font:800 11px var(--mono);letter-spacing:.18em}
+.reader-bottom button{display:none}
 .research-modal{position:fixed;inset:0;z-index:35;background:rgba(10,10,9,.78);display:grid;place-items:center;padding:24px;color:var(--ink)}
 .research-panel{width:min(920px,96vw);max-height:86vh;overflow:auto;background:var(--sheet);border:1px solid var(--line);padding:28px;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.38)}
 .research-panel .close{position:absolute;right:18px;top:18px;border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;font-weight:800}
@@ -678,6 +683,15 @@ button{font:inherit;color:inherit}
   .thumbs button{min-width:130px}
   .tools{display:grid;grid-template-columns:1fr 1fr}
   .research-sections{grid-template-columns:1fr}
-  .reader-nav{position:static;transform:none}
+  .reader{background:#0a0a09;grid-template-rows:auto minmax(0,1fr) auto;place-items:stretch;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));gap:14px}
+  .reader-top{align-items:center}
+  .reader-top span{font-size:9px;letter-spacing:.14em}
+  .reader-top b{font-size:20px;line-height:1.15}
+  .reader-top button{padding:10px 13px;white-space:nowrap}
+  .reader img{align-self:start;justify-self:center;width:100%;max-width:100%;max-height:calc(100svh - 190px);margin-top:28px;box-shadow:none}
+  .reader-nav{display:none}
+  .reader-bottom{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+  .reader-bottom button{display:block;padding:12px 10px}
+  .reader-bottom span{text-align:center;white-space:nowrap}
 }
 `;
