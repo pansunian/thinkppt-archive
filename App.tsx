@@ -204,6 +204,7 @@ export default function App() {
   const [activeVersion, setActiveVersion] = useState(0);
   const [activePage, setActivePage] = useState(0);
   const [readerOpen, setReaderOpen] = useState(false);
+  const [researchOpen, setResearchOpen] = useState(false);
   const [copyState, setCopyState] = useState('复制链接');
 
   useEffect(() => {
@@ -240,6 +241,7 @@ export default function App() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setReaderOpen(false);
+      if (event.key === 'Escape') setResearchOpen(false);
       if (event.key === 'ArrowRight') setActivePage(page => Math.min(page + 1, version.labels.length - 1));
       if (event.key === 'ArrowLeft') setActivePage(page => Math.max(page - 1, 0));
     };
@@ -365,6 +367,21 @@ export default function App() {
               <div className="eyebrow">{archive.platform} / {archive.type}</div>
               <h2>{version.title}</h2>
               <p>{version.summary}</p>
+              <div className="version-switch" aria-label="方案版本切换">
+                <span>方案版本</span>
+                <div className="version">
+                  {versions.map((item, index) => (
+                    <button
+                      key={`${item.year}-${item.title}`}
+                      className={index === activeVersion ? 'active' : ''}
+                      onClick={() => selectVersion(index)}
+                    >
+                      <b>{item.year}</b>
+                      <small>{item.title.replace(/^小红书|^2024小红书/, '')}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="count">
               {String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}
@@ -419,18 +436,7 @@ export default function App() {
             <div className="tools">
               <button onClick={() => activeImage && setReaderOpen(true)}>全屏阅读</button>
               <button onClick={copyShareLink}>{copyState}</button>
-              <button className="locked">研究资料</button>
-              <div className="version">
-                {versions.map((item, index) => (
-                  <button
-                    key={`${item.year}-${item.title}`}
-                    className={index === activeVersion ? 'active' : ''}
-                    onClick={() => selectVersion(index)}
-                  >
-                    {item.year}
-                  </button>
-                ))}
-              </div>
+              <button onClick={() => setResearchOpen(true)}>研究资料</button>
             </div>
           </div>
         </section>
@@ -449,6 +455,47 @@ export default function App() {
           <img src={activeImage} alt={`${version.title} ${version.labels[activePage]}`} />
           <button className="reader-nav next" onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}>下一页</button>
           <div className="reader-bottom">{String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}</div>
+        </section>
+      )}
+
+      {researchOpen && (
+        <section className="research-modal" role="dialog" aria-modal="true" aria-label="研究资料">
+          <div className="research-panel">
+            <button className="close" onClick={() => setResearchOpen(false)}>关闭</button>
+            <div className="eyebrow">Research Dossier</div>
+            <h3>{archive.name} 研究资料</h3>
+            <p>{archive.thesis}</p>
+
+            <div className="research-sections">
+              <article>
+                <span>01 / IP 判断</span>
+                <strong>{archive.type}</strong>
+                <p>{archive.text}</p>
+              </article>
+              <article>
+                <span>02 / 策划路径</span>
+                {archive.framework.map(item => (
+                  <div key={`research-${item.step}`}>
+                    <b>{item.step} {item.title}</b>
+                    <p>{item.text}</p>
+                  </div>
+                ))}
+              </article>
+              <article>
+                <span>03 / 版本演变</span>
+                {versions.map(item => (
+                  <div key={`research-version-${item.year}`}>
+                    <b>{item.year}</b>
+                    <p>{item.title}</p>
+                  </div>
+                ))}
+              </article>
+              <article>
+                <span>04 / 后续可开放</span>
+                <p>完整 PDF 下载、逐页策划批注、IP 演变报告、品牌适配清单和可复用方案结构。这里未来可以作为登录或付费后的高价值内容区。</p>
+              </article>
+            </div>
+          </div>
         </section>
       )}
     </main>
@@ -490,7 +537,7 @@ button{font:inherit;color:inherit}
 .top{display:grid;grid-template-columns:250px 1fr auto;gap:22px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
 .brand{display:flex;align-items:center;gap:13px}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px var(--display)}
-.eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
+.eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block}
 .brand b{display:block;margin-top:3px;font-size:17px}
 .chapters{display:flex;gap:8px;overflow:auto}
@@ -539,13 +586,15 @@ button{font:inherit;color:inherit}
 .feature-head>div{min-width:0}
 .feature h2{margin:6px 0 0;font:800 clamp(28px,2.4vw,42px)/1.05 var(--display);letter-spacing:0;max-width:820px;overflow-wrap:anywhere;word-break:break-word}
 .feature p{margin:8px 0 0;color:rgba(255,250,240,.58);font-size:12px;line-height:1.55;max-width:720px;overflow-wrap:anywhere;word-break:break-word}
+.version-switch{margin-top:14px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:stretch;max-width:880px}
+.version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 12px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px;overflow:hidden}
+.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;overflow:hidden}
 .main-image{height:100%;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:center;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:grid;place-items:center;padding:12px;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
 .main-image img{width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.thumbs{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:8px;overflow:auto;padding-right:2px}
+.thumbs{min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;overflow:auto;padding-right:2px}
 .thumbs button{border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:5px;cursor:pointer;min-width:0;position:relative}
 .thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
 .thumbs img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
@@ -557,10 +606,12 @@ button{font:inherit;color:inherit}
 .tools{display:flex;align-items:center;gap:8px;min-width:0}
 .tools>button{border:1px solid rgba(255,250,240,.22);background:transparent;color:rgba(255,250,240,.76);padding:10px 12px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em}
 .tools>button:hover{background:var(--sheet);color:var(--dark)}
-.tools>button.locked{color:rgba(255,250,240,.38)}
 .version{display:flex;gap:8px;overflow:auto}
-.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:112px}
+.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);min-width:148px;text-align:left;padding:10px 12px;background:rgba(255,250,240,.03)}
+.version button b,.version button small{display:block}
+.version button small{margin-top:6px;color:rgba(255,250,240,.42);font-size:11px;line-height:1.35;white-space:normal}
 .version button.active,.version button:hover{background:var(--sheet);color:var(--dark);border-color:var(--sheet)}
+.version button.active small,.version button:hover small{color:rgba(18,17,15,.55)}
 .placeholder{width:100%;aspect-ratio:16/9;background:var(--sheet);color:var(--ink);display:grid;align-content:space-between;padding:22px}
 .placeholder strong{font:700 52px/.85 var(--display);letter-spacing:0}
 .placeholder span{color:var(--red);font:800 10px var(--mono);letter-spacing:.2em;text-transform:uppercase}
@@ -576,6 +627,18 @@ button{font:inherit;color:inherit}
 .reader-nav.prev{left:22px}
 .reader-nav.next{right:22px}
 .reader-bottom{color:rgba(255,250,240,.48);font:800 11px var(--mono);letter-spacing:.18em}
+.research-modal{position:fixed;inset:0;z-index:35;background:rgba(10,10,9,.78);display:grid;place-items:center;padding:24px;color:var(--ink)}
+.research-panel{width:min(920px,96vw);max-height:86vh;overflow:auto;background:var(--sheet);border:1px solid var(--line);padding:28px;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.38)}
+.research-panel .close{position:absolute;right:18px;top:18px;border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;font-weight:800}
+.research-panel h3{margin:10px 0 0;font:800 44px/1.05 var(--display);letter-spacing:0}
+.research-panel>p{max-width:720px;margin:12px 0 0;color:var(--muted);line-height:1.75}
+.research-sections{margin-top:24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.research-sections article{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px;min-height:190px}
+.research-sections article>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
+.research-sections strong{font-size:19px}
+.research-sections p{color:var(--muted);font-size:13px;line-height:1.65}
+.research-sections div{border-top:1px solid rgba(17,16,14,.08);padding-top:10px;margin-top:10px}
+.research-sections b{font-size:13px}
 @media(max-width:1100px){
   .annual-app{height:auto;min-height:100svh;overflow:visible}
   .top,.spread{grid-template-columns:1fr}
@@ -597,14 +660,14 @@ button{font:inherit;color:inherit}
   .story h1{font-size:64px}
   .feature h2{font-size:28px;line-height:1.12;max-width:100%}
   .feature p{max-width:100%}
-  .feature-head,.caption{grid-template-columns:1fr}
+  .feature-head,.caption,.version-switch{grid-template-columns:1fr}
   .meta{text-align:left}
   .stage{gap:12px}
   .main-image{width:100%;height:auto}
   .thumbs{display:flex;overflow:auto}
   .thumbs button{min-width:130px}
   .tools{display:grid;grid-template-columns:1fr 1fr}
-  .tools .version{grid-column:1/-1}
+  .research-sections{grid-template-columns:1fr}
   .reader-nav{position:static;transform:none}
 }
 `;
