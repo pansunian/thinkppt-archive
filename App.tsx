@@ -326,13 +326,13 @@ export default function App() {
       <style>{styles}</style>
 
       <header className="top">
-        <div className="brand">
+        <a className="brand" href="/" aria-label="ThinkPPT 首页">
           <div className="mark">T</div>
           <div>
             <b>ThinkPPT</b>
             <small>深刻PPT</small>
           </div>
-        </div>
+        </a>
         <nav className="chapters" aria-label="平台筛选">
           {platforms.map(platform => (
             <button
@@ -398,9 +398,10 @@ export default function App() {
             </div>
           </div>
           <div className="site-note">
-            <b>THINKPPT</b>
-            <span>Platform IP Scheme Annual</span>
-            <p>一个面向策划人和品牌市场部的互联网平台 IP 方案年鉴。未来可登录获取研究资料、完整 PDF 与批量下载包。</p>
+            <b>ThinkPPT</b>
+            <span>深刻PPT</span>
+            <p>面向策划人和品牌市场部的互联网平台 IP 方案年鉴，持续收藏、整理和策展高质量营销方案。</p>
+            <small>备案信息：待补充</small>
           </div>
         </aside>
 
@@ -585,7 +586,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);l
 button{font:inherit;color:inherit}
 .annual-app{height:100svh;padding:18px;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:10px;background:var(--paper);overflow:hidden}
 .top{display:grid;grid-template-columns:250px 1fr auto;gap:22px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
-.brand{display:flex;align-items:center;gap:13px}
+.brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
 .eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block;margin-top:4px;font:700 12px/1 var(--text);letter-spacing:.1em;text-transform:none}
@@ -594,9 +595,9 @@ button{font:inherit;color:inherit}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .meta{color:var(--muted);text-align:right;line-height:1.6}
-.shelf{display:flex;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
+.shelf{display:flex;gap:8px;border-bottom:1px solid var(--line);padding:3px 0 10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
 .ip-card{flex:0 0 210px;min-height:54px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:8px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;row-gap:3px;align-items:center;transition:.18s ease}
-.ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(-2px)}
+.ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(0)}
 .ip-card.coming{opacity:.68}
 .ip-card.coming:not(.active){border-style:dashed}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
@@ -631,6 +632,7 @@ button{font:inherit;color:inherit}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
+.site-note small{display:block;margin-top:10px;padding-top:10px;border-top:1px solid rgba(17,16,14,.1);color:rgba(116,109,99,.72);font-size:11px;line-height:1.4}
 .feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:14px 16px 12px;display:grid;grid-template-rows:auto auto;gap:10px;align-self:start;min-width:0;min-height:0;overflow:hidden}
 .feature-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(430px,42vw);gap:20px;align-items:start}
 .feature-head>div{min-width:0}
