@@ -325,8 +325,8 @@ export default function App() {
         <div className="brand">
           <div className="mark">T</div>
           <div>
-            <small>THINKPPT</small>
-            <b>PPT Marketing Annual</b>
+            <b>ThinkPPT</b>
+            <small>深刻PPT</small>
           </div>
         </div>
         <nav className="chapters" aria-label="平台筛选">
@@ -581,10 +581,10 @@ button{font:inherit;color:inherit}
 .annual-app{height:100svh;padding:18px;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:10px;background:var(--paper);overflow:hidden}
 .top{display:grid;grid-template-columns:250px 1fr auto;gap:22px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
 .brand{display:flex;align-items:center;gap:13px}
-.mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px var(--display)}
+.mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
 .eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
-.brand small{color:var(--muted);display:block}
-.brand b{display:block;margin-top:3px;font-size:17px}
+.brand small{color:var(--muted);display:block;margin-top:4px;font:700 12px/1 var(--text);letter-spacing:.1em;text-transform:none}
+.brand b{display:block;font:800 23px/.95 var(--text);letter-spacing:0}
 .chapters{display:flex;gap:8px;overflow:auto}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
