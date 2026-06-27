@@ -679,10 +679,10 @@ const styles = `
   --display:"EarlySummerTitle","Songti SC","STSong",Georgia,serif;
 }
 *{box-sizing:border-box}
-html,body,#root{height:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0}
+html,body,#root{min-height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0;overflow-y:auto}
 button{font:inherit;color:inherit}
-.annual-app{height:100svh;padding:14px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;background:var(--paper);overflow:hidden}
+.annual-app{min-height:100svh;padding:14px;display:grid;grid-template-rows:auto auto;gap:10px;background:var(--paper);overflow:visible}
 .top{display:grid;grid-template-columns:236px 1fr auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
@@ -693,8 +693,8 @@ button{font:inherit;color:inherit}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .meta{color:var(--muted);text-align:right;line-height:1.6}
-.workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:hidden}
-.rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px}
+.workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:visible;align-items:start}
+.rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
 .shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
 .ip-card{width:100%;min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:9px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;row-gap:4px;align-items:center;transition:.18s ease}
 .ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(0)}
@@ -703,7 +703,7 @@ button{font:inherit;color:inherit}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
 .ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto;align-content:start;gap:10px;overflow-y:auto;overflow-x:hidden;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
+.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto;align-content:start;gap:10px;overflow:visible;padding-right:0}
 .story{background:var(--sheet);border:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;min-width:0;min-height:0;overflow:visible}
 .story .eyebrow{color:var(--red)}
 .story h1{margin:6px 0 0;font:800 clamp(34px,3.2vw,52px)/.94 var(--display);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -739,7 +739,7 @@ button{font:inherit;color:inherit}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
 .site-note small{display:block;margin-top:10px;padding-top:10px;border-top:1px solid rgba(17,16,14,.1);color:rgba(116,109,99,.72);font-size:11px;line-height:1.4}
-.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:12px;display:block;min-width:0;min-height:0;overflow:hidden}
+.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:12px;display:block;min-width:0;min-height:0;overflow:visible}
 .feature-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
 .feature-head>div{min-width:0}
 .feature h2{margin:3px 0 0;font:800 clamp(26px,2.1vw,40px)/1.02 var(--display);letter-spacing:0;max-width:1120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -747,7 +747,7 @@ button{font:inherit;color:inherit}
 .version-switch{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
 .version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 8px;color:rgba(255,250,240,.54);font:800 9px var(--mono);letter-spacing:.14em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{min-height:0;display:block;overflow:hidden;position:relative;background:#0a0a09;margin-top:10px}
+.stage{min-height:0;display:block;overflow:visible;position:relative;background:#0a0a09;margin-top:10px}
 .image-shell{position:relative;width:100%;aspect-ratio:16/9;background:#0a0a09;overflow:hidden}
 .main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#0a0a09;cursor:zoom-in;color:inherit;overflow:hidden}
 .main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#0a0a09;transform:none}
@@ -808,7 +808,7 @@ button{font:inherit;color:inherit}
   .annual-app{height:auto;min-height:100svh;overflow:visible}
   .top,.workspace{grid-template-columns:1fr}
   .workspace,.main-stack{overflow:visible}
-  .rail{grid-template-rows:auto auto}
+  .rail{grid-template-rows:auto auto;position:static;max-height:none}
   .shelf{display:flex;overflow-x:auto;overflow-y:hidden;padding-right:0;padding-bottom:8px}
   .ip-card{flex:0 0 200px}
   .site-note{display:none}
