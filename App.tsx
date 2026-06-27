@@ -432,7 +432,8 @@ export default function App() {
             onClick={toggleTheme}
             aria-label="切换页面风格"
           >
-            {themeMode === 'dark' ? '浅色' : '深色'}
+            <span className={themeMode === 'light' ? 'active' : ''}>浅</span>
+            <span className={themeMode === 'dark' ? 'active' : ''}>深</span>
           </button>
           <div className="meta">2024-2026<br />IP SCHEME ANNUAL</div>
         </div>
@@ -702,6 +703,9 @@ button{font:inherit;color:inherit}
 .theme-dark .page-arrow{border-color:rgba(255,250,240,.2);background:rgba(18,17,15,.72);color:var(--ink)}
 .theme-dark .page-arrow:hover{background:var(--ink);color:var(--sheet)}
 .theme-dark .zoom-hint{background:rgba(18,17,15,.82);border-color:rgba(255,250,240,.2);color:rgba(255,250,240,.78)}
+.theme-dark .theme-toggle{background:rgba(255,250,240,.05)}
+.theme-dark .theme-toggle span.active{background:var(--ink);color:var(--paper)}
+.theme-dark .thumbs img{background:#0a0a09}
 .top{display:grid;grid-template-columns:236px 1fr auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
@@ -712,12 +716,14 @@ button{font:inherit;color:inherit}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .top-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
-.theme-toggle{border:1px solid var(--line);background:var(--sheet);color:var(--ink);padding:10px 12px;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
-.theme-toggle:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.theme-toggle{border:1px solid var(--line);background:transparent;color:var(--muted);padding:2px;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap;display:flex;gap:2px;align-items:center}
+.theme-toggle span{display:grid;place-items:center;min-width:30px;height:26px;padding:0 8px}
+.theme-toggle span.active{background:var(--ink);color:var(--sheet)}
+.theme-toggle:hover{border-color:var(--ink)}
 .meta{color:var(--muted);text-align:right;line-height:1.6}
 .workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:visible;align-items:start}
 .rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
-.shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
+.shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .ip-card{width:100%;min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:9px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;row-gap:4px;align-items:center;transition:.18s ease}
 .ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(0)}
 .ip-card.coming{opacity:.68}
@@ -738,7 +744,7 @@ button{font:inherit;color:inherit}
 .detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(320px,1fr) minmax(560px,2fr);gap:18px;align-items:start}
 .research-card{min-width:0}
 .research-card span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
-.research-card strong{display:block;margin-top:10px;font-size:14px;line-height:1.65;color:rgba(17,16,14,.88)}
+.research-card strong{display:block;margin-top:10px;font-size:14px;line-height:1.65;color:var(--ink)}
 .research-card ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
 .research-card li{position:relative;padding-left:14px;color:var(--muted);font-size:12px;line-height:1.55}
 .research-card li:before{content:"";position:absolute;left:0;top:.72em;width:5px;height:1px;background:var(--red)}
@@ -753,7 +759,7 @@ button{font:inherit;color:inherit}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
-.site-note small{display:block;margin-top:10px;padding-top:10px;border-top:1px solid rgba(17,16,14,.1);color:rgba(116,109,99,.72);font-size:11px;line-height:1.4}
+.site-note small{display:block;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.4}
 .feature{background:var(--sheet);color:var(--ink);border:1px solid var(--line);padding:12px;display:block;min-width:0;min-height:0;overflow:visible}
 .feature-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
 .feature-head>div{min-width:0}
@@ -761,22 +767,22 @@ button{font:inherit;color:inherit}
 .feature p{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.45;max-width:1120px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow-wrap:anywhere;word-break:break-word}
 .version-switch{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
 .version-switch>span{border:1px solid var(--line);display:grid;place-items:center;padding:0 8px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.14em;white-space:nowrap}
-.count{color:rgba(116,109,99,.72);text-align:right;line-height:1.7}
+.count{color:var(--muted);text-align:right;line-height:1.7}
 .stage{min-height:0;display:block;overflow:visible;position:relative;background:var(--sheet);margin-top:10px}
 .image-shell{position:relative;width:100%;aspect-ratio:16/9;background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
 .main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#f7f0e5;cursor:zoom-in;color:inherit;overflow:hidden}
 .main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#f7f0e5;transform:none}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(255,250,240,.9);border:1px solid var(--line);padding:8px 10px;color:var(--muted);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.page-arrow{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:44px;height:68px;border:1px solid rgba(17,16,14,.18);background:rgba(255,250,240,.72);color:var(--ink);cursor:pointer;font-size:22px;display:grid;place-items:center}
+.page-arrow{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:44px;height:68px;border:1px solid var(--line);background:rgba(255,250,240,.72);color:var(--ink);cursor:pointer;font-size:22px;display:grid;place-items:center}
 .page-arrow:hover{background:var(--ink);color:var(--sheet)}
 .page-arrow-prev{left:10px}
 .page-arrow-next{right:10px}
-.thumbs{height:92px;min-height:0;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;margin-top:8px;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.26) transparent;background:var(--sheet)}
+.thumbs{height:92px;min-height:0;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;margin-top:8px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
 .thumbs button{flex:0 0 136px;border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto}
 .thumbs button.active{border-color:var(--red);background:rgba(157,56,46,.06)}
 .thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
-.thumbs span{display:block;margin-top:4px;color:rgba(116,109,99,.68);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
+.thumbs span{display:block;margin-top:4px;color:var(--muted);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--ink)}
 .caption{min-width:0;min-height:0;border-top:1px solid var(--line);padding-top:8px;margin-top:8px;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:var(--sheet)}
 .caption b{font-size:18px}
@@ -784,11 +790,11 @@ button{font:inherit;color:inherit}
 .tools{display:flex;justify-content:flex-end;gap:8px;min-width:0}
 .tools>button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:11px 10px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em;text-align:center}
 .tools>button:hover{background:var(--ink);color:var(--sheet)}
-.version{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.24) transparent}
+.version{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .version button{color:var(--muted);border-color:var(--line);flex:1 1 0;min-width:122px;text-align:left;padding:7px 10px;background:rgba(238,231,218,.18)}
 .version button b,.version button small{display:block}
 .version button b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.version button small{margin-top:4px;color:rgba(116,109,99,.72);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.version button small{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .version button.active,.version button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .version button.active small,.version button:hover small{color:rgba(255,250,240,.68)}
 .placeholder{width:100%;aspect-ratio:16/9;background:var(--sheet);color:var(--ink);display:grid;align-content:space-between;padding:22px}
