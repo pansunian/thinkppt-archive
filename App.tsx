@@ -315,10 +315,13 @@ export default function App() {
   const [readerOpen, setReaderOpen] = useState(false);
   const [researchOpen, setResearchOpen] = useState(false);
   const [copyState, setCopyState] = useState('复制当前页链接');
-  const [themeMode, setThemeMode] = useState<'annual' | 'bright'>('annual');
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    const savedTheme = window.localStorage.getItem('thinkppt-theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') setThemeMode(savedTheme);
+
     const params = new URLSearchParams(window.location.search);
     const ipName = params.get('ip');
     if (!ipName) return;
@@ -392,8 +395,16 @@ export default function App() {
     }
   };
 
+  const toggleTheme = () => {
+    setThemeMode(mode => {
+      const nextMode = mode === 'dark' ? 'light' : 'dark';
+      window.localStorage.setItem('thinkppt-theme', nextMode);
+      return nextMode;
+    });
+  };
+
   return (
-    <main className={`annual-app ${themeMode === 'bright' ? 'theme-bright' : ''}`}>
+    <main className={`annual-app ${themeMode === 'dark' ? 'theme-dark' : ''}`}>
       <style>{styles}</style>
 
       <header className="top">
@@ -418,10 +429,10 @@ export default function App() {
         <div className="top-actions">
           <button
             className="theme-toggle"
-            onClick={() => setThemeMode(mode => mode === 'bright' ? 'annual' : 'bright')}
+            onClick={toggleTheme}
             aria-label="切换页面风格"
           >
-            {themeMode === 'bright' ? '年鉴色' : '亮色'}
+            {themeMode === 'dark' ? '浅色' : '深色'}
           </button>
           <div className="meta">2024-2026<br />IP SCHEME ANNUAL</div>
         </div>
@@ -684,10 +695,13 @@ html,body,#root{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0;overflow-y:auto}
 button{font:inherit;color:inherit}
 .annual-app{min-height:100svh;padding:14px;display:grid;grid-template-rows:auto auto;gap:10px;background:var(--paper);overflow:visible}
-.annual-app.theme-bright{--paper:#f7f7f4;--sheet:#ffffff;--ink:#101010;--muted:#66645f;--line:rgba(16,16,16,.12);--red:#8e2f29}
-.theme-bright .image-shell,.theme-bright .main-image,.theme-bright .main-image img{background:#fff}
-.theme-bright .story-metrics,.theme-bright .framework-grid div,.theme-bright .version button,.theme-bright .thumbs button{background:#fafafa}
-.theme-bright .site-note{background:#fff}
+.annual-app.theme-dark{--paper:#0f0e0c;--sheet:#171613;--ink:#fffaf0;--muted:#a9a19a;--line:rgba(255,250,240,.15);--red:#d26352}
+.theme-dark .mark{background:var(--sheet);color:var(--ink);border-color:var(--line)}
+.theme-dark .story-metrics,.theme-dark .framework-grid div,.theme-dark .version button,.theme-dark .thumbs button,.theme-dark .site-note{background:rgba(255,250,240,.035)}
+.theme-dark .image-shell,.theme-dark .main-image,.theme-dark .main-image img{background:#0a0a09}
+.theme-dark .page-arrow{border-color:rgba(255,250,240,.2);background:rgba(18,17,15,.72);color:var(--ink)}
+.theme-dark .page-arrow:hover{background:var(--ink);color:var(--sheet)}
+.theme-dark .zoom-hint{background:rgba(18,17,15,.82);border-color:rgba(255,250,240,.2);color:rgba(255,250,240,.78)}
 .top{display:grid;grid-template-columns:236px 1fr auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
