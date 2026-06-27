@@ -447,9 +447,13 @@ export default function App() {
               <h1>{archive.name}</h1>
               <p>{archive.text}</p>
             </div>
-            <div className="story-mark">
-              <span>{archive.platform}</span>
-              <b>{archive.type}</b>
+            <div className="story-metrics" aria-label="IP 版本谱系">
+              {archive.metrics.map(metric => (
+                <div key={metric.label}>
+                  <b>{metric.value}</b>
+                  <span>{metric.label}</span>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -571,11 +575,6 @@ export default function App() {
               </div>
             </div>
             <div className="detail-side">
-              <div className="info-grid">
-                {archive.metrics.map(metric => (
-                  <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span></div>
-                ))}
-              </div>
               <div className="audience">
                 <span>适合参考</span>
                 <div>
@@ -704,15 +703,16 @@ button{font:inherit;color:inherit}
 .ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto;align-content:start;gap:10px;overflow:visible;padding-right:0}
-.story{background:var(--sheet);border:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;min-width:0;min-height:0;overflow:visible}
+.story{background:var(--sheet);border:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:16px;align-items:end;min-width:0;min-height:0;overflow:visible}
 .story .eyebrow{color:var(--red)}
 .story h1{margin:6px 0 0;font:800 clamp(34px,3.2vw,52px)/.94 var(--display);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .story-intro{min-width:0}
 .story-intro>p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.5;max-width:780px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
-.story-mark{border:1px solid var(--line);padding:9px 12px;min-width:190px;background:rgba(238,231,218,.28)}
-.story-mark span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
-.story-mark b{display:block;margin-top:6px;font-size:12px;line-height:1.25}
-.detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(260px,1.1fr) minmax(420px,2fr) 260px;gap:18px;align-items:start}
+.story-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line);background:rgba(238,231,218,.18)}
+.story-metrics div{min-width:0;padding:10px 11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.story-metrics b{display:block;font-size:24px;line-height:1;white-space:nowrap}
+.story-metrics span{display:block;margin-top:7px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.12em}
+.detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(320px,1.35fr) minmax(520px,2.35fr) minmax(190px,.65fr);gap:18px;align-items:start}
 .research-card{min-width:0}
 .research-card span,.audience>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .research-card strong{display:block;margin-top:10px;font-size:14px;line-height:1.65;color:rgba(17,16,14,.88)}
@@ -726,7 +726,7 @@ button{font:inherit;color:inherit}
 .framework small{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.08em}
 .framework b{display:block;margin-top:8px;font-size:13px}
 .framework p{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
-.detail-side{display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;min-width:0}
+.detail-side{display:block;min-width:0}
 .info-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
 .info-grid div{padding:11px 9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .info-grid b{display:block;font-size:24px;white-space:nowrap}
@@ -813,7 +813,7 @@ button{font:inherit;color:inherit}
   .ip-card{flex:0 0 200px}
   .site-note{display:none}
   .story,.detail-section{grid-template-columns:1fr;max-height:none;overflow:visible}
-  .story-mark{min-width:0}
+  .story-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
   .framework{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:14px}
   .framework-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .detail-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}
@@ -835,7 +835,8 @@ button{font:inherit;color:inherit}
   .story,.feature,.detail-section{padding:16px}
   .ip-card{flex-basis:184px}
   .story h1{font-size:48px;white-space:normal;overflow:visible;text-overflow:clip}
-  .framework-grid,.detail-side{grid-template-columns:1fr}
+  .framework-grid{grid-template-columns:1fr}
+  .story-metrics{grid-template-columns:1fr}
   .feature h2{font-size:26px;line-height:1.12;max-width:100%;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all;line-break:anywhere}
   .feature p{max-width:100%}
   .feature-head,.version-switch{grid-template-columns:1fr}
