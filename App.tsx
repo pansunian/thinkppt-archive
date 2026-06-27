@@ -446,35 +446,10 @@ export default function App() {
               <div className="eyebrow">Annual Feature</div>
               <h1>{archive.name}</h1>
               <p>{archive.text}</p>
-              <div className="research-card">
-                <span>策划人读法</span>
-                <strong>{archive.thesis}</strong>
-              </div>
             </div>
-            <div className="framework">
-              <span>策划路径</span>
-              <div className="framework-grid">
-                {archive.framework.map(item => (
-                  <div key={`${item.step}-${item.title}`}>
-                    <small>{item.step}</small>
-                    <b>{item.title}</b>
-                    <p>{item.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="story-side">
-              <div className="info-grid">
-                {archive.metrics.map(metric => (
-                  <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span></div>
-                ))}
-              </div>
-              <div className="audience">
-                <span>适合参考</span>
-                <div>
-                  {archive.audience.map(item => <b key={item}>{item}</b>)}
-                </div>
-              </div>
+            <div className="story-mark">
+              <span>{archive.platform}</span>
+              <b>{archive.type}</b>
             </div>
           </section>
 
@@ -509,33 +484,35 @@ export default function App() {
             </div>
 
             <div className="stage">
-              <button
-                className="page-arrow page-arrow-prev"
-                onClick={() => setActivePage(page => Math.max(page - 1, 0))}
-                aria-label="上一页"
-              >
-                ←
-              </button>
-              <button
-                className="page-arrow page-arrow-next"
-                onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}
-                aria-label="下一页"
-              >
-                →
-              </button>
+              <div className="image-shell">
+                <button
+                  className="page-arrow page-arrow-prev"
+                  onClick={() => setActivePage(page => Math.max(page - 1, 0))}
+                  aria-label="上一页"
+                >
+                  ←
+                </button>
+                <button
+                  className="page-arrow page-arrow-next"
+                  onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}
+                  aria-label="下一页"
+                >
+                  →
+                </button>
 
-              <button className="main-image" onClick={() => activeImage && setReaderOpen(true)}>
-                {activeImage ? (
-                  <img src={activeImage} alt={version.labels[activePage]} />
-                ) : (
-                  <div className="placeholder">
-                    <span>{archive.platform}</span>
-                    <strong>{archive.name}</strong>
-                    <span>{version.labels[activePage]} / PDF 待接入</span>
-                  </div>
-                )}
-                <span className="zoom-hint">打开全屏阅读</span>
-              </button>
+                <button className="main-image" onClick={() => activeImage && setReaderOpen(true)}>
+                  {activeImage ? (
+                    <img src={activeImage} alt={version.labels[activePage]} />
+                  ) : (
+                    <div className="placeholder">
+                      <span>{archive.platform}</span>
+                      <strong>{archive.name}</strong>
+                      <span>{version.labels[activePage]} / PDF 待接入</span>
+                    </div>
+                  )}
+                  <span className="zoom-hint">打开全屏阅读</span>
+                </button>
+              </div>
 
               <div className="caption">
                 <b>{String(activePage + 1).padStart(2, '0')} / {version.labels[activePage]}</b>
@@ -569,6 +546,41 @@ export default function App() {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+          </section>
+
+          <section className="detail-section">
+            <div className="research-card">
+              <span>策划人读法</span>
+              <strong>{archive.thesis}</strong>
+              <ul>
+                {archive.studyNotes.map(note => <li key={note}>{note}</li>)}
+              </ul>
+            </div>
+            <div className="framework">
+              <span>策划路径</span>
+              <div className="framework-grid">
+                {archive.framework.map(item => (
+                  <div key={`${item.step}-${item.title}`}>
+                    <small>{item.step}</small>
+                    <b>{item.title}</b>
+                    <p>{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="detail-side">
+              <div className="info-grid">
+                {archive.metrics.map(metric => (
+                  <div key={metric.label}><b>{metric.value}</b><span>{metric.label}</span></div>
+                ))}
+              </div>
+              <div className="audience">
+                <span>适合参考</span>
+                <div>
+                  {archive.audience.map(item => <b key={item}>{item}</b>)}
+                </div>
               </div>
             </div>
           </section>
@@ -670,8 +682,8 @@ const styles = `
 html,body,#root{height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0}
 button{font:inherit;color:inherit}
-.annual-app{height:100svh;padding:18px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px;background:var(--paper);overflow:hidden}
-.top{display:grid;grid-template-columns:250px 1fr auto;gap:22px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px}
+.annual-app{height:100svh;padding:14px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;background:var(--paper);overflow:hidden}
+.top{display:grid;grid-template-columns:236px 1fr auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
 .eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
@@ -681,7 +693,7 @@ button{font:inherit;color:inherit}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .meta{color:var(--muted);text-align:right;line-height:1.6}
-.workspace{min-height:0;display:grid;grid-template-columns:248px minmax(0,1fr);gap:14px;overflow:hidden}
+.workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:hidden}
 .rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px}
 .shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
 .ip-card{width:100%;min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:9px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;row-gap:4px;align-items:center;transition:.18s ease}
@@ -691,15 +703,22 @@ button{font:inherit;color:inherit}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
 .ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto;align-content:start;gap:12px;overflow-y:auto;overflow-x:hidden;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
-.story{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(260px,1.2fr) minmax(420px,2fr) 260px;gap:18px;align-items:stretch;min-width:0;min-height:0;overflow:visible}
+.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto;align-content:start;gap:10px;overflow-y:auto;overflow-x:hidden;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(17,16,14,.28) transparent}
+.story{background:var(--sheet);border:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;min-width:0;min-height:0;overflow:visible}
 .story .eyebrow{color:var(--red)}
-.story h1{margin:10px 0 0;font:800 clamp(46px,4vw,72px)/.94 var(--display);letter-spacing:0}
+.story h1{margin:6px 0 0;font:800 clamp(34px,3.2vw,52px)/.94 var(--display);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .story-intro{min-width:0}
-.story-intro>p{margin:14px 0 0;color:var(--muted);font-size:14px;line-height:1.65;max-width:620px}
-.research-card{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.story-intro>p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.5;max-width:780px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.story-mark{border:1px solid var(--line);padding:9px 12px;min-width:190px;background:rgba(238,231,218,.28)}
+.story-mark span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.story-mark b{display:block;margin-top:6px;font-size:12px;line-height:1.25}
+.detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(260px,1.1fr) minmax(420px,2fr) 260px;gap:18px;align-items:start}
+.research-card{min-width:0}
 .research-card span,.audience>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
-.research-card strong{display:block;margin-top:8px;font-size:13px;line-height:1.55;color:rgba(17,16,14,.86)}
+.research-card strong{display:block;margin-top:10px;font-size:14px;line-height:1.65;color:rgba(17,16,14,.88)}
+.research-card ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+.research-card li{position:relative;padding-left:14px;color:var(--muted);font-size:12px;line-height:1.55}
+.research-card li:before{content:"";position:absolute;left:0;top:.72em;width:5px;height:1px;background:var(--red)}
 .framework{min-width:0;border-left:1px solid var(--line);padding-left:18px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px}
 .framework>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .framework-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0}
@@ -707,7 +726,7 @@ button{font:inherit;color:inherit}
 .framework small{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.08em}
 .framework b{display:block;margin-top:8px;font-size:13px}
 .framework p{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
-.story-side{display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;min-width:0}
+.detail-side{display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;min-width:0}
 .info-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
 .info-grid div{padding:11px 9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .info-grid b{display:block;font-size:24px;white-space:nowrap}
@@ -720,40 +739,41 @@ button{font:inherit;color:inherit}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
 .site-note small{display:block;margin-top:10px;padding-top:10px;border-top:1px solid rgba(17,16,14,.1);color:rgba(116,109,99,.72);font-size:11px;line-height:1.4}
-.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:16px;display:grid;grid-template-rows:auto auto auto;gap:12px;min-width:0;min-height:0;overflow:visible}
-.feature-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
+.feature{background:var(--dark);color:var(--sheet);border:1px solid var(--dark);padding:12px;display:block;min-width:0;min-height:0;overflow:hidden}
+.feature-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
 .feature-head>div{min-width:0}
-.feature h2{margin:4px 0 0;font:800 clamp(30px,2.6vw,48px)/1.04 var(--display);letter-spacing:0;max-width:1120px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere;word-break:break-word}
-.feature p{margin:8px 0 0;color:rgba(255,250,240,.58);font-size:12px;line-height:1.55;max-width:1120px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow-wrap:anywhere;word-break:break-word}
-.version-switch{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;min-width:0}
-.version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 8px;color:rgba(255,250,240,.54);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
+.feature h2{margin:3px 0 0;font:800 clamp(26px,2.1vw,40px)/1.02 var(--display);letter-spacing:0;max-width:1120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feature p{margin:6px 0 0;color:rgba(255,250,240,.58);font-size:11px;line-height:1.45;max-width:1120px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow-wrap:anywhere;word-break:break-word}
+.version-switch{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
+.version-switch>span{border:1px solid rgba(255,250,240,.22);display:grid;place-items:center;padding:0 8px;color:rgba(255,250,240,.54);font:800 9px var(--mono);letter-spacing:.14em;white-space:nowrap}
 .count{color:rgba(255,250,240,.45);text-align:right;line-height:1.7}
-.stage{--preview-height:clamp(420px,58svh,720px);min-height:0;display:grid;grid-template-rows:var(--preview-height) auto 96px;gap:10px;align-items:start;overflow:visible;position:relative}
-.main-image{height:var(--preview-height);width:auto;aspect-ratio:16/9;max-width:100%;justify-self:center;align-self:start;min-width:0;min-height:0;border:1px solid rgba(255,250,240,.16);display:block;padding:0;background:#0a0a09;cursor:zoom-in;position:relative;color:inherit;overflow:hidden}
-.main-image img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:cover;background:#0a0a09;transform:scale(1.012)}
+.stage{min-height:0;display:block;overflow:hidden;position:relative;background:#0a0a09;margin-top:10px}
+.image-shell{position:relative;width:100%;aspect-ratio:16/9;background:#0a0a09;overflow:hidden}
+.main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#0a0a09;cursor:zoom-in;color:inherit;overflow:hidden}
+.main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#0a0a09;transform:none}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(18,17,15,.82);border:1px solid rgba(255,250,240,.24);padding:8px 10px;color:rgba(255,250,240,.74);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.page-arrow{position:absolute;top:calc(var(--preview-height)/2);z-index:3;transform:translateY(-50%);width:44px;height:68px;border:1px solid rgba(255,250,240,.26);background:rgba(18,17,15,.62);color:var(--sheet);cursor:pointer;font-size:22px;display:grid;place-items:center}
+.page-arrow{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:44px;height:68px;border:1px solid rgba(255,250,240,.26);background:rgba(18,17,15,.62);color:var(--sheet);cursor:pointer;font-size:22px;display:grid;place-items:center}
 .page-arrow:hover{background:var(--sheet);color:var(--dark)}
 .page-arrow-prev{left:10px}
 .page-arrow-next{right:10px}
-.thumbs{height:96px;min-height:0;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;scrollbar-width:thin;scrollbar-color:rgba(255,250,240,.32) transparent}
+.thumbs{height:92px;min-height:0;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;margin-top:8px;scrollbar-width:thin;scrollbar-color:rgba(255,250,240,.32) transparent;background:#0a0a09}
 .thumbs button{flex:0 0 136px;border:1px solid rgba(255,250,240,.18);background:#0a0a09;padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto}
-.thumbs button.active{border-color:var(--sheet);background:var(--sheet)}
+.thumbs button.active{border-color:var(--sheet);background:#0a0a09}
 .thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
 .thumbs span{display:block;margin-top:4px;color:rgba(255,250,240,.48);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
-.thumbs button.active span{color:var(--dark)}
-.caption{min-width:0;min-height:0;border-top:1px solid rgba(255,250,240,.14);padding-top:10px;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:14px;align-items:center;width:100%}
+.thumbs button.active span{color:rgba(255,250,240,.86)}
+.caption{min-width:0;min-height:0;border-top:1px solid rgba(255,250,240,.14);padding-top:8px;margin-top:8px;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:#0a0a09}
 .caption b{font-size:18px}
 .caption span{display:block;color:rgba(255,250,240,.45);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .tools{display:flex;justify-content:flex-end;gap:8px;min-width:0}
 .tools>button{border:1px solid rgba(255,250,240,.22);background:transparent;color:rgba(255,250,240,.76);padding:11px 10px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em;text-align:center}
 .tools>button:hover{background:var(--sheet);color:var(--dark)}
 .version{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;scrollbar-width:thin;scrollbar-color:rgba(255,250,240,.24) transparent}
-.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);flex:1 1 0;min-width:128px;text-align:left;padding:8px 10px;background:rgba(255,250,240,.03)}
+.version button{color:rgba(255,250,240,.7);border-color:rgba(255,250,240,.22);flex:1 1 0;min-width:122px;text-align:left;padding:7px 10px;background:rgba(255,250,240,.03)}
 .version button b,.version button small{display:block}
 .version button b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.version button small{margin-top:6px;color:rgba(255,250,240,.42);font-size:11px;line-height:1.32;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.version button small{margin-top:4px;color:rgba(255,250,240,.42);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .version button.active,.version button:hover{background:var(--sheet);color:var(--dark);border-color:var(--sheet)}
 .version button.active small,.version button:hover small{color:rgba(18,17,15,.55)}
 .placeholder{width:100%;aspect-ratio:16/9;background:var(--sheet);color:var(--ink);display:grid;align-content:space-between;padding:22px}
@@ -792,15 +812,15 @@ button{font:inherit;color:inherit}
   .shelf{display:flex;overflow-x:auto;overflow-y:hidden;padding-right:0;padding-bottom:8px}
   .ip-card{flex:0 0 200px}
   .site-note{display:none}
-  .story{grid-template-columns:1fr;max-height:none;overflow:visible}
+  .story,.detail-section{grid-template-columns:1fr;max-height:none;overflow:visible}
+  .story-mark{min-width:0}
   .framework{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:14px}
   .framework-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .story-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .detail-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}
   .feature,.stage{overflow:visible}
   .feature-head{grid-template-columns:1fr}
-  .stage{--preview-height:auto;grid-template-rows:auto auto auto}
-  .main-image{width:100%;height:auto}
-  .page-arrow{top:calc((100vw - 64px) * .28125)}
+  .image-shell{width:100%}
+  .page-arrow{top:50%}
   .caption{grid-template-columns:1fr}
   .thumbs{height:auto;overflow:auto}
   .thumbs button{flex-basis:130px}
@@ -812,17 +832,17 @@ button{font:inherit;color:inherit}
 @media(max-width:680px){
   .annual-app{padding:14px}
   .top{gap:14px}
-  .story,.feature{padding:16px}
+  .story,.feature,.detail-section{padding:16px}
   .ip-card{flex-basis:184px}
-  .story h1{font-size:52px}
-  .framework-grid,.story-side{grid-template-columns:1fr}
-  .feature h2{font-size:26px;line-height:1.12;max-width:100%;word-break:break-all;line-break:anywhere}
+  .story h1{font-size:48px;white-space:normal;overflow:visible;text-overflow:clip}
+  .framework-grid,.detail-side{grid-template-columns:1fr}
+  .feature h2{font-size:26px;line-height:1.12;max-width:100%;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all;line-break:anywhere}
   .feature p{max-width:100%}
   .feature-head,.version-switch{grid-template-columns:1fr}
   .version{grid-template-columns:1fr}
   .meta{text-align:left}
   .stage{gap:12px}
-  .page-arrow{width:38px;height:56px;top:calc((100vw - 28px) * .28125)}
+  .page-arrow{width:38px;height:56px;top:50%}
   .thumbs button{min-width:130px}
   .tools{display:grid;grid-template-columns:1fr 1fr}
   .research-sections{grid-template-columns:1fr}
