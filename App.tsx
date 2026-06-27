@@ -18,7 +18,6 @@ type IpAnnual = {
   metrics: { label: string; value: string }[];
   studyNotes: string[];
   audience: string[];
-  downloadUrl?: string;
   framework: { step: string; title: string; text: string }[];
   versions: PageVersion[];
 };
@@ -316,6 +315,7 @@ export default function App() {
   const [readerOpen, setReaderOpen] = useState(false);
   const [researchOpen, setResearchOpen] = useState(false);
   const [copyState, setCopyState] = useState('复制当前页链接');
+  const [themeMode, setThemeMode] = useState<'annual' | 'bright'>('annual');
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -344,7 +344,6 @@ export default function App() {
   const versions = archive.versions.length ? archive.versions : [fallbackVersion(archive)];
   const version = versions[activeVersion] || versions[0];
   const activeImage = imageFor(version, activePage);
-  const totalExtractedPages = versions.reduce((sum, item) => sum + item.labels.length, 0);
   const thumbIndexes = version.labels.map((_, index) => index).slice(0, 10);
   if (activePage >= 10 && !thumbIndexes.includes(activePage)) {
     thumbIndexes[thumbIndexes.length - 1] = activePage;
@@ -394,7 +393,7 @@ export default function App() {
   };
 
   return (
-    <main className="annual-app">
+    <main className={`annual-app ${themeMode === 'bright' ? 'theme-bright' : ''}`}>
       <style>{styles}</style>
 
       <header className="top">
@@ -416,7 +415,16 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <div className="meta">2024-2026<br />IP SCHEME ANNUAL</div>
+        <div className="top-actions">
+          <button
+            className="theme-toggle"
+            onClick={() => setThemeMode(mode => mode === 'bright' ? 'annual' : 'bright')}
+            aria-label="切换页面风格"
+          >
+            {themeMode === 'bright' ? '年鉴色' : '亮色'}
+          </button>
+          <div className="meta">2024-2026<br />IP SCHEME ANNUAL</div>
+        </div>
       </header>
 
       <section className="workspace">
@@ -576,18 +584,6 @@ export default function App() {
                 ))}
               </div>
             </div>
-            <div className="detail-side">
-              <div className="download-card">
-                <span>IP 资料包</span>
-                <strong>{archive.name} 打包下载</strong>
-                <p>{archive.versions.length} 个版本 PDF / {totalExtractedPages} 张精选页 / IP 研究备注</p>
-                {archive.downloadUrl ? (
-                  <a href={archive.downloadUrl} target="_blank" rel="noreferrer">获取完整资料包</a>
-                ) : (
-                  <button disabled>资料包待整理</button>
-                )}
-              </div>
-            </div>
           </section>
         </section>
       </section>
@@ -688,6 +684,10 @@ html,body,#root{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0;overflow-y:auto}
 button{font:inherit;color:inherit}
 .annual-app{min-height:100svh;padding:14px;display:grid;grid-template-rows:auto auto;gap:10px;background:var(--paper);overflow:visible}
+.annual-app.theme-bright{--paper:#f7f7f4;--sheet:#ffffff;--ink:#101010;--muted:#66645f;--line:rgba(16,16,16,.12);--red:#8e2f29}
+.theme-bright .image-shell,.theme-bright .main-image,.theme-bright .main-image img{background:#fff}
+.theme-bright .story-metrics,.theme-bright .framework-grid div,.theme-bright .version button,.theme-bright .thumbs button{background:#fafafa}
+.theme-bright .site-note{background:#fff}
 .top{display:grid;grid-template-columns:236px 1fr auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
@@ -697,6 +697,9 @@ button{font:inherit;color:inherit}
 .chapters{display:flex;gap:8px;overflow:auto}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
+.theme-toggle{border:1px solid var(--line);background:var(--sheet);color:var(--ink);padding:10px 12px;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
+.theme-toggle:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
 .meta{color:var(--muted);text-align:right;line-height:1.6}
 .workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:visible;align-items:start}
 .rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
@@ -718,9 +721,9 @@ button{font:inherit;color:inherit}
 .story-metrics div{min-width:0;padding:10px 11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .story-metrics b{display:block;font-size:24px;line-height:1;white-space:nowrap}
 .story-metrics span{display:block;margin-top:7px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.12em}
-.detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(320px,1.35fr) minmax(520px,2.35fr) minmax(190px,.65fr);gap:18px;align-items:start}
+.detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(320px,1fr) minmax(560px,2fr);gap:18px;align-items:start}
 .research-card{min-width:0}
-.research-card span,.download-card>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.research-card span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .research-card strong{display:block;margin-top:10px;font-size:14px;line-height:1.65;color:rgba(17,16,14,.88)}
 .research-card ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
 .research-card li{position:relative;padding-left:14px;color:var(--muted);font-size:12px;line-height:1.55}
@@ -732,17 +735,6 @@ button{font:inherit;color:inherit}
 .framework small{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.08em}
 .framework b{display:block;margin-top:8px;font-size:13px}
 .framework p{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
-.detail-side{display:block;min-width:0}
-.info-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
-.info-grid div{padding:11px 9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
-.info-grid b{display:block;font-size:24px;white-space:nowrap}
-.info-grid span{display:block;margin-top:6px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.12em}
-.download-card{border:1px solid var(--line);padding:14px;background:rgba(238,231,218,.18);overflow:hidden}
-.download-card strong{display:block;margin-top:10px;font-size:18px;line-height:1.2}
-.download-card p{margin:10px 0 12px;color:var(--muted);font-size:12px;line-height:1.55}
-.download-card a,.download-card button{width:100%;border:1px solid var(--line);background:rgba(255,250,240,.56);color:var(--ink);padding:9px 10px;display:grid;place-items:center;text-decoration:none;cursor:pointer;font:800 10px var(--mono);letter-spacing:.12em}
-.download-card a:hover{border-color:var(--ink);background:var(--ink);color:var(--sheet)}
-.download-card button:disabled{color:rgba(116,109,99,.62);cursor:not-allowed}
 .site-note{border:1px solid var(--line);padding:14px;background:rgba(255,250,240,.78)}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
@@ -816,6 +808,7 @@ button{font:inherit;color:inherit}
 @media(max-width:1100px){
   .annual-app{height:auto;min-height:100svh;overflow:visible}
   .top,.workspace{grid-template-columns:1fr}
+  .top-actions{justify-content:flex-start}
   .workspace,.main-stack{overflow:visible}
   .rail{grid-template-rows:auto auto;position:static;max-height:none}
   .shelf{display:flex;overflow-x:auto;overflow-y:hidden;padding-right:0;padding-bottom:8px}
@@ -825,7 +818,6 @@ button{font:inherit;color:inherit}
   .story-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
   .framework{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:14px}
   .framework-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .detail-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}
   .feature,.stage{overflow:visible}
   .feature-head{grid-template-columns:1fr}
   .image-shell{width:100%}
