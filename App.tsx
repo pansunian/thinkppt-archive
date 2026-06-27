@@ -18,6 +18,7 @@ type IpAnnual = {
   metrics: { label: string; value: string }[];
   studyNotes: string[];
   audience: string[];
+  downloadUrl?: string;
   framework: { step: string; title: string; text: string }[];
   versions: PageVersion[];
 };
@@ -343,6 +344,7 @@ export default function App() {
   const versions = archive.versions.length ? archive.versions : [fallbackVersion(archive)];
   const version = versions[activeVersion] || versions[0];
   const activeImage = imageFor(version, activePage);
+  const totalExtractedPages = versions.reduce((sum, item) => sum + item.labels.length, 0);
   const thumbIndexes = version.labels.map((_, index) => index).slice(0, 10);
   if (activePage >= 10 && !thumbIndexes.includes(activePage)) {
     thumbIndexes[thumbIndexes.length - 1] = activePage;
@@ -575,11 +577,15 @@ export default function App() {
               </div>
             </div>
             <div className="detail-side">
-              <div className="audience">
-                <span>适合参考</span>
-                <div>
-                  {archive.audience.map(item => <b key={item}>{item}</b>)}
-                </div>
+              <div className="download-card">
+                <span>IP 资料包</span>
+                <strong>{archive.name} 打包下载</strong>
+                <p>{archive.versions.length} 个版本 PDF / {totalExtractedPages} 张精选页 / IP 研究备注</p>
+                {archive.downloadUrl ? (
+                  <a href={archive.downloadUrl} target="_blank" rel="noreferrer">下载资料包</a>
+                ) : (
+                  <button disabled>待开放下载地址</button>
+                )}
               </div>
             </div>
           </section>
@@ -714,7 +720,7 @@ button{font:inherit;color:inherit}
 .story-metrics span{display:block;margin-top:7px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.12em}
 .detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(320px,1.35fr) minmax(520px,2.35fr) minmax(190px,.65fr);gap:18px;align-items:start}
 .research-card{min-width:0}
-.research-card span,.audience>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.research-card span,.download-card>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .research-card strong{display:block;margin-top:10px;font-size:14px;line-height:1.65;color:rgba(17,16,14,.88)}
 .research-card ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
 .research-card li{position:relative;padding-left:14px;color:var(--muted);font-size:12px;line-height:1.55}
@@ -731,9 +737,11 @@ button{font:inherit;color:inherit}
 .info-grid div{padding:11px 9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .info-grid b{display:block;font-size:24px;white-space:nowrap}
 .info-grid span{display:block;margin-top:6px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.12em}
-.audience{border:1px solid var(--line);padding:12px;background:rgba(238,231,218,.28);overflow:hidden}
-.audience div{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.audience b{border:1px solid var(--line);padding:6px 8px;font-size:11px;font-weight:700;background:rgba(255,250,240,.62);white-space:nowrap}
+.download-card{border:1px solid var(--line);padding:14px;background:rgba(238,231,218,.28);overflow:hidden}
+.download-card strong{display:block;margin-top:10px;font-size:18px;line-height:1.2}
+.download-card p{margin:10px 0 14px;color:var(--muted);font-size:12px;line-height:1.55}
+.download-card a,.download-card button{width:100%;border:1px solid var(--ink);background:var(--ink);color:var(--sheet);padding:11px 10px;display:grid;place-items:center;text-decoration:none;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em}
+.download-card button:disabled{border-color:var(--line);background:transparent;color:rgba(116,109,99,.62);cursor:not-allowed}
 .site-note{border:1px solid var(--line);padding:14px;background:rgba(255,250,240,.78)}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
