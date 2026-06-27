@@ -24,6 +24,7 @@ type IpAnnual = {
 
 const root = '/scheme-pages/xiaohongshu/manrenjie';
 const snowRoot = '/scheme-pages/xiaohongshu/xuerenjie';
+const cnyRoot = '/scheme-pages/xiaohongshu/cny';
 
 const annualData: IpAnnual[] = [
   {
@@ -174,25 +175,58 @@ const annualData: IpAnnual[] = [
     versions: [],
   },
   {
-    platform: '快手',
-    name: '春节 IP',
+    platform: '小红书',
+    name: '小红书 CNY',
     type: '春节节点 IP',
-    text: '春节流量如何变成晚会、互动和品牌资源包。后续上传 PDF 后，这里会自动展开完整页面。',
-    thesis: '适合观察春节这个超级节点如何被拆成内容晚会、互动任务、品牌资源包和用户参与机制。',
+    text: '把春节年味、返乡情绪、内容共创和线下场景包装成平台级年度营销资产。',
+    thesis: '它的价值在于把春节从单次节点投放升级为可连续经营的 CNY IP：先证明年轻人仍然需要年味，再用内容、明星、线下场景、城市联动和品牌资源包把“过年就来小红书”做成年轻人的春节入口。',
     metrics: [
-      { label: '版本谱系', value: '待接入' },
-      { label: '已提取页面', value: '0' },
-      { label: '观察方向', value: '春节大促' },
+      { label: '版本谱系', value: '4' },
+      { label: '精选页面', value: '48' },
+      { label: '观察跨度', value: '2024-2025' },
     ],
-    studyNotes: ['重点看平台大节点如何承接品牌曝光和用户互动。', '后续可补充晚会、红包、任务玩法等模块。'],
-    audience: ['大众消费', '电商平台', '游戏娱乐', '本地生活'],
+    studyNotes: ['从“春节流量”到“年味资产”：先定义年轻人为什么还需要过年，再找到平台可占据的情绪入口。', '从线上内容到线下场景：CNY 方案明显在用城市、商场、年货市集和春晚互动把内容 IP 实体化。', '从主题到产品化：2025 版本已经出现更清晰的资源包、传播节奏和品牌共创方式。'],
+    audience: ['食品饮料', '电商与零售', '文旅城市', '美妆个护', '出行与本地生活'],
     framework: [
-      { step: '01', title: '节点', text: '春节是平台全年最大规模的用户注意力窗口。' },
-      { step: '02', title: '互动', text: '晚会、红包、任务和内容共创共同承接品牌需求。' },
-      { step: '03', title: '转化', text: '适合品牌把曝光、互动和交易线索打通。' },
-      { step: '04', title: '待补', text: 'PDF 接入后补充真实页面和版本变化。' },
+      { step: '01', title: '洞察', text: '春节不是过时节点，而是年轻人重新寻找年味、关系和生活仪式的高密度时刻。' },
+      { step: '02', title: '主题', text: '用“过年就来小红书”把年货、年味、年俗和出行收束成平台入口。' },
+      { step: '03', title: '场景', text: '用春晚、年货市集、城市路线、线下大事件和 UGC 内容把节点变成可参与场景。' },
+      { step: '04', title: '资源', text: '把站内流量、达人明星、品牌共创和线下曝光组合成品牌可购买的春节资源包。' },
     ],
-    versions: [],
+    versions: [
+      {
+        year: '2024 龙年',
+        title: '2024小红书CNY【龙年龙咚锵】招商方案',
+        summary: '精选封面、年味复兴洞察、项目节奏、寻找龙咚锵、城市寻访、产品互动和资源页。',
+        dir: `${cnyRoot}/2024-dragon`,
+        pages: ['001', '003', '005', '006', '007', '009', '010', '012', '013', '016', '018', '024'],
+        labels: ['封面', '年味洞察', '节点判断', '复兴计划', '路线图', 'IP 定义', '产品玩法', '全站寻找', '城市寻访', '记忆扭蛋机', '互动产品', '引流资源'],
+      },
+      {
+        year: '2024 IP',
+        title: '2024过年就来小红书CNY招商方案',
+        summary: '精选用户规模、过年决策、大家的新年、春晚联动、资源曝光和互动玩法等关键页。',
+        dir: `${cnyRoot}/2024-ip`,
+        pages: ['001', '002', '003', '006', '007', '008', '010', '016', '021', '028', '031', '041'],
+        labels: ['封面', '用户规模', '决策答案', '共创新年', 'IP 结构', '春晚节奏', '流量高点', '作战线', '曝光注入', '内容共创', '互动玩法', '资源曝光'],
+      },
+      {
+        year: '2025 IP',
+        title: '2025 CNY【过年就来小红书】IP招商方案',
+        summary: '精选回顾、洞察、升级主题、内容框架、时间战线、品牌共创模型和项目节奏。',
+        dir: `${cnyRoot}/2025-ip`,
+        pages: ['001', '003', '004', '006', '010', '013', '014', '016', '017', '028', '036', '047'],
+        labels: ['封面', '过年方式', '洞察', '参考答案', '威力', '主题页', '内容框架', '作战线', '开场', '共创模型', '线下联动', '项目节奏'],
+      },
+      {
+        year: '2025 大集',
+        title: '2025小红书CNY【新年小红大集】招商方案',
+        summary: '精选新年小红大集、年夜饭洞察、红运主题、项目目标、三阶段路径、线下市集和传播路线。',
+        dir: `${cnyRoot}/2025-market`,
+        pages: ['001', '003', '004', '006', '007', '008', '010', '013', '014', '022', '024', '031'],
+        labels: ['封面', '年轻人过年', '年夜饭洞察', '红运主张', '主题页', '项目目标', '大集场景', '阶段路径', '清单', '线下市集', '红运玩法', '路线图'],
+      },
+    ],
   },
   {
     platform: 'BILIBILI',
@@ -719,7 +753,7 @@ button{font:inherit;color:inherit}
   .feature{order:1}
   .story{order:2}
   .story h1{font-size:64px}
-  .feature h2{font-size:28px;line-height:1.12;max-width:100%}
+  .feature h2{font-size:26px;line-height:1.12;max-width:100%;word-break:break-all;line-break:anywhere}
   .feature p{max-width:100%}
   .feature-head,.version-switch{grid-template-columns:1fr}
   .version{grid-template-columns:1fr}
