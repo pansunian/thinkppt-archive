@@ -490,14 +490,18 @@ export default function App() {
                     className={index === activeVersion ? 'active' : ''}
                     onClick={() => selectVersion(index)}
                   >
-                    <b>{item.year}</b>
-                    <small>{item.title.replace(/^\d{4}小红书|^小红书/, '')}</small>
+                    <span className="version-copy">
+                      <b>{item.year}</b>
+                      <small>{item.title.replace(/^\d{4}小红书|^小红书/, '')}</small>
+                    </span>
+                    {index === activeVersion && (
+                      <span className="page-count" aria-label="当前页码">
+                        <b>{String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}</b>
+                        <small>当前页</small>
+                      </span>
+                    )}
                   </button>
                 ))}
-              </div>
-              <div className="page-count" aria-label="当前页码">
-                <b>{String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}</b>
-                <small>当前页</small>
               </div>
             </div>
 
@@ -765,10 +769,10 @@ button{font:inherit;color:inherit}
 .feature-head>div{min-width:0}
 .feature h2{margin:3px 0 0;font:800 clamp(26px,2.1vw,40px)/1.02 var(--display);letter-spacing:0;max-width:1120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feature p{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.45;max-width:1120px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow-wrap:anywhere;word-break:break-word}
-.version-switch{display:grid;grid-template-columns:68px minmax(0,1fr) 86px;gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
+.version-switch{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
 .version-switch>span{border:1px solid var(--line);display:grid;place-items:center;padding:0 8px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.14em;white-space:nowrap}
-.page-count{border:1px solid var(--line);display:grid;place-items:center;text-align:center;color:var(--muted);padding:0 8px;min-width:0}
-.page-count b{display:block;white-space:nowrap;color:var(--ink);line-height:1.1}
+.page-count{border-left:1px solid rgba(255,250,240,.24);display:grid;place-items:center;text-align:center;color:rgba(255,250,240,.62);padding-left:12px;margin-left:10px;min-width:72px}
+.page-count b{display:block;white-space:nowrap;color:inherit;line-height:1.1}
 .page-count small{display:block;margin-top:6px;font:800 8px var(--mono);letter-spacing:.12em;white-space:nowrap}
 .stage{min-height:0;display:block;overflow:visible;position:relative;background:var(--sheet);margin-top:10px}
 .image-shell{position:relative;width:100%;aspect-ratio:16/9;background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
@@ -793,7 +797,8 @@ button{font:inherit;color:inherit}
 .tools>button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:11px 10px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em;text-align:center}
 .tools>button:hover{background:var(--ink);color:var(--sheet)}
 .version{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.version button{color:var(--muted);border-color:var(--line);flex:1 1 0;min-width:122px;text-align:left;padding:7px 10px;background:rgba(238,231,218,.18)}
+.version button{color:var(--muted);border-color:var(--line);flex:1 1 0;min-width:122px;text-align:left;padding:7px 10px;background:rgba(238,231,218,.18);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+.version-copy{min-width:0}
 .version button b,.version button small{display:block}
 .version button b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .version button small{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -867,12 +872,13 @@ button{font:inherit;color:inherit}
   .feature h2{font-size:26px;line-height:1.12;max-width:100%;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all;line-break:anywhere}
   .feature p{max-width:100%}
   .feature-head{grid-template-columns:1fr}
-  .version-switch{grid-template-columns:50px minmax(0,1fr) 58px;gap:6px}
+  .version-switch{grid-template-columns:1fr;gap:6px}
   .version-switch>span{font-size:8px;letter-spacing:.06em;padding:0 4px}
-  .page-count{padding:0 4px}
+  .page-count{min-width:56px;padding-left:7px;margin-left:7px}
   .page-count b{font-size:8px;letter-spacing:.04em}
   .page-count small{font-size:7px;letter-spacing:.04em;margin-top:4px}
   .version{grid-template-columns:1fr}
+  .version button{min-height:56px}
   .stage{gap:12px}
   .page-arrow{width:38px;height:56px;top:50%}
   .caption{grid-template-columns:auto auto minmax(0,1fr);gap:6px}
