@@ -479,11 +479,6 @@ export default function App() {
                 <h2>{version.title}</h2>
                 <p>{version.summary}</p>
               </div>
-              <div className="count">
-                {String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}
-                <br />
-                {version.year}
-              </div>
             </div>
 
             <div className="version-switch" aria-label="方案版本切换">
@@ -499,6 +494,10 @@ export default function App() {
                     <small>{item.title.replace(/^\d{4}小红书|^小红书/, '')}</small>
                   </button>
                 ))}
+              </div>
+              <div className="page-count" aria-label="当前页码">
+                <b>{String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}</b>
+                <small>当前页</small>
               </div>
             </div>
 
@@ -708,7 +707,7 @@ button{font:inherit;color:inherit}
 .theme-dark .thumbs img{background:#0a0a09}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
-.eyebrow,.brand small,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
+.eyebrow,.brand small,.chapters button,.ip-card small,.version button b,.page-count b{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block;margin-top:4px;font:700 12px/1 var(--text);letter-spacing:.1em;text-transform:none}
 .brand b{display:block;font:800 23px/.95 var(--text);letter-spacing:0}
 .top{min-width:0;display:grid;grid-template-columns:236px minmax(0,1fr) auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
@@ -762,13 +761,15 @@ button{font:inherit;color:inherit}
 .site-note small a{color:inherit;text-decoration:none}
 .site-note small a:hover{color:var(--red)}
 .feature{background:var(--sheet);color:var(--ink);border:1px solid var(--line);padding:12px;display:block;min-width:0;min-height:0;overflow:visible}
-.feature-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
+.feature-head{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
 .feature-head>div{min-width:0}
 .feature h2{margin:3px 0 0;font:800 clamp(26px,2.1vw,40px)/1.02 var(--display);letter-spacing:0;max-width:1120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feature p{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.45;max-width:1120px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow-wrap:anywhere;word-break:break-word}
-.version-switch{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
+.version-switch{display:grid;grid-template-columns:68px minmax(0,1fr) 86px;gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
 .version-switch>span{border:1px solid var(--line);display:grid;place-items:center;padding:0 8px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.14em;white-space:nowrap}
-.count{color:var(--muted);text-align:right;line-height:1.7}
+.page-count{border:1px solid var(--line);display:grid;place-items:center;text-align:center;color:var(--muted);padding:0 8px;min-width:0}
+.page-count b{display:block;white-space:nowrap;color:var(--ink);line-height:1.1}
+.page-count small{display:block;margin-top:6px;font:800 8px var(--mono);letter-spacing:.12em;white-space:nowrap}
 .stage{min-height:0;display:block;overflow:visible;position:relative;background:var(--sheet);margin-top:10px}
 .image-shell{position:relative;width:100%;aspect-ratio:16/9;background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
 .main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#f7f0e5;cursor:zoom-in;color:inherit;overflow:hidden}
@@ -865,7 +866,12 @@ button{font:inherit;color:inherit}
   .story-metrics span{font-size:8px;letter-spacing:.06em}
   .feature h2{font-size:26px;line-height:1.12;max-width:100%;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all;line-break:anywhere}
   .feature p{max-width:100%}
-  .feature-head,.version-switch{grid-template-columns:1fr}
+  .feature-head{grid-template-columns:1fr}
+  .version-switch{grid-template-columns:50px minmax(0,1fr) 58px;gap:6px}
+  .version-switch>span{font-size:8px;letter-spacing:.06em;padding:0 4px}
+  .page-count{padding:0 4px}
+  .page-count b{font-size:8px;letter-spacing:.04em}
+  .page-count small{font-size:7px;letter-spacing:.04em;margin-top:4px}
   .version{grid-template-columns:1fr}
   .stage{gap:12px}
   .page-arrow{width:38px;height:56px;top:50%}
