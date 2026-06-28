@@ -407,36 +407,39 @@ export default function App() {
     <main className={`annual-app ${themeMode === 'dark' ? 'theme-dark' : ''}`}>
       <style>{styles}</style>
 
+      <header className="top">
+        <a className="brand" href="/" aria-label="ThinkPPT 首页">
+          <div className="mark">T</div>
+          <div>
+            <b>ThinkPPT</b>
+            <small>深刻PPT</small>
+          </div>
+        </a>
+        <nav className="chapters" aria-label="平台筛选">
+          {platforms.map(platform => (
+            <button
+              key={platform}
+              className={platform === activePlatform ? 'active' : ''}
+              onClick={() => selectPlatform(platform)}
+            >
+              {platform}
+            </button>
+          ))}
+        </nav>
+        <div className="top-actions">
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label="切换页面风格"
+          >
+            <span className={themeMode === 'light' ? 'active' : ''}>浅</span>
+            <span className={themeMode === 'dark' ? 'active' : ''}>深</span>
+          </button>
+        </div>
+      </header>
+
       <section className="workspace">
         <aside className="rail">
-          <div className="rail-head">
-            <a className="brand" href="/" aria-label="ThinkPPT 首页">
-              <div className="mark">T</div>
-              <div>
-                <b>ThinkPPT</b>
-                <small>深刻PPT</small>
-              </div>
-            </a>
-            <button
-              className="theme-toggle"
-              onClick={toggleTheme}
-              aria-label="切换页面风格"
-            >
-              <span className={themeMode === 'light' ? 'active' : ''}>浅</span>
-              <span className={themeMode === 'dark' ? 'active' : ''}>深</span>
-            </button>
-          </div>
-          <nav className="chapters" aria-label="平台筛选">
-            {platforms.map(platform => (
-              <button
-                key={platform}
-                className={platform === activePlatform ? 'active' : ''}
-                onClick={() => selectPlatform(platform)}
-              >
-                {platform}
-              </button>
-            ))}
-          </nav>
           <nav className="shelf" aria-label="IP 年鉴目录">
             {filtered.map((item, index) => (
               <button
@@ -450,12 +453,6 @@ export default function App() {
               </button>
             ))}
           </nav>
-          <div className="site-note">
-            <b>ThinkPPT</b>
-            <span>深刻PPT</span>
-            <p>面向策划人和品牌市场部的互联网平台 IP 方案年鉴，持续收藏、整理和策展高质量营销方案。</p>
-            <small><a href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号-2</a></small>
-          </div>
         </aside>
 
         <section className="main-stack">
@@ -593,6 +590,12 @@ export default function App() {
               </div>
             </div>
           </section>
+          <footer className="site-note">
+            <b>ThinkPPT</b>
+            <span>深刻PPT</span>
+            <p>面向策划人和品牌市场部的互联网平台 IP 方案年鉴，持续收藏、整理和策展高质量营销方案。</p>
+            <small><a href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号-2</a></small>
+          </footer>
         </section>
       </section>
 
@@ -691,7 +694,7 @@ const styles = `
 html,body,#root{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0;overflow-y:auto}
 button{font:inherit;color:inherit}
-.annual-app{min-height:100svh;padding:14px;background:var(--paper);color:var(--ink);overflow:visible}
+.annual-app{min-height:100svh;padding:14px;background:var(--paper);color:var(--ink);overflow:visible;display:grid;grid-template-rows:auto auto;gap:10px}
 .annual-app.theme-dark{--paper:#0f0e0c;--sheet:#171613;--ink:#fffaf0;--muted:#a9a19a;--line:rgba(255,250,240,.15);--red:#d26352}
 .theme-dark .mark{background:var(--sheet);color:var(--ink);border-color:var(--line)}
 .theme-dark .ip-card,.theme-dark .story-metrics,.theme-dark .framework-grid div,.theme-dark .version button,.theme-dark .thumbs button,.theme-dark .site-note{background:rgba(255,250,240,.035)}
@@ -708,16 +711,17 @@ button{font:inherit;color:inherit}
 .eyebrow,.brand small,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block;margin-top:4px;font:700 12px/1 var(--text);letter-spacing:.1em;text-transform:none}
 .brand b{display:block;font:800 23px/.95 var(--text);letter-spacing:0}
-.chapters{display:flex;flex-wrap:wrap;gap:8px;overflow:auto;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0}
+.top{min-width:0;display:grid;grid-template-columns:236px minmax(0,1fr) auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
+.chapters{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;padding:2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.top-actions{display:flex;align-items:center;justify-content:flex-end;min-width:0}
 .theme-toggle{border:1px solid var(--line);background:transparent;color:var(--muted);padding:2px;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap;display:flex;gap:2px;align-items:center}
 .theme-toggle span{display:grid;place-items:center;min-width:30px;height:26px;padding:0 8px}
 .theme-toggle span.active{background:var(--ink);color:var(--sheet)}
 .theme-toggle:hover{border-color:var(--ink)}
-.workspace{min-height:0;display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;overflow:visible;align-items:start}
-.rail{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
-.rail-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:visible;align-items:start}
+.rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr);gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
 .shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .ip-card{width:100%;min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:9px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;row-gap:4px;align-items:center;transition:.18s ease}
 .ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(0)}
@@ -726,7 +730,7 @@ button{font:inherit;color:inherit}
 .ip-card small{color:var(--red);align-self:start;padding-top:3px}
 .ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto;align-content:start;gap:10px;overflow:visible;padding-right:0}
+.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto auto;align-content:start;gap:10px;overflow:visible;padding-right:0}
 .story{background:var(--sheet);border:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:16px;align-items:end;min-width:0;min-height:0;overflow:visible}
 .story .eyebrow{color:var(--red)}
 .story h1{margin:6px 0 0;font:800 clamp(34px,3.2vw,52px)/.94 var(--display);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -750,11 +754,11 @@ button{font:inherit;color:inherit}
 .framework small{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.08em}
 .framework b{display:block;margin-top:8px;font-size:13px}
 .framework p{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
-.site-note{border:1px solid var(--line);padding:14px;background:rgba(255,250,240,.78)}
-.site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em}
-.site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
-.site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
-.site-note small{display:block;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.4}
+.site-note{border:1px solid var(--line);padding:14px 16px;background:rgba(255,250,240,.56);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em;white-space:nowrap}
+.site-note span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.site-note p{margin:0;color:var(--muted);font-size:12px;line-height:1.5;min-width:0}
+.site-note small{display:block;color:var(--muted);font-size:11px;line-height:1.4;white-space:nowrap}
 .site-note small a{color:inherit;text-decoration:none}
 .site-note small a:hover{color:var(--red)}
 .feature{background:var(--sheet);color:var(--ink);border:1px solid var(--line);padding:12px;display:block;min-width:0;min-height:0;overflow:visible}
@@ -824,13 +828,14 @@ button{font:inherit;color:inherit}
 .research-sections b{font-size:13px}
 @media(max-width:1100px){
   .annual-app{height:auto;min-height:100svh;overflow:visible}
-  .workspace{grid-template-columns:1fr}
+  .top,.workspace{grid-template-columns:1fr}
+  .top-actions{justify-content:flex-start}
   .workspace,.main-stack{overflow:visible}
-  .rail{grid-template-rows:auto auto auto auto;position:static;max-height:none}
-  .rail-head{align-items:center}
+  .rail{grid-template-rows:auto;position:static;max-height:none}
   .shelf{display:flex;overflow-x:auto;overflow-y:hidden;padding-right:0;padding-bottom:8px}
   .ip-card{flex:0 0 200px}
-  .site-note{display:none}
+  .site-note{grid-template-columns:1fr}
+  .site-note small{white-space:normal}
   .story,.detail-section{grid-template-columns:1fr;max-height:none;overflow:visible}
   .story-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
   .framework{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:14px}
@@ -849,7 +854,7 @@ button{font:inherit;color:inherit}
 }
 @media(max-width:680px){
   .annual-app{padding:14px}
-  .rail-head{gap:14px}
+  .top{gap:14px}
   .story,.feature,.detail-section{padding:16px}
   .ip-card{flex-basis:184px}
   .story h1{font-size:48px;white-space:normal;overflow:visible;text-overflow:clip}
