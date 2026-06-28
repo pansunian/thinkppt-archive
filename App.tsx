@@ -346,6 +346,7 @@ export default function App() {
   const archive = filtered[activeIp] || filtered[0] || annualData[0];
   const versions = archive.versions.length ? archive.versions : [fallbackVersion(archive)];
   const version = versions[activeVersion] || versions[0];
+  const pageCount = version.labels.length;
   const activeImage = imageFor(version, activePage);
   const thumbIndexes = version.labels.map((_, index) => index).slice(0, 10);
   if (activePage >= 10 && !thumbIndexes.includes(activePage)) {
@@ -355,16 +356,24 @@ export default function App() {
     ? ''
     : `${window.location.origin}${window.location.pathname}?ip=${encodeURIComponent(archive.name)}&version=${encodeURIComponent(version.year)}&page=${activePage + 1}`;
 
+  const goToNextPage = () => {
+    setActivePage(page => pageCount ? (page + 1) % pageCount : 0);
+  };
+
+  const goToPreviousPage = () => {
+    setActivePage(page => pageCount ? (page - 1 + pageCount) % pageCount : 0);
+  };
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setReaderOpen(false);
       if (event.key === 'Escape') setResearchOpen(false);
-      if (event.key === 'ArrowRight') setActivePage(page => Math.min(page + 1, version.labels.length - 1));
-      if (event.key === 'ArrowLeft') setActivePage(page => Math.max(page - 1, 0));
+      if (event.key === 'ArrowRight') setActivePage(page => pageCount ? (page + 1) % pageCount : 0);
+      if (event.key === 'ArrowLeft') setActivePage(page => pageCount ? (page - 1 + pageCount) % pageCount : 0);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [version.labels.length]);
+  }, [pageCount]);
 
   const selectPlatform = (platform: string) => {
     setActivePlatform(platform);
@@ -509,14 +518,14 @@ export default function App() {
               <div className="image-shell">
                 <button
                   className="page-arrow page-arrow-prev"
-                  onClick={() => setActivePage(page => Math.max(page - 1, 0))}
+                  onClick={goToPreviousPage}
                   aria-label="上一页"
                 >
                   ←
                 </button>
                 <button
                   className="page-arrow page-arrow-next"
-                  onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}
+                  onClick={goToNextPage}
                   aria-label="下一页"
                 >
                   →
@@ -611,13 +620,13 @@ export default function App() {
             </div>
             <button onClick={() => setReaderOpen(false)}>关闭</button>
           </div>
-          <button className="reader-nav prev" onClick={() => setActivePage(page => Math.max(page - 1, 0))}>上一页</button>
+          <button className="reader-nav prev" onClick={goToPreviousPage}>上一页</button>
           <img src={activeImage} alt={`${version.title} ${version.labels[activePage]}`} />
-          <button className="reader-nav next" onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}>下一页</button>
+          <button className="reader-nav next" onClick={goToNextPage}>下一页</button>
           <div className="reader-bottom">
-            <button onClick={() => setActivePage(page => Math.max(page - 1, 0))}>上一页</button>
+            <button onClick={goToPreviousPage}>上一页</button>
             <span>{String(activePage + 1).padStart(2, '0')} / {String(version.labels.length).padStart(2, '0')}</span>
-            <button onClick={() => setActivePage(page => Math.min(page + 1, version.labels.length - 1))}>下一页</button>
+            <button onClick={goToNextPage}>下一页</button>
           </div>
         </section>
       )}
@@ -860,7 +869,13 @@ button{font:inherit;color:inherit}
 }
 @media(max-width:680px){
   .annual-app{padding:14px}
-  .top{gap:14px}
+  .top{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"brand actions" "chapters chapters";gap:10px 12px;align-items:center}
+  .brand{grid-area:brand;min-width:0}
+  .mark{width:38px;height:38px;font-size:25px}
+  .brand b{font-size:21px}
+  .top-actions{grid-area:actions;justify-content:flex-end}
+  .theme-toggle span{min-width:28px;height:24px;padding:0 7px}
+  .chapters{grid-area:chapters;width:100%;padding:0 0 2px}
   .story,.feature,.detail-section{padding:16px}
   .ip-card{flex-basis:184px}
   .story h1{font-size:48px;white-space:normal;overflow:visible;text-overflow:clip}
