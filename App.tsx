@@ -457,7 +457,7 @@ export default function App() {
             <b>ThinkPPT</b>
             <span>深刻PPT</span>
             <p>面向策划人和品牌市场部的互联网平台 IP 方案年鉴，持续收藏、整理和策展高质量营销方案。</p>
-            <small>备案信息：待补充</small>
+            <small><a href="https://beian.miit.gov.cn" target="_blank" rel="noreferrer">陕ICP备2026004104号-2</a></small>
           </div>
         </aside>
 
@@ -759,6 +759,8 @@ button{font:inherit;color:inherit}
 .site-note span{display:block;margin-top:6px;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase}
 .site-note p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.65}
 .site-note small{display:block;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1.4}
+.site-note small a{color:inherit;text-decoration:none}
+.site-note small a:hover{color:var(--red)}
 .feature{background:var(--sheet);color:var(--ink);border:1px solid var(--line);padding:12px;display:block;min-width:0;min-height:0;overflow:visible}
 .feature-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
 .feature-head>div{min-width:0}
@@ -780,7 +782,7 @@ button{font:inherit;color:inherit}
 .thumbs{height:92px;min-height:0;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;margin-top:8px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
 .thumbs button{flex:0 0 136px;border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto}
 .thumbs button.active{border-color:var(--red);background:rgba(157,56,46,.06)}
-.thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#fff}
+.thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:cover;background:transparent}
 .thumbs span{display:block;margin-top:4px;color:var(--muted);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--ink)}
 .caption{min-width:0;min-height:0;border-top:1px solid var(--line);padding-top:8px;margin-top:8px;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:var(--sheet)}
