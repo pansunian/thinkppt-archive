@@ -435,7 +435,6 @@ export default function App() {
             <span className={themeMode === 'light' ? 'active' : ''}>浅</span>
             <span className={themeMode === 'dark' ? 'active' : ''}>深</span>
           </button>
-          <div className="meta">2024-2026<br />IP SCHEME ANNUAL</div>
         </div>
       </header>
 
@@ -695,10 +694,11 @@ const styles = `
 html,body,#root{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0;overflow-y:auto}
 button{font:inherit;color:inherit}
-.annual-app{min-height:100svh;padding:14px;display:grid;grid-template-rows:auto auto;gap:10px;background:var(--paper);overflow:visible}
+.annual-app{min-height:100svh;padding:14px;display:grid;grid-template-rows:auto auto;gap:10px;background:var(--paper);color:var(--ink);overflow:visible}
 .annual-app.theme-dark{--paper:#0f0e0c;--sheet:#171613;--ink:#fffaf0;--muted:#a9a19a;--line:rgba(255,250,240,.15);--red:#d26352}
 .theme-dark .mark{background:var(--sheet);color:var(--ink);border-color:var(--line)}
-.theme-dark .story-metrics,.theme-dark .framework-grid div,.theme-dark .version button,.theme-dark .thumbs button,.theme-dark .site-note{background:rgba(255,250,240,.035)}
+.theme-dark .ip-card,.theme-dark .story-metrics,.theme-dark .framework-grid div,.theme-dark .version button,.theme-dark .thumbs button,.theme-dark .site-note{background:rgba(255,250,240,.035)}
+.theme-dark .ip-card.active,.theme-dark .ip-card:hover{background:rgba(255,250,240,.075)}
 .theme-dark .image-shell,.theme-dark .main-image,.theme-dark .main-image img{background:#0a0a09}
 .theme-dark .page-arrow{border-color:rgba(255,250,240,.2);background:rgba(18,17,15,.72);color:var(--ink)}
 .theme-dark .page-arrow:hover{background:var(--ink);color:var(--sheet)}
@@ -709,7 +709,7 @@ button{font:inherit;color:inherit}
 .top{display:grid;grid-template-columns:236px 1fr auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
-.eyebrow,.brand small,.meta,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
+.eyebrow,.brand small,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block;margin-top:4px;font:700 12px/1 var(--text);letter-spacing:.1em;text-transform:none}
 .brand b{display:block;font:800 23px/.95 var(--text);letter-spacing:0}
 .chapters{display:flex;gap:8px;overflow:auto}
@@ -720,7 +720,6 @@ button{font:inherit;color:inherit}
 .theme-toggle span{display:grid;place-items:center;min-width:30px;height:26px;padding:0 8px}
 .theme-toggle span.active{background:var(--ink);color:var(--sheet)}
 .theme-toggle:hover{border-color:var(--ink)}
-.meta{color:var(--muted);text-align:right;line-height:1.6}
 .workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:visible;align-items:start}
 .rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
 .shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
@@ -862,7 +861,6 @@ button{font:inherit;color:inherit}
   .feature p{max-width:100%}
   .feature-head,.version-switch{grid-template-columns:1fr}
   .version{grid-template-columns:1fr}
-  .meta{text-align:left}
   .stage{gap:12px}
   .page-arrow{width:38px;height:56px;top:50%}
   .thumbs button{min-width:130px}
