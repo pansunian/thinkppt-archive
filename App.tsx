@@ -407,39 +407,36 @@ export default function App() {
     <main className={`annual-app ${themeMode === 'dark' ? 'theme-dark' : ''}`}>
       <style>{styles}</style>
 
-      <header className="top">
-        <a className="brand" href="/" aria-label="ThinkPPT 首页">
-          <div className="mark">T</div>
-          <div>
-            <b>ThinkPPT</b>
-            <small>深刻PPT</small>
-          </div>
-        </a>
-        <nav className="chapters" aria-label="平台筛选">
-          {platforms.map(platform => (
-            <button
-              key={platform}
-              className={platform === activePlatform ? 'active' : ''}
-              onClick={() => selectPlatform(platform)}
-            >
-              {platform}
-            </button>
-          ))}
-        </nav>
-        <div className="top-actions">
-          <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label="切换页面风格"
-          >
-            <span className={themeMode === 'light' ? 'active' : ''}>浅</span>
-            <span className={themeMode === 'dark' ? 'active' : ''}>深</span>
-          </button>
-        </div>
-      </header>
-
       <section className="workspace">
         <aside className="rail">
+          <div className="rail-head">
+            <a className="brand" href="/" aria-label="ThinkPPT 首页">
+              <div className="mark">T</div>
+              <div>
+                <b>ThinkPPT</b>
+                <small>深刻PPT</small>
+              </div>
+            </a>
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label="切换页面风格"
+            >
+              <span className={themeMode === 'light' ? 'active' : ''}>浅</span>
+              <span className={themeMode === 'dark' ? 'active' : ''}>深</span>
+            </button>
+          </div>
+          <nav className="chapters" aria-label="平台筛选">
+            {platforms.map(platform => (
+              <button
+                key={platform}
+                className={platform === activePlatform ? 'active' : ''}
+                onClick={() => selectPlatform(platform)}
+              >
+                {platform}
+              </button>
+            ))}
+          </nav>
           <nav className="shelf" aria-label="IP 年鉴目录">
             {filtered.map((item, index) => (
               <button
@@ -694,7 +691,7 @@ const styles = `
 html,body,#root{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0;overflow-y:auto}
 button{font:inherit;color:inherit}
-.annual-app{min-height:100svh;padding:14px;display:grid;grid-template-rows:auto auto;gap:10px;background:var(--paper);color:var(--ink);overflow:visible}
+.annual-app{min-height:100svh;padding:14px;background:var(--paper);color:var(--ink);overflow:visible}
 .annual-app.theme-dark{--paper:#0f0e0c;--sheet:#171613;--ink:#fffaf0;--muted:#a9a19a;--line:rgba(255,250,240,.15);--red:#d26352}
 .theme-dark .mark{background:var(--sheet);color:var(--ink);border-color:var(--line)}
 .theme-dark .ip-card,.theme-dark .story-metrics,.theme-dark .framework-grid div,.theme-dark .version button,.theme-dark .thumbs button,.theme-dark .site-note{background:rgba(255,250,240,.035)}
@@ -706,22 +703,21 @@ button{font:inherit;color:inherit}
 .theme-dark .theme-toggle{background:rgba(255,250,240,.05)}
 .theme-dark .theme-toggle span.active{background:var(--ink);color:var(--paper)}
 .theme-dark .thumbs img{background:#0a0a09}
-.top{display:grid;grid-template-columns:236px 1fr auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
 .eyebrow,.brand small,.chapters button,.ip-card small,.version button b,.count{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block;margin-top:4px;font:700 12px/1 var(--text);letter-spacing:.1em;text-transform:none}
 .brand b{display:block;font:800 23px/.95 var(--text);letter-spacing:0}
-.chapters{display:flex;gap:8px;overflow:auto}
+.chapters{display:flex;flex-wrap:wrap;gap:8px;overflow:auto;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0}
 .chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
 .chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
-.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
 .theme-toggle{border:1px solid var(--line);background:transparent;color:var(--muted);padding:2px;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap;display:flex;gap:2px;align-items:center}
 .theme-toggle span{display:grid;place-items:center;min-width:30px;height:26px;padding:0 8px}
 .theme-toggle span.active{background:var(--ink);color:var(--sheet)}
 .theme-toggle:hover{border-color:var(--ink)}
-.workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:visible;align-items:start}
-.rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
+.workspace{min-height:0;display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;overflow:visible;align-items:start}
+.rail{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
+.rail-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}
 .shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 .ip-card{width:100%;min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:9px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;row-gap:4px;align-items:center;transition:.18s ease}
 .ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(0)}
@@ -828,10 +824,10 @@ button{font:inherit;color:inherit}
 .research-sections b{font-size:13px}
 @media(max-width:1100px){
   .annual-app{height:auto;min-height:100svh;overflow:visible}
-  .top,.workspace{grid-template-columns:1fr}
-  .top-actions{justify-content:flex-start}
+  .workspace{grid-template-columns:1fr}
   .workspace,.main-stack{overflow:visible}
-  .rail{grid-template-rows:auto auto;position:static;max-height:none}
+  .rail{grid-template-rows:auto auto auto auto;position:static;max-height:none}
+  .rail-head{align-items:center}
   .shelf{display:flex;overflow-x:auto;overflow-y:hidden;padding-right:0;padding-bottom:8px}
   .ip-card{flex:0 0 200px}
   .site-note{display:none}
@@ -853,7 +849,7 @@ button{font:inherit;color:inherit}
 }
 @media(max-width:680px){
   .annual-app{padding:14px}
-  .top{gap:14px}
+  .rail-head{gap:14px}
   .story,.feature,.detail-section{padding:16px}
   .ip-card{flex-basis:184px}
   .story h1{font-size:48px;white-space:normal;overflow:visible;text-overflow:clip}
