@@ -859,7 +859,10 @@ button{font:inherit;color:inherit}
   .ip-card{flex-basis:184px}
   .story h1{font-size:48px;white-space:normal;overflow:visible;text-overflow:clip}
   .framework-grid{grid-template-columns:1fr}
-  .story-metrics{grid-template-columns:1fr}
+  .story-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .story-metrics div{padding:9px 8px}
+  .story-metrics b{font-size:20px}
+  .story-metrics span{font-size:8px;letter-spacing:.06em}
   .feature h2{font-size:26px;line-height:1.12;max-width:100%;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-all;line-break:anywhere}
   .feature p{max-width:100%}
   .feature-head,.version-switch{grid-template-columns:1fr}
@@ -867,7 +870,8 @@ button{font:inherit;color:inherit}
   .stage{gap:12px}
   .page-arrow{width:38px;height:56px;top:50%}
   .thumbs button{min-width:130px}
-  .tools{display:grid;grid-template-columns:1fr 1fr}
+  .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+  .tools>button{min-width:0;padding:10px 6px;font-size:8px;letter-spacing:.04em}
   .research-sections{grid-template-columns:1fr}
   .reader{background:#0a0a09;grid-template-rows:auto minmax(0,1fr) auto;place-items:stretch;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));gap:14px}
   .reader-top{align-items:center}
