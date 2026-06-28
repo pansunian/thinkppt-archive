@@ -314,7 +314,7 @@ export default function App() {
   const [activePage, setActivePage] = useState(0);
   const [readerOpen, setReaderOpen] = useState(false);
   const [researchOpen, setResearchOpen] = useState(false);
-  const [copyState, setCopyState] = useState('复制当前页链接');
+  const [copyState, setCopyState] = useState('复制链接');
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
@@ -388,10 +388,10 @@ export default function App() {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopyState('已复制');
-      window.setTimeout(() => setCopyState('复制当前页链接'), 1600);
+      window.setTimeout(() => setCopyState('复制链接'), 1600);
     } catch {
       setCopyState('复制失败');
-      window.setTimeout(() => setCopyState('复制当前页链接'), 1600);
+      window.setTimeout(() => setCopyState('复制链接'), 1600);
     }
   };
 
@@ -780,9 +780,9 @@ button{font:inherit;color:inherit}
 .page-arrow-prev{left:10px}
 .page-arrow-next{right:10px}
 .thumbs{height:92px;min-height:0;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:2px;margin-top:8px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
-.thumbs button{flex:0 0 136px;border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto}
+.thumbs button{flex:0 0 136px;border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:auto auto}
 .thumbs button.active{border-color:var(--red);background:rgba(157,56,46,.06)}
-.thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:cover;background:transparent}
+.thumbs img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:transparent}
 .thumbs span{display:block;margin-top:4px;color:var(--muted);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
 .thumbs button.active span{color:var(--ink)}
 .caption{min-width:0;min-height:0;border-top:1px solid var(--line);padding-top:8px;margin-top:8px;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:var(--sheet)}
@@ -869,9 +869,12 @@ button{font:inherit;color:inherit}
   .version{grid-template-columns:1fr}
   .stage{gap:12px}
   .page-arrow{width:38px;height:56px;top:50%}
+  .caption{grid-template-columns:auto auto minmax(0,1fr);gap:6px}
+  .caption b{font-size:14px;white-space:nowrap}
+  .caption span{font-size:8px;letter-spacing:.06em}
   .thumbs button{min-width:130px}
-  .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
-  .tools>button{min-width:0;padding:10px 6px;font-size:8px;letter-spacing:.04em}
+  .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%}
+  .tools>button{min-width:0;padding:9px 3px;font-size:7px;letter-spacing:0}
   .research-sections{grid-template-columns:1fr}
   .reader{background:#0a0a09;grid-template-rows:auto minmax(0,1fr) auto;place-items:stretch;padding:calc(14px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));gap:14px}
   .reader-top{align-items:center}
