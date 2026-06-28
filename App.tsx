@@ -972,6 +972,10 @@ button{font:inherit;color:inherit}
 .theme-dark .theme-toggle{background:rgba(255,250,240,.05)}
 .theme-dark .theme-toggle span.active{background:var(--ink);color:var(--paper)}
 .theme-dark .thumbs img{background:#0a0a09}
+.theme-dark .version button.active,.theme-dark .version button:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.theme-dark .version button.active small,.theme-dark .version button:hover small{color:rgba(15,14,12,.62)}
+.theme-dark .version button.active .page-count,.theme-dark .version button:hover .page-count{border-left-color:rgba(15,14,12,.22);color:rgba(15,14,12,.72)}
+.theme-dark .version button.active .page-count small,.theme-dark .version button:hover .page-count small{color:rgba(15,14,12,.58)}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
 .mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
 .eyebrow,.brand small,.chapters button,.ip-card small,.version button b,.page-count b{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
