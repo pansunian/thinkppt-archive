@@ -1041,7 +1041,7 @@ button{font:inherit;color:inherit}
 .page-count{border-left:1px solid rgba(255,250,240,.24);display:grid;place-items:center;text-align:center;color:rgba(255,250,240,.62);padding-left:12px;margin-left:10px;min-width:72px}
 .page-count b{display:block;white-space:nowrap;color:inherit;line-height:1.1}
 .page-count small{display:block;margin-top:6px;font:800 8px var(--mono);letter-spacing:.12em;white-space:nowrap}
-.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 280px;grid-template-areas:"image thumbs" "caption thumbs";gap:8px 12px;overflow:visible;position:relative;background:var(--sheet);margin-top:10px;align-items:start}
+.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(240px,18vw,340px);grid-template-areas:"image thumbs" "caption caption";grid-template-rows:auto auto;gap:8px 12px;overflow:visible;position:relative;background:var(--sheet);margin-top:10px;align-items:stretch}
 .image-shell{grid-area:image;position:relative;width:100%;aspect-ratio:16/9;background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
 .main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#f7f0e5;cursor:zoom-in;color:inherit;overflow:hidden}
 .main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#f7f0e5;transform:none}
@@ -1051,7 +1051,7 @@ button{font:inherit;color:inherit}
 .page-arrow:hover{background:var(--ink);color:var(--sheet)}
 .page-arrow-prev{left:10px}
 .page-arrow-next{right:10px}
-.thumbs{grid-area:thumbs;align-self:stretch;height:auto;max-height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;overflow-x:hidden;overflow-y:auto;padding:0 2px 2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
+.thumbs{grid-area:thumbs;align-self:stretch;height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;overflow-x:hidden;overflow-y:auto;padding:0 2px 2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
 .thumbs button{border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:auto auto}
 .thumbs button.active{border-color:var(--red);background:rgba(157,56,46,.06)}
 .thumbs img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:transparent}
