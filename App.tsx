@@ -7,6 +7,7 @@ type PageVersion = {
   dir: string;
   pages: string[];
   labels: string[];
+  aspect?: string;
 };
 
 type IpAnnual = {
@@ -90,9 +91,9 @@ const annualData: IpAnnual[] = [
     text: '把户外、沙漠、音乐、市集和青年出走情绪包装成可共建、可体验、可商业合作的生活方式 IP。',
     thesis: '它的价值在于把“去户外”从一次旅行变成一种身份表达：用“外人”命名人群，用沙漠和城市绿洲做场景，用主题营地和挑战任务让品牌真正参与到用户体验里。',
     metrics: [
-      { label: '版本谱系', value: '1' },
-      { label: '精选页面', value: '20' },
-      { label: '观察跨度', value: '2024' },
+      { label: '版本谱系', value: '2' },
+      { label: '精选页面', value: '42' },
+      { label: '观察跨度', value: '2024-2025' },
     ],
     studyNotes: ['人群命名清晰：外人不是“圈外人”，而是主动出走、寻找真实体验的人。', '场景资产强：沙漠、营地、音乐、市集天然适合品牌做沉浸式体验。', '合作方式明确：从抵达机制、共建营地到品牌合作空间，招商路径比较完整。'],
     audience: ['户外运动品牌', '文旅目的地', '汽车出行', '潮流服饰', '饮品与生活方式品牌'],
@@ -110,6 +111,15 @@ const annualData: IpAnnual[] = [
         dir: `${wairenRoot}/2024-3-hq`,
         pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012', '013', '014', '015', '016', '017', '018', '019', '020'],
         labels: ['封面', '1.0 回顾', '2.0 回顾', '无外人之地', '概念升级', '双会场', '路线机制', '启程', '抵达机制', '社群化', '共建营地', '体验营地', '挑战站', '音乐派对', '用户旅程', '美妆护肤', '3C家电', '食饮宠物', '版本升级', '收束页'],
+      },
+      {
+        year: '2025 2.0',
+        title: '2025小红书外人节招商通案',
+        summary: '精选 22 页宽屏页面：从户外趋势、年度目标、上山路径到全域体验和营销闭环。',
+        dir: `${wairenRoot}/2025-tongan`,
+        aspect: '12 / 5',
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '013', '017', '020', '022', '023', '024', '029', '032', '037', '038', '039'],
+        labels: ['封面', '项目定义', '野外部落', '版本演进', '户外变化', '核心目标', '上山路径', '户外圈层', '年度大选', '外人卡', '品牌虚拟卡', '大神集结', '花式上山', '三重场景', '品牌需求', '城市感', '差异化', '全域体验', '营销闭环', '用户路径', '时间安排', '收束页'],
       },
     ],
   },
@@ -602,6 +612,7 @@ export default function App() {
   const version = versions[activeVersion] || versions[0];
   const pageCount = version.labels.length;
   const activeImage = imageFor(version, activePage);
+  const pageAspect = version.aspect || '16 / 9';
   const thumbIndexes = version.labels.map((_, index) => index).slice(0, 10);
   if (activePage >= 10 && !thumbIndexes.includes(activePage)) {
     thumbIndexes[thumbIndexes.length - 1] = activePage;
@@ -769,7 +780,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="stage">
+            <div className="stage" style={{ '--page-aspect': pageAspect } as React.CSSProperties}>
               <div className="image-shell">
                 <button
                   className="page-arrow page-arrow-prev"
@@ -1055,9 +1066,9 @@ button{font:inherit;color:inherit}
 .page-count b{display:block;white-space:nowrap;color:inherit;line-height:1.1}
 .page-count small{display:block;margin-top:6px;font:800 8px var(--mono);letter-spacing:.12em;white-space:nowrap}
 .stage{min-height:0;display:grid;grid-template-columns:minmax(0,3fr) minmax(280px,1fr);grid-template-areas:"image thumbs" "caption caption";grid-template-rows:auto auto;gap:8px 12px;overflow:visible;position:relative;background:var(--sheet);margin-top:10px;align-items:stretch}
-.image-shell{grid-area:image;position:relative;width:100%;aspect-ratio:16/9;background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
+.image-shell{grid-area:image;position:relative;width:100%;aspect-ratio:var(--page-aspect,16 / 9);background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
 .main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#f7f0e5;cursor:zoom-in;color:inherit;overflow:hidden}
-.main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#f7f0e5;transform:none}
+.main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:var(--page-aspect,16 / 9);object-fit:contain;background:#f7f0e5;transform:none}
 .zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(255,250,240,.9);border:1px solid var(--line);padding:8px 10px;color:var(--muted);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
 .page-arrow{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:44px;height:68px;border:1px solid var(--line);background:rgba(255,250,240,.72);color:var(--ink);cursor:pointer;font-size:22px;display:grid;place-items:center}
@@ -1067,7 +1078,7 @@ button{font:inherit;color:inherit}
 .thumbs{grid-area:thumbs;align-self:stretch;height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--thumb-rows,5),minmax(0,1fr));align-content:stretch;gap:8px;overflow-x:hidden;overflow-y:auto;padding:0 2px 2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
 .thumbs button{border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;min-height:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
 .thumbs button.active{border-color:var(--red);background:rgba(157,56,46,.06)}
-.thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:transparent}
+.thumbs img{display:block;width:100%;height:100%;aspect-ratio:var(--page-aspect,16 / 9);object-fit:contain;background:transparent}
 .thumbs span{display:block;margin-top:4px;color:var(--muted);font:800 8px/1.2 var(--mono);letter-spacing:.08em;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .thumbs button.active span{color:var(--ink)}
 .caption{grid-area:caption;min-width:0;min-height:0;border-top:1px solid var(--line);padding-top:8px;margin-top:0;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:var(--sheet)}
