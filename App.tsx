@@ -944,7 +944,7 @@ const styles = `
 }
 @font-face{
   font-family:"EarlySummerText";
-  src:url("/fonts/EarlySummerSerif-light.woff") format("woff");
+  src:url("/fonts/EarlySummerSerif-light.woff2") format("woff2");
   font-weight:300 600;
   font-style:normal;
   font-display:swap;
