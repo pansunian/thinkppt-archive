@@ -606,6 +606,7 @@ export default function App() {
   if (activePage >= 10 && !thumbIndexes.includes(activePage)) {
     thumbIndexes[thumbIndexes.length - 1] = activePage;
   }
+  const thumbRows = Math.max(1, Math.ceil(thumbIndexes.length / 2));
   const shareUrl = typeof window === 'undefined'
     ? ''
     : `${window.location.origin}${window.location.pathname}?ip=${encodeURIComponent(archive.name)}&version=${encodeURIComponent(version.year)}&page=${activePage + 1}`;
@@ -809,7 +810,11 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="thumbs" aria-label="PDF 页面缩略图">
+              <div
+                className="thumbs"
+                aria-label="PDF 页面缩略图"
+                style={{ '--thumb-rows': String(thumbRows) } as React.CSSProperties}
+              >
                 {thumbIndexes.map((index) => {
                   const label = version.labels[index];
                   const thumb = thumbFor(version, index);
@@ -1041,7 +1046,7 @@ button{font:inherit;color:inherit}
 .page-count{border-left:1px solid rgba(255,250,240,.24);display:grid;place-items:center;text-align:center;color:rgba(255,250,240,.62);padding-left:12px;margin-left:10px;min-width:72px}
 .page-count b{display:block;white-space:nowrap;color:inherit;line-height:1.1}
 .page-count small{display:block;margin-top:6px;font:800 8px var(--mono);letter-spacing:.12em;white-space:nowrap}
-.stage{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) clamp(240px,18vw,340px);grid-template-areas:"image thumbs" "caption caption";grid-template-rows:auto auto;gap:8px 12px;overflow:visible;position:relative;background:var(--sheet);margin-top:10px;align-items:stretch}
+.stage{min-height:0;display:grid;grid-template-columns:minmax(0,3fr) minmax(280px,1fr);grid-template-areas:"image thumbs" "caption caption";grid-template-rows:auto auto;gap:8px 12px;overflow:visible;position:relative;background:var(--sheet);margin-top:10px;align-items:stretch}
 .image-shell{grid-area:image;position:relative;width:100%;aspect-ratio:16/9;background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
 .main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#f7f0e5;cursor:zoom-in;color:inherit;overflow:hidden}
 .main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:#f7f0e5;transform:none}
@@ -1051,11 +1056,11 @@ button{font:inherit;color:inherit}
 .page-arrow:hover{background:var(--ink);color:var(--sheet)}
 .page-arrow-prev{left:10px}
 .page-arrow-next{right:10px}
-.thumbs{grid-area:thumbs;align-self:stretch;height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;overflow-x:hidden;overflow-y:auto;padding:0 2px 2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
-.thumbs button{border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;position:relative;display:grid;grid-template-rows:auto auto}
+.thumbs{grid-area:thumbs;align-self:stretch;height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--thumb-rows,5),minmax(0,1fr));align-content:stretch;gap:8px;overflow-x:hidden;overflow-y:auto;padding:0 2px 2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
+.thumbs button{border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;min-height:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
 .thumbs button.active{border-color:var(--red);background:rgba(157,56,46,.06)}
-.thumbs img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:transparent}
-.thumbs span{display:block;margin-top:4px;color:var(--muted);font:800 8px var(--mono);letter-spacing:.08em;text-align:left}
+.thumbs img{display:block;width:100%;height:100%;aspect-ratio:16/9;object-fit:contain;background:transparent}
+.thumbs span{display:block;margin-top:4px;color:var(--muted);font:800 8px/1.2 var(--mono);letter-spacing:.08em;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .thumbs button.active span{color:var(--ink)}
 .caption{grid-area:caption;min-width:0;min-height:0;border-top:1px solid var(--line);padding-top:8px;margin-top:0;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:var(--sheet)}
 .caption b{font-size:18px}
@@ -1120,7 +1125,8 @@ button{font:inherit;color:inherit}
   .page-arrow{top:50%}
   .caption{grid-template-columns:1fr;margin-top:8px}
   .thumbs{height:auto;display:flex;overflow:auto;padding-bottom:2px;margin-top:8px}
-  .thumbs button{flex:0 0 130px}
+  .thumbs button{flex:0 0 130px;grid-template-rows:auto auto;overflow:visible}
+  .thumbs img{height:auto}
   .tools{justify-content:flex-start;flex-wrap:wrap}
   .version-switch{max-width:100%}
   .version{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;width:100%}
