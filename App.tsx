@@ -33,11 +33,21 @@ const douyinSeasonRoot = '/scheme-pages/douyin/season-culture';
 const douyinYouthRoot = '/scheme-pages/douyin/new-youth';
 const bilibiliRoot = '/scheme-pages/bilibili/bainianji';
 const bilibiliWorldRoot = '/scheme-pages/bilibili/bilibiliworld';
+const bilibiliCampusRoot = '/scheme-pages/bilibili/campus-season';
+const bilibiliNinetyRoot = '/scheme-pages/bilibili/ninety-series';
+const bilibiliFashionRoot = '/scheme-pages/bilibili/fashion-ip';
+const bilibiliDocumentaryRoot = '/scheme-pages/bilibili/documentary-ip';
+const bilibiliMusicRoot = '/scheme-pages/bilibili/music-ip';
+const bilibiliSportsOutdoorRoot = '/scheme-pages/bilibili/sports-outdoor-ip';
+const bilibiliAutoRoot = '/scheme-pages/bilibili/auto-ip';
 const wairenRoot = '/scheme-pages/xiaohongshu/wairenjie';
 const yerenRoot = '/scheme-pages/xiaohongshu/yerenjie';
 const kuaishouCnyRoot = '/scheme-pages/kuaishou/cny';
+const tmallCampusRoot = '/scheme-pages/tmall/campus-ip';
 
-const annualData: IpAnnual[] = [
+const firstTwelvePages = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'];
+
+const fallbackAnnualData: IpAnnual[] = [
   {
     platform: '小红书',
     name: '慢人节',
@@ -206,8 +216,8 @@ const annualData: IpAnnual[] = [
     text: '把城市散步、市集、社区店铺和节日出游包装成可招商、可打卡、可长期运营的城市生活方式 IP。',
     thesis: '它的价值在于把“出门逛逛”变成平台级线下场景资产：用城市路线组织用户行动，用市集摊位和店铺共创承接品牌体验，再用站内内容把线下热闹变成可传播的生活方式符号。',
     metrics: [
-      { label: '版本谱系', value: '2' },
-      { label: '精选页面', value: '24' },
+      { label: '版本谱系', value: '3' },
+      { label: '精选页面', value: '36' },
       { label: '观察跨度', value: '2024-2025' },
     ],
     studyNotes: ['从“逛”到“可招商”：把散步、市集、打卡和消费任务组织成品牌可参与的路线。', '从社区到平台事件：线下摊位、城市店铺和站内传播共同构成 IP 的商业闭环。', '从日常到节日化：上海新年季版本把“遛遛生活”延展到春节前后的情绪节点。'],
@@ -244,8 +254,8 @@ const annualData: IpAnnual[] = [
     text: '把 3 月开学季从普通节点包装成校园人群、青春情绪和品牌共创的年度营销资产。',
     thesis: '它的价值在于把“开学”从时间节点升级为年轻人情绪入口：用青春叙事建立人群共鸣，用校园大事件和线下装置承接品牌体验，再用站内内容扩散形成可复用的校园 IP 资产。',
     metrics: [
-      { label: '版本谱系', value: '2' },
-      { label: '精选页面', value: '24' },
+      { label: '版本谱系', value: '3' },
+      { label: '精选页面', value: '36' },
       { label: '观察跨度', value: '2024-2025' },
     ],
     studyNotes: ['节点命名：用“闪光青春派”把开学季转译成更有情绪感的青春事件。', '人群组织：围绕大学生、校园社交、返校仪式感和新生活方式建立沟通语言。', '版本迭代：2025 版从“开学跟风大会”升级到“好运花路”，更强调阶段任务与内容扩散。'],
@@ -266,12 +276,86 @@ const annualData: IpAnnual[] = [
         labels: ['封面', '青春洞察', '开学大会', '主题视觉', '人群数据', '场景概览', '联动玩法', '资源组合', '品牌权益', '现场活动', '六大亮点', '时间线'],
       },
       {
+        year: '2024 补充',
+        title: '2024小红书闪光开学季招商通案',
+        summary: '精选封面、开学季主题、校园人群、品牌合作场景、内容资源和传播节奏等关键页。',
+        dir: `${shanguangRoot}/2024-supplement`,
+        pages: firstTwelvePages,
+        labels: ['封面', '项目背景', '开学主题', '人群洞察', '校园场景', '内容资源', '互动玩法', '达人共创', '品牌权益', '传播节奏', '合作路径', '收束页'],
+      },
+      {
         year: '2025 开学季',
         title: '【2025小红书开学季】闪光开学季招商通案',
         summary: '精选封面、开学邀约、春天花会开、好运花路、资源矩阵、达人内容、线下装置和用户路径等关键页。',
         dir: `${shanguangRoot}/2025`,
         pages: ['001', '005', '006', '007', '009', '010', '013', '014', '019', '025', '027', '030'],
         labels: ['封面', '开学邀约', '年度主题', '数据资产', '三阶段', '资源矩阵', '好运花路', '达人种草', '线下装置', '传播扩散', '合作路径', '用户路径'],
+      },
+    ],
+  },
+  {
+    platform: '天猫',
+    name: '天猫校园',
+    type: '校园消费 IP',
+    text: '把大学生返校、新生开学、毕业出发和双11节点串成天猫面向校园人群的全年消费运营 IP。',
+    thesis: '它的价值在于把校园营销从单次节点促销升级成消费生命周期经营：用返校速报识别人群与品类机会，用开学、毕业、双11等节点承接品牌曝光、货品转化和校园场景共创。',
+    metrics: [
+      { label: '版本谱系', value: '5' },
+      { label: '精选页面', value: '60' },
+      { label: '观察跨度', value: '2025' },
+    ],
+    studyNotes: [
+      '消费数据先行：返校季速报可以作为校园人群洞察和品类机会入口。',
+      '节点覆盖完整：新生开学、返校、毕业、双11分别对应入学、补给、出发和大促场景。',
+      '电商转化明确：比内容平台 IP 更强调从心智、场景、货品到成交的全域链路。',
+    ],
+    audience: ['3C 数码', '美妆个护', '服饰鞋包', '食品饮料', '学习用品', '校园生活服务'],
+    framework: [
+      { step: '01', title: '人群', text: '围绕大学生、新生、毕业生和返校人群识别不同消费任务。' },
+      { step: '02', title: '节点', text: '用开学、返校、毕业、双11构成天猫校园全年营销日历。' },
+      { step: '03', title: '货品', text: '把学习、宿舍、通勤、社交、数码和生活方式品类放进校园场景。' },
+      { step: '04', title: '转化', text: '通过全域资源、内容种草、活动玩法和大促机制把兴趣转成购买。' },
+    ],
+    versions: [
+      {
+        year: '2025 全域',
+        title: '天猫校园2025全域营销企划',
+        summary: '精选天猫校园全年资源、校园人群、节点布局、全域触点、合作资源和品牌转化路径。',
+        dir: `${tmallCampusRoot}/marketing-2025`,
+        pages: firstTwelvePages,
+        labels: ['封面', '项目背景', '校园人群', '年度机会', '节点日历', '全域资源', '内容触点', '货品场景', '互动玩法', '品牌合作', '转化路径', '收束页'],
+      },
+      {
+        year: '2025 返校',
+        title: '2025年大学生返校季消费速报',
+        summary: '精选返校消费趋势、人群变化、品类机会、校园生活方式和品牌参考洞察。',
+        dir: `${tmallCampusRoot}/back-to-school-report-2025`,
+        pages: firstTwelvePages,
+        labels: ['封面', '速报概览', '返校趋势', '人群画像', '消费变化', '品类机会', '生活场景', '数码需求', '宿舍补给', '社交消费', '品牌启发', '收束页'],
+      },
+      {
+        year: '2025 新生',
+        title: '天猫校园2025新生开学季企划',
+        summary: '精选新生开学节点、人群需求、入学消费场景、互动玩法、传播资源和品牌合作入口。',
+        dir: `${tmallCampusRoot}/freshman-season-2025`,
+        pages: firstTwelvePages,
+        labels: ['封面', '开学节点', '新生人群', '入学任务', '消费清单', '校园场景', '内容玩法', '互动机制', '资源矩阵', '品牌权益', '传播节奏', '收束页'],
+      },
+      {
+        year: '2025 毕业',
+        title: '天猫校园2025出发毕业季企划',
+        summary: '精选毕业出发主题、毕业生消费场景、内容表达、活动资源和品牌合作方案。',
+        dir: `${tmallCampusRoot}/graduation-season-2025`,
+        pages: firstTwelvePages,
+        labels: ['封面', '毕业出发', '人群洞察', '毕业任务', '消费场景', '内容主张', '活动玩法', '资源组合', '品牌合作', '权益规划', '时间节奏', '收束页'],
+      },
+      {
+        year: '双11 寻宝',
+        title: '天猫校园双11「校园寻宝企划」',
+        summary: '精选双11校园寻宝玩法、大促场景、校园互动、资源权益和品牌转化路径。',
+        dir: `${tmallCampusRoot}/double11-treasure`,
+        pages: firstTwelvePages,
+        labels: ['封面', '双11节点', '寻宝主题', '校园任务', '活动机制', '内容玩法', '用户路径', '资源曝光', '品牌权益', '大促转化', '节奏规划', '收束页'],
       },
     ],
   },
@@ -557,6 +641,317 @@ const annualData: IpAnnual[] = [
       },
     ],
   },
+  {
+    platform: 'BILIBILI',
+    name: '校园成长季',
+    type: '校园节点营销 IP',
+    text: '把开学、高考、毕业和校园生活节点串成 B 站年轻人全年成长路径。',
+    thesis: '它的价值在于把校园营销从单个节点升级成连续经营：品牌既能进入高考、开学、毕业等强情绪时刻，也能通过校园生活、兴趣内容和 UP 主表达长期陪伴年轻人。',
+    metrics: [
+      { label: '版本谱系', value: '6' },
+      { label: '精选页面', value: '72' },
+      { label: '观察跨度', value: '2024-2026' },
+    ],
+    studyNotes: [
+      '节点连续：开学、高考、毕业都具备固定年度复用价值。',
+      '人群明确：围绕学生、准大学生、毕业生和校园兴趣圈层展开。',
+      '品牌入口多：既能做陪伴式内容，也能落到校内外场景、互动任务和资源权益。',
+    ],
+    audience: ['教育学习', '3C 数码', '饮料食品', '出行旅游', '服饰潮流', '校园招聘'],
+    framework: [
+      { step: '01', title: '节点', text: '把年轻人的关键成长时刻拆成开学、高考、毕业等年度营销窗口。' },
+      { step: '02', title: '情绪', text: '用备考、上岸、启程、告别和新生活承接用户的真实情感。' },
+      { step: '03', title: '内容', text: '通过 UP 主、校园话题、学习生活场景和站内互动放大参与。' },
+      { step: '04', title: '合作', text: '把品牌权益放进陪伴、激励、补给、出行和线下活动等场景里。' },
+    ],
+    versions: [
+      {
+        year: '2024 开学',
+        title: '2024年B站开学季',
+        summary: '精选封面、开学洞察、用户场景、内容机制、资源规划和品牌合作页。',
+        dir: `${bilibiliCampusRoot}/2024-school`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '用户洞察', '开学场景', '内容机会', '活动主张', '互动机制', '资源矩阵', '校园触点', '合作权益', '传播节奏', '收束页'],
+      },
+      {
+        year: '2025 开学',
+        title: '2025《哔哩哔哩开学季》通案',
+        summary: '精选项目定位、校园人群、活动规划、内容玩法、传播节奏和招商权益页。',
+        dir: `${bilibiliCampusRoot}/2025-school`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '目录', '项目定位', '人群洞察', '校园场景', '主题主张', '内容规划', '互动玩法', '资源组合', '品牌合作', '执行节奏', '权益页'],
+      },
+      {
+        year: '2025 高考',
+        title: '2025年bilibili高考季《上B站稳接高分》招商方案',
+        summary: '精选高考季洞察、主题表达、内容阵地、站内玩法、品牌合作和资源权益页。',
+        dir: `${bilibiliCampusRoot}/2025-gaokao`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '高考洞察', '核心主张', '用户路径', '内容阵地', 'UP主内容', '互动玩法', '传播资源', '合作模式', '权益组合', '节奏规划'],
+      },
+      {
+        year: '2026 高考',
+        title: '2026【哔哩哔哩高考季】旗开得胜招商方案',
+        summary: '精选 2026 高考节点、备考陪伴、内容策略、营销玩法和品牌合作入口。',
+        dir: `${bilibiliCampusRoot}/2026-gaokao`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '节点背景', '高考人群', '备考情绪', '主题主张', '内容策略', '陪伴机制', '站内互动', '资源矩阵', '品牌权益', '传播节奏', '合作页'],
+      },
+      {
+        year: '2025 毕业',
+        title: '2025【bilibili毕业季】营销通案',
+        summary: '精选毕业季洞察、主题设定、内容玩法、线下场景、传播资源和招商权益页。',
+        dir: `${bilibiliCampusRoot}/2025-graduation`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目定义', '毕业洞察', '用户情绪', '主题表达', '内容玩法', '共创机制', '线下场景', '资源规划', '合作权益', '时间节奏', '收束页'],
+      },
+      {
+        year: '2026 毕业',
+        title: '2026年《哔哩哔哩毕业季》招商通案',
+        summary: '精选毕业节点升级、年轻人洞察、项目规划、内容合作、资源矩阵和招商权益页。',
+        dir: `${bilibiliCampusRoot}/2026-graduation`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '毕业人群', '节点价值', '主题主张', '活动规划', '内容合作', '互动机制', '资源矩阵', '品牌合作', '传播节奏', '权益页'],
+      },
+    ],
+  },
+  {
+    platform: 'BILIBILI',
+    name: '90系列',
+    type: '青年生活番剧化 IP',
+    text: '用“90”命名房、租房、婚恋和年度生活议题，把年轻人的现实生活包装成可连续开发的内容企划。',
+    thesis: '它的价值在于把年轻人的人生议题番剧化：住房、租房、婚恋和年度选择都不是孤立项目，而是可以持续扩写的 B 站生活叙事。',
+    metrics: [
+      { label: '版本谱系', value: '4' },
+      { label: '精选页面', value: '48' },
+      { label: '观察跨度', value: '2024-2025' },
+    ],
+    studyNotes: [
+      '命名统一：90 房介所、租房所、婚介所、年番系列形成清晰栏目感。',
+      '议题真实：围绕年轻人的居住、关系和生活选择展开，天然有讨论度。',
+      '适合栏目化招商：品牌可以围绕生活方式、家居、金融、婚恋和消费决策进入。',
+    ],
+    audience: ['家居家电', '房产租住', '金融保险', '婚恋平台', '生活方式品牌', '线上娱乐'],
+    framework: [
+      { step: '01', title: '议题', text: '从年轻人真实生活问题里抽取住房、租房、婚恋和年度选择。' },
+      { step: '02', title: '栏目', text: '用统一命名和番剧化包装，让不同议题成为同一 IP 系列。' },
+      { step: '03', title: '讨论', text: '通过站内话题、UP 主表达和用户投稿制造可持续内容。' },
+      { step: '04', title: '招商', text: '把品牌放进生活决策、关系咨询、空间改造和消费解决方案里。' },
+    ],
+    versions: [
+      {
+        year: '2024 房介所',
+        title: '2024bilibili年番品牌企划-90房介所内容案',
+        summary: '精选系列起点、生活议题、人群洞察、内容设定、栏目机制和商业合作页。',
+        dir: `${bilibiliNinetyRoot}/2024-house`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '议题洞察', '年轻人群', '内容设定', '栏目结构', '话题机制', 'UP主共创', '传播资源', '合作入口', '权益规划', '收束页'],
+      },
+      {
+        year: '2025 租房所',
+        title: '2025年bilibili品牌企划《90租房所》招商通案',
+        summary: '精选租房洞察、企划定位、栏目内容、用户参与、传播资源和招商权益页。',
+        dir: `${bilibiliNinetyRoot}/2025-rent`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '租房洞察', '用户场景', '企划定位', '内容规划', '栏目玩法', '互动机制', '资源矩阵', '品牌合作', '权益组合', '节奏页'],
+      },
+      {
+        year: '2025 婚介所',
+        title: '2025bilibili品牌企划《90婚介所》招商通案',
+        summary: '精选婚恋议题、年轻人关系洞察、内容包装、互动玩法、传播资源和品牌合作页。',
+        dir: `${bilibiliNinetyRoot}/2025-match`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '关系洞察', '人群态度', '企划定义', '内容结构', '话题玩法', '用户互动', '资源规划', '合作场景', '权益组合', '收束页'],
+      },
+      {
+        year: '2025 年番',
+        title: '2025bilibili品牌企划《90年番系列》招商通案',
+        summary: '精选年番系列定位、内容资产、年度议题、栏目矩阵、营销资源和商业合作页。',
+        dir: `${bilibiliNinetyRoot}/2025-annual`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '系列定位', '内容资产', '年度议题', '人群洞察', '栏目矩阵', '内容玩法', '传播机制', '资源地图', '商业合作', '权益规划', '时间线'],
+      },
+    ],
+  },
+  {
+    platform: 'BILIBILI',
+    name: '时尚内容 IP',
+    type: '时尚垂类内容 IP',
+    text: '把 B 站时尚区的女性表达、男性时尚、生活方式和文化审美做成连续招商内容。',
+    thesis: '它的价值在于证明 B 站时尚不是单一穿搭场景，而是可以覆盖女性议题、男性消费、生活审美、历史文化和高端媒体合作的内容矩阵。',
+    metrics: [
+      { label: '版本谱系', value: '5' },
+      { label: '精选页面', value: '59' },
+      { label: '观察跨度', value: '2025-2026' },
+    ],
+    studyNotes: [
+      '垂类延展强：从 38 节女性表达，到时尚简史、盛装生活节、男性时尚季都有完整入口。',
+      '内容调性更成熟：能把品牌从单纯种草带到审美、文化和人群态度。',
+      '合作行业广：美妆、服饰、奢侈品、个护、生活方式和媒体联名都适合进入。',
+    ],
+    audience: ['美妆个护', '服饰潮流', '奢侈品', '生活方式', '男性消费', '高端媒体合作'],
+    framework: [
+      { step: '01', title: '人群', text: '区分女性表达、男性时尚、潮流青年和审美兴趣人群。' },
+      { step: '02', title: '议题', text: '把穿搭消费上升到身份、文化、审美和生活方式议题。' },
+      { step: '03', title: '内容', text: '用专题节目、节日节点、媒体联名和 UP 主内容形成矩阵。' },
+      { step: '04', title: '商业', text: '把品牌植入趋势表达、内容共创、资源曝光和线下体验里。' },
+    ],
+    versions: [
+      {
+        year: '2025 她们',
+        title: 'B站时尚区38节「她们的流金时代」招商方案',
+        summary: '精选女性节点、时尚区人群、内容主题、合作资源和品牌权益页。',
+        dir: `${bilibiliFashionRoot}/2025-women`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '节点背景', '女性洞察', '人群态度', '主题主张', '内容规划', 'UP主矩阵', '互动玩法', '传播资源', '合作权益', '执行节奏', '收束页'],
+      },
+      {
+        year: '2025 简史',
+        title: 'B站时尚区《漫谈时尚简史》招商方案',
+        summary: '精选项目定位、时尚文化内容、栏目结构、用户价值、传播资源和合作权益页。',
+        dir: `${bilibiliFashionRoot}/2025-fashion-history`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '内容定位', '文化视角', '用户价值', '栏目结构', '内容玩法', '传播机制', '资源组合', '品牌合作', '权益页', '节奏规划'],
+      },
+      {
+        year: '2025 盛装',
+        title: 'B站时尚区《盛装生活节》招商方案',
+        summary: '精选盛装生活节定位、生活方式场景、内容规划、传播资源和品牌合作页。',
+        dir: `${bilibiliFashionRoot}/2025-style-life`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011'],
+        labels: ['封面', '项目定位', '生活洞察', '时尚场景', '主题表达', '内容规划', '互动机制', '资源矩阵', '品牌合作', '权益组合', '收束页'],
+      },
+      {
+        year: '2026 男性',
+        title: 'bilibili时尚区「B站男性时尚季」招商方案',
+        summary: '精选男性时尚人群、内容主张、栏目玩法、资源矩阵和商业合作入口。',
+        dir: `${bilibiliFashionRoot}/2026-men`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '项目背景', '男性人群', '消费洞察', '主题主张', '内容规划', '栏目玩法', 'UP主合作', '传播资源', '品牌权益', '执行节奏', '合作页'],
+      },
+      {
+        year: '2025 先生',
+        title: 'B站时尚区 × 时尚先生Esquire《先生与少年》招商方案',
+        summary: '精选媒体联名、男性成长议题、内容结构、嘉宾资源、传播资源和商业权益页。',
+        dir: `${bilibiliFashionRoot}/2025-esquire`,
+        pages: ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012'],
+        labels: ['封面', '联名背景', '人群洞察', '主题表达', '内容结构', '嘉宾资源', '栏目玩法', '传播矩阵', '品牌场景', '合作权益', '时间节奏', '收束页'],
+      },
+    ],
+  },
+  {
+    platform: 'BILIBILI',
+    name: '纪录片内容 IP',
+    type: '纪录片厂牌内容 IP',
+    text: '把 B 站纪录片从单片招商升级成长期内容厂牌，覆盖荒野探索、城市生活、职业观察和人文记录。',
+    thesis: '它的价值在于把“纪录片”做成可信任的内容资产：既有平台级合作推荐和操作指南，也有单片项目可承接品牌故事、行业表达和高品质内容植入。',
+    metrics: [
+      { label: '版本谱系', value: '9' },
+      { label: '精选页面', value: '108' },
+      { label: '观察跨度', value: '2024-2025' },
+    ],
+    studyNotes: [
+      '厂牌化明显：合作推荐、操作指南和多部单片共同构成纪录片内容货架。',
+      '题材跨度宽：荒野、毕业、儿科医生、老字号等题材适合不同品牌价值表达。',
+      '合作方式成熟：品牌不只是露出，更可以进入议题、人物、场景和内容宣发链路。',
+    ],
+    audience: ['汽车出行', '食品饮料', '3C数码', '生活方式品牌', '文旅目的地', '本地生活'],
+    framework: [
+      { step: '01', title: '厂牌', text: '先用纪录片合作推荐和操作指南建立平台内容资产。' },
+      { step: '02', title: '题材', text: '用荒野、人文、职业、城市和生活题材匹配不同品牌叙事。' },
+      { step: '03', title: '内容', text: '把品牌放进人物、场景、任务、议题和纪录片宣发结构里。' },
+      { step: '04', title: '招商', text: '通过单片权益、内容共创、站内资源和社会化传播完成商业承接。' },
+    ],
+    versions: [
+      { year: '2024 H2', title: '2024H2 哔哩哔哩纪录片合作推荐', summary: '精选纪录片内容货架、合作题材、平台资源和品牌合作入口。', dir: `${bilibiliDocumentaryRoot}/h2-cooperation`, pages: firstTwelvePages, labels: ['封面', '内容推荐', '合作概览', '用户价值', '题材矩阵', '项目货架', '平台资源', '品牌入口', '内容场景', '合作权益', '传播资源', '收束页'] },
+      { year: '2025 指南', title: '2025年哔哩哔哩纪录片操作指南', summary: '精选纪录片运营逻辑、合作路径、资源组合和内容执行要点。', dir: `${bilibiliDocumentaryRoot}/operation-guide-2025`, pages: firstTwelvePages, labels: ['封面', '操作指南', '项目背景', '内容生态', '用户画像', '合作路径', '资源组合', '内容玩法', '宣发节奏', '品牌权益', '执行重点', '收束页'] },
+      { year: '单挑荒野', title: '哔哩哔哩纪录片《单挑荒野》招商通案', summary: '精选荒野生存题材、人物资产、场景价值、内容权益和品牌合作页。', dir: `${bilibiliDocumentaryRoot}/solo-wilderness`, pages: firstTwelvePages, labels: ['封面', '项目概览', '荒野题材', '人物资产', '内容看点', '用户兴趣', '场景价值', '宣发资源', '合作权益', '品牌场景', '传播规划', '收束页'] },
+      { year: '火之章', title: '哔哩哔哩纪录片《单挑荒野：火之章》招商通案', summary: '精选系列升级、荒野主题、内容结构、传播资源和招商权益页。', dir: `${bilibiliDocumentaryRoot}/fire-chapter`, pages: firstTwelvePages, labels: ['封面', '系列升级', '项目定位', '荒野任务', '内容结构', '用户洞察', '场景植入', '宣发矩阵', '合作资源', '权益组合', '时间节奏', '收束页'] },
+      { year: '野境求真', title: '纪录片《野境求真》招商方案', summary: '精选野外探索、科学求真、内容调性、品牌场景和传播资源页。', dir: `${bilibiliDocumentaryRoot}/wild-truth`, pages: firstTwelvePages, labels: ['封面', '项目背景', '野境主题', '内容主张', '科学视角', '用户兴趣', '场景资源', '品牌合作', '宣发节奏', '权益页', '合作模式', '收束页'] },
+      { year: '毕业', title: '哔哩哔哩纪录片《毕业》招商通案', summary: '精选毕业议题、青年人群、人物叙事、内容价值和合作入口。', dir: `${bilibiliDocumentaryRoot}/graduation`, pages: firstTwelvePages, labels: ['封面', '项目概览', '毕业议题', '青年洞察', '人物叙事', '内容价值', '情绪场景', '传播资源', '品牌合作', '权益组合', '执行节奏', '收束页'] },
+      { year: '德爷', title: '哔哩哔哩纪录片《德爷的登阶奇旅》招商通案', summary: '精选国际人物、探险题材、内容亮点、平台资源和品牌合作方案。', dir: `${bilibiliDocumentaryRoot}/ed-stafford-climb`, pages: firstTwelvePages, labels: ['封面', '项目背景', '人物资产', '探险题材', '内容亮点', '用户兴趣', '场景植入', '传播矩阵', '合作权益', '品牌入口', '时间节奏', '收束页'] },
+      { year: '老字号', title: '哔哩哔哩纪录片《野生老字号》招商方案', summary: '精选老字号、人文商业、本地生活、内容叙事和品牌合作页。', dir: `${bilibiliDocumentaryRoot}/wild-old-brands`, pages: firstTwelvePages, labels: ['封面', '项目定位', '老字号议题', '人文商业', '本地生活', '内容结构', '用户价值', '品牌场景', '宣发资源', '合作权益', '执行节奏', '收束页'] },
+      { year: '儿科医生3', title: '哔哩哔哩纪录片《闪闪的儿科医生3》招商方案', summary: '精选医疗职业观察、社会议题、人物情感、内容资源和合作权益。', dir: `${bilibiliDocumentaryRoot}/pediatricians3`, pages: firstTwelvePages, labels: ['封面', '项目背景', '系列价值', '职业观察', '社会议题', '人物情感', '用户共鸣', '传播资源', '品牌合作', '权益组合', '执行节奏', '收束页'] },
+    ],
+  },
+  {
+    platform: 'BILIBILI',
+    name: '音乐内容 IP',
+    type: '音乐现场与青年文化 IP',
+    text: '把音乐节、校园歌手、世界音乐和年度音乐内容营销组合成 B 站年轻音乐人群的内容阵地。',
+    thesis: '它的价值在于把音乐从单场演出扩展为平台内容资产：既有线下音乐节，也有校园歌手和世界音乐文化集，能够承接年轻情绪、校园文化和品牌现场体验。',
+    metrics: [
+      { label: '版本谱系', value: '4' },
+      { label: '精选页面', value: '48' },
+      { label: '观察跨度', value: '2024-2026' },
+    ],
+    studyNotes: ['现场感强：音乐节和世界音乐文化集天然适合品牌体验。', '年轻人群清楚：校园歌手把高校、创作者和音乐兴趣聚在一起。', '可年度化经营：2026 音乐内容营销通案已经呈现整年资源思路。'],
+    audience: ['食品饮料', '3C数码', '校园消费', '生活方式品牌', '美妆个护', '汽车出行'],
+    framework: [
+      { step: '01', title: '人群', text: '锁定年轻音乐兴趣人群、校园创作者和现场体验用户。' },
+      { step: '02', title: '现场', text: '用音乐节、文化集和校园舞台提供可参与的品牌场景。' },
+      { step: '03', title: '内容', text: '通过站内话题、UP 主、演出内容和二创延长传播周期。' },
+      { step: '04', title: '商业', text: '把品牌权益拆进冠名、舞台、互动、内容共创和资源曝光。' },
+    ],
+    versions: [
+      { year: '2024 干杯', title: 'BILIBILI2024SUPER干杯音乐节', summary: '精选音乐节定位、用户兴趣、现场玩法、传播资源和品牌权益。', dir: `${bilibiliMusicRoot}/super-cheers-2024`, pages: firstTwelvePages, labels: ['封面', '项目定位', '音乐现场', '用户画像', '活动亮点', '内容资源', '现场互动', '传播矩阵', '品牌合作', '权益组合', '执行节奏', '收束页'] },
+      { year: '校园歌手', title: 'BILIBILI校园歌手大赛招商方案', summary: '精选校园音乐人群、赛制规划、内容传播、线下场景和招商资源。', dir: `${bilibiliMusicRoot}/campus-singer`, pages: firstTwelvePages, labels: ['封面', '项目背景', '校园人群', '赛制规划', '内容亮点', '用户参与', '站内传播', '线下场景', '品牌合作', '权益组合', '时间节奏', '收束页'] },
+      { year: '2026 通案', title: '2026音乐内容营销通案', summary: '精选年度音乐资源、内容矩阵、用户洞察、合作路径和品牌权益。', dir: `${bilibiliMusicRoot}/music-marketing-2026`, pages: firstTwelvePages, labels: ['封面', '年度资源', '音乐生态', '用户洞察', '内容矩阵', '项目规划', '合作路径', '传播资源', '品牌场景', '权益组合', '执行节奏', '收束页'] },
+      { year: '世界音乐', title: 'B站世界音乐文化集招商通案', summary: '精选世界音乐文化定位、现场体验、内容表达、合作权益和传播资源。', dir: `${bilibiliMusicRoot}/world-music-2025`, pages: firstTwelvePages, labels: ['封面', '项目定位', '世界音乐', '文化场景', '用户兴趣', '内容结构', '现场体验', '传播资源', '品牌合作', '权益组合', '时间节奏', '收束页'] },
+    ],
+  },
+  {
+    platform: 'BILIBILI',
+    name: '运动户外 IP',
+    type: '运动生活方式 IP',
+    text: '把骑行、跑步、篮球和硬核户外组合成 B 站年轻运动兴趣人群的内容招商矩阵。',
+    thesis: '它的价值在于把运动从单项赛事变成生活方式内容：跑步、篮球、骑行、户外都能用 UP 主内容、兴趣社群和线下场景形成品牌参与理由。',
+    metrics: [
+      { label: '版本谱系', value: '4' },
+      { label: '精选页面', value: '48' },
+      { label: '观察跨度', value: '2024-2025' },
+    ],
+    studyNotes: ['兴趣圈层明确：跑步、骑行、篮球、户外各自都有清晰人群。', '适合品牌场景化：装备、饮料、出行、汽车和运动品牌都有进入点。', '内容与线下可结合：站内内容种草和线下活动可以形成闭环。'],
+    audience: ['生活方式品牌', '食品饮料', '汽车出行', '3C数码', '文旅目的地', '本地生活'],
+    framework: [
+      { step: '01', title: '兴趣', text: '从骑行、跑步、篮球、户外四类高参与兴趣切入。' },
+      { step: '02', title: '人群', text: '用 UP 主、运动爱好者和年轻生活方式用户定义合作对象。' },
+      { step: '03', title: '场景', text: '把内容、挑战、线下集合和装备消费串成参与路径。' },
+      { step: '04', title: '转化', text: '让品牌通过任务、内容共创、补给和活动权益进入真实运动场景。' },
+    ],
+    versions: [
+      { year: '骑游人生', title: 'bilibili潮流运动骑游人生系列IP招商方案', summary: '精选骑行趋势、潮流运动、人群洞察、活动玩法和商业权益。', dir: `${bilibiliSportsOutdoorRoot}/cycling-life`, pages: firstTwelvePages, labels: ['封面', '项目背景', '骑行趋势', '人群洞察', '潮流运动', '内容规划', '互动机制', '线下场景', '传播资源', '品牌合作', '执行节奏', '收束页'] },
+      { year: '跑步日', title: 'bilibili《专业跑步看B站》跑步日整合营销方案', summary: '精选跑步人群、跑步日主题、内容资源、站内互动和品牌合作页。', dir: `${bilibiliSportsOutdoorRoot}/running-day`, pages: firstTwelvePages, labels: ['封面', '跑步日', '用户洞察', '内容主题', '专业表达', 'UP主资源', '互动玩法', '传播矩阵', '品牌场景', '合作权益', '时间节奏', '收束页'] },
+      { year: '篮球', title: '#球场上见#bilibili-PUGV篮球IP项目招商企划', summary: '精选篮球兴趣圈层、PUGV 内容、线下球场、传播资源和招商权益。', dir: `${bilibiliSportsOutdoorRoot}/basketball-court`, pages: firstTwelvePages, labels: ['封面', '项目定位', '篮球圈层', '内容生态', '用户画像', 'PUGV玩法', '球场场景', '传播资源', '品牌合作', '权益组合', '执行节奏', '收束页'] },
+      { year: '硬核户外', title: 'B站硬核户外《我们野太会了吧》招商方案', summary: '精选户外趋势、节目主张、达人内容、线下体验和合作资源。', dir: `${bilibiliSportsOutdoorRoot}/wild-outdoor`, pages: firstTwelvePages, labels: ['封面', '户外趋势', '项目主张', '人群洞察', '内容看点', '达人资源', '户外场景', '互动任务', '传播矩阵', '品牌权益', '节奏规划', '收束页'] },
+    ],
+  },
+  {
+    platform: 'BILIBILI',
+    name: '汽车内容 IP',
+    type: '汽车垂类内容 IP',
+    text: '把新车、车展、UP 主交流和汽车内容栏目包装成 B 站汽车兴趣人群的持续招商入口。',
+    thesis: '它的价值在于证明 B 站汽车内容不只是测评，而是围绕新车发布、车展节点、UP 主内容和年轻购车兴趣形成完整营销链路。',
+    metrics: [
+      { label: '版本谱系', value: '4' },
+      { label: '精选页面', value: '48' },
+      { label: '观察跨度', value: '2024-2025' },
+    ],
+    studyNotes: ['节点清楚：成都车展、新车企划和 UP 主交流日都能承接品牌发布。', '内容链路完整：从兴趣种草到评测表达，再到线下交流和传播资源。', '适合车企长期运营：可以围绕车型、技术、年轻用户和场景体验持续做内容。'],
+    audience: ['汽车出行', '3C数码', '生活方式品牌', '本地生活', '食品饮料', '游戏动漫'],
+    framework: [
+      { step: '01', title: '产品', text: '用新车、技术、车型和出行场景形成内容主题。' },
+      { step: '02', title: '创作者', text: '借助汽车 UP 主、线下交流日和内容共创建立可信表达。' },
+      { step: '03', title: '节点', text: '围绕车展、发布、试驾和年轻用户兴趣组织营销节奏。' },
+      { step: '04', title: '合作', text: '通过栏目植入、UP 主内容、线下活动和资源曝光承接车企预算。' },
+    ],
+    versions: [
+      { year: '2024 花飞', title: '2024bilibli汽车花飞营销策略通案', summary: '精选汽车营销策略、用户洞察、内容资源、合作路径和商业权益。', dir: `${bilibiliAutoRoot}/auto-huafei-2024`, pages: firstTwelvePages, labels: ['封面', '策略背景', '汽车人群', '内容生态', '营销机会', '资源矩阵', '传播路径', '合作模式', '品牌权益', '执行节奏', '案例参考', '收束页'] },
+      { year: 'UP来电', title: 'bilibili汽车【UP来电交流日】UP主线下交流日暨整合营销栏目', summary: '精选 UP 主交流日、线下场景、栏目机制、传播资源和合作权益。', dir: `${bilibiliAutoRoot}/up-electric-day`, pages: firstTwelvePages, labels: ['封面', '项目定位', 'UP主资源', '交流日', '线下场景', '栏目机制', '用户参与', '传播矩阵', '品牌合作', '权益组合', '时间节奏', '收束页'] },
+      { year: '成都车展', title: 'bilibili《这届新车有dian意思》成都车展招商企划', summary: '精选车展节点、新车内容、用户兴趣、展会传播和品牌合作页。', dir: `${bilibiliAutoRoot}/chengdu-auto-show`, pages: firstTwelvePages, labels: ['封面', '车展节点', '新车企划', '用户洞察', '内容亮点', '展会场景', '互动玩法', '传播资源', '品牌入口', '合作权益', '节奏规划', '收束页'] },
+      { year: '未来车研社', title: 'bilibili汽车《未来车研社》招商通案', summary: '精选汽车栏目定位、未来出行议题、内容结构、UP 主资源和招商权益。', dir: `${bilibiliAutoRoot}/future-car-lab`, pages: firstTwelvePages, labels: ['封面', '栏目定位', '未来出行', '汽车人群', '内容结构', 'UP主资源', '技术议题', '传播资源', '品牌合作', '权益组合', '执行节奏', '收束页'] },
+    ],
+  },
 ];
 
 const fallbackVersion = (archive: IpAnnual): PageVersion => ({
@@ -579,7 +974,9 @@ const thumbFor = (version: PageVersion, pageIndex: number) => {
 };
 
 export default function App() {
-  const platforms = useMemo(() => ['全部', ...Array.from(new Set(annualData.map(item => item.platform)))], []);
+  const [annualData, setAnnualData] = useState<IpAnnual[]>(fallbackAnnualData);
+  const [annualDataReady, setAnnualDataReady] = useState(false);
+  const platforms = useMemo(() => ['全部', ...Array.from(new Set(annualData.map(item => item.platform)))], [annualData]);
   const [activePlatform, setActivePlatform] = useState('全部');
   const [activeIp, setActiveIp] = useState(0);
   const [activeVersion, setActiveVersion] = useState(0);
@@ -591,6 +988,27 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    let cancelled = false;
+    fetch('/data/annual-data.json', { cache: 'no-cache' })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!cancelled && Array.isArray(data) && data.length > 0) {
+          setAnnualData(data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setAnnualDataReady(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !annualDataReady) return;
     const savedTheme = window.localStorage.getItem('thinkppt-theme');
     if (savedTheme === 'light' || savedTheme === 'dark') setThemeMode(savedTheme);
 
@@ -612,7 +1030,7 @@ export default function App() {
     setActiveIp(archiveIndex);
     setActiveVersion(resolvedVersionIndex);
     setActivePage(Math.min(Math.max(pageNumber - 1, 0), resolvedVersion.labels.length - 1));
-  }, []);
+  }, [annualData, annualDataReady]);
 
   const filtered = annualData.filter(item => activePlatform === '全部' || item.platform === activePlatform);
   const archive = filtered[activeIp] || filtered[0] || annualData[0];
@@ -981,7 +1399,14 @@ const styles = `
   --ink:#11100e;
   --muted:#746d63;
   --line:rgba(17,16,14,.14);
-  --red:#9d382e;
+  --red:#0f6b4d;
+  --rose:#1f4d74;
+  --blue:#1f4d74;
+  --lilac:#8b7fa4;
+  --green:#0d7653;
+  --gold:#b5a15c;
+  --orange:#d85a34;
+  --shadow:none;
   --dark:#12110f;
   --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
   --text:"EarlySummerText","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
@@ -992,12 +1417,24 @@ const styles = `
 html,body,#root{min-height:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);letter-spacing:0;overflow-y:auto}
 button{font:inherit;color:inherit}
-.annual-app{min-height:100svh;padding:14px;background:var(--paper);color:var(--ink);overflow:visible;display:grid;grid-template-rows:auto auto;gap:10px}
-.annual-app.theme-dark{--paper:#0f0e0c;--sheet:#171613;--ink:#fffaf0;--muted:#a9a19a;--line:rgba(255,250,240,.15);--red:#d26352}
-.theme-dark .mark{background:var(--sheet);color:var(--ink);border-color:var(--line)}
-.theme-dark .ip-card,.theme-dark .story-metrics,.theme-dark .framework-grid div,.theme-dark .version button,.theme-dark .thumbs button,.theme-dark .site-note{background:rgba(255,250,240,.035)}
-.theme-dark .ip-card.active,.theme-dark .ip-card:hover{background:rgba(255,250,240,.075)}
-.theme-dark .image-shell,.theme-dark .main-image,.theme-dark .main-image img{background:#0a0a09}
+.annual-app{min-height:100svh;padding:20px;background:var(--paper);color:var(--ink);overflow:visible;display:grid;grid-template-rows:auto auto;gap:18px;position:relative}
+.annual-app:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.48;mix-blend-mode:multiply;background-image:
+  radial-gradient(circle at 18% 22%,rgba(33,31,27,.18) 0 .7px,transparent .9px),
+  radial-gradient(circle at 72% 38%,rgba(255,255,255,.75) 0 .8px,transparent 1px),
+  radial-gradient(circle at 44% 68%,rgba(13,118,83,.13) 0 .6px,transparent .9px),
+  linear-gradient(90deg,rgba(31,77,116,.025),rgba(13,118,83,.025));
+  background-size:11px 11px,17px 17px,23px 23px,100% 100%}
+.annual-app:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.11;mix-blend-mode:multiply;background-image:
+  radial-gradient(circle at 24% 16%,rgba(0,0,0,.5) 0 .5px,transparent .7px),
+  radial-gradient(circle at 68% 62%,rgba(255,255,255,.9) 0 .55px,transparent .75px);
+  background-size:5px 5px,7px 7px}
+.annual-app>*{position:relative;z-index:1}
+.annual-app.theme-dark{--paper:#0e1110;--sheet:#151916;--ink:#fffaf0;--muted:#aaa397;--line:rgba(255,250,240,.15);--red:#74a483;--rose:#85a6c4;--blue:#85a6c4;--lilac:#a494bd;--green:#6daa82;--gold:#c6b265;--orange:#df704f;--shadow:none}
+.annual-app.theme-dark:after{opacity:.16;mix-blend-mode:screen}
+.theme-dark .mark{background:var(--red);color:var(--ink);border-color:rgba(255,243,223,.26)}
+.theme-dark .ip-card,.theme-dark .story-metrics,.theme-dark .framework-grid div,.theme-dark .version button,.theme-dark .thumbs button,.theme-dark .site-note{background:rgba(255,243,223,.045)}
+.theme-dark .ip-card.active,.theme-dark .ip-card:hover{background:rgba(255,243,223,.09)}
+.theme-dark .image-shell,.theme-dark .main-image,.theme-dark .main-image img{background:#120d0c}
 .theme-dark .page-arrow{border-color:rgba(255,250,240,.2);background:rgba(18,17,15,.72);color:var(--ink)}
 .theme-dark .page-arrow:hover{background:var(--ink);color:var(--sheet)}
 .theme-dark .zoom-hint{background:rgba(18,17,15,.82);border-color:rgba(255,250,240,.2);color:rgba(255,250,240,.78)}
@@ -1008,125 +1445,161 @@ button{font:inherit;color:inherit}
 .theme-dark .version button.active small,.theme-dark .version button:hover small{color:rgba(15,14,12,.62)}
 .theme-dark .version button.active .page-count,.theme-dark .version button:hover .page-count{border-left-color:rgba(15,14,12,.22);color:rgba(15,14,12,.72)}
 .theme-dark .version button.active .page-count small,.theme-dark .version button:hover .page-count small{color:rgba(15,14,12,.58)}
+.theme-dark .top,.theme-dark .story,.theme-dark .detail-section,.theme-dark .feature,.theme-dark .caption,.theme-dark .research-panel{background:linear-gradient(135deg,rgba(255,250,240,.075),rgba(255,250,240,.035));color:var(--ink)}
+.theme-dark .story h1,.theme-dark .feature h2,.theme-dark .caption b,.theme-dark .research-panel h3,.theme-dark .research-sections strong,.theme-dark .research-sections b,.theme-dark .framework b,.theme-dark .research-card strong,.theme-dark .ip-card b,.theme-dark .brand b{color:var(--ink)}
+.theme-dark .chapters button,.theme-dark .version-switch>span,.theme-dark .tools>button,.theme-dark .research-panel .close{background:rgba(255,250,240,.055);color:var(--ink);border-color:var(--line)}
+.theme-dark .chapters button.active,.theme-dark .chapters button:hover,.theme-dark .tools>button:hover,.theme-dark .research-panel .close:hover{background:var(--red);border-color:var(--red);color:#0e1110}
+.theme-dark .theme-toggle span.active{background:var(--ink);color:var(--paper)}
+.theme-dark .story-metrics{border-color:rgba(255,250,240,.14);background:rgba(255,250,240,.045)}
+.theme-dark .story-metrics div{border-color:rgba(255,250,240,.14)}
+.theme-dark .framework-grid div,.theme-dark .research-sections article{background:rgba(255,250,240,.045)}
+.theme-dark .research-sections div{border-top-color:rgba(255,250,240,.1)}
+.theme-dark .caption,.theme-dark .site-note{background:rgba(255,250,240,.055)}
+.theme-dark .reader,.theme-dark .reader-top button,.theme-dark .reader-nav,.theme-dark .reader-bottom button{color:#fffaf0}
+.theme-dark .reader-top button:hover,.theme-dark .reader-nav:hover,.theme-dark .reader-bottom button:hover{background:#fffaf0;border-color:#fffaf0;color:#171613}
 .brand{display:flex;align-items:center;gap:13px;color:inherit;text-decoration:none}
-.mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 28px/.9 var(--display);border:1px solid var(--ink)}
+.mark{width:42px;height:42px;background:var(--ink);color:var(--sheet);display:grid;place-items:center;font:700 27px/.9 var(--display);border:1px solid var(--ink);border-radius:8px;box-shadow:none;position:relative}
 .eyebrow,.brand small,.chapters button,.ip-card small,.version button b,.page-count b{font:800 10px var(--mono);letter-spacing:.22em;text-transform:uppercase}
 .brand small{color:var(--muted);display:block;margin-top:4px;font:700 12px/1 var(--text);letter-spacing:.1em;text-transform:none}
 .brand b{display:block;font:800 23px/.95 var(--text);letter-spacing:0}
-.top{min-width:0;display:grid;grid-template-columns:236px minmax(0,1fr) auto;gap:18px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px}
+.top{min-width:0;display:grid;grid-template-columns:236px minmax(0,1fr) auto;gap:18px;align-items:center;border:1px solid var(--line);background:rgba(255,248,234,.72);padding:12px;border-radius:8px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}
 .chapters{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;padding:2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.chapters button,.version button{border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;white-space:nowrap}
-.chapters button.active,.chapters button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.chapters button,.version button{border:1px solid var(--line);background:rgba(255,248,234,.46);padding:10px 14px;cursor:pointer;white-space:nowrap;border-radius:7px}
+.chapters button.active,.chapters button:hover{background:var(--red);color:var(--sheet);border-color:var(--red)}
 .top-actions{display:flex;align-items:center;justify-content:flex-end;min-width:0}
-.theme-toggle{border:1px solid var(--line);background:transparent;color:var(--muted);padding:2px;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap;display:flex;gap:2px;align-items:center}
+.theme-toggle{border:1px solid var(--line);background:rgba(255,248,234,.46);color:var(--muted);padding:2px;cursor:pointer;font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap;display:flex;gap:2px;align-items:center;border-radius:7px}
 .theme-toggle span{display:grid;place-items:center;min-width:30px;height:26px;padding:0 8px}
-.theme-toggle span.active{background:var(--ink);color:var(--sheet)}
-.theme-toggle:hover{border-color:var(--ink)}
-.workspace{min-height:0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;overflow:visible;align-items:start}
+.theme-toggle span.active{background:var(--red);color:var(--sheet);border-radius:5px}
+.theme-toggle:hover{border-color:var(--red)}
+.workspace{min-height:0;display:grid;grid-template-columns:244px minmax(0,1fr);gap:18px;overflow:visible;align-items:start}
 .rail{min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr);gap:12px;position:sticky;top:14px;max-height:calc(100svh - 28px)}
-.shelf{display:grid;grid-auto-rows:min-content;gap:8px;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.ip-card{width:100%;min-height:64px;border:1px solid var(--line);background:rgba(255,250,240,.72);padding:9px 10px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;row-gap:4px;align-items:center;transition:.18s ease}
-.ip-card.active,.ip-card:hover{background:var(--sheet);border-color:var(--red);transform:translateY(0)}
+.shelf{display:grid;grid-auto-rows:min-content;gap:11px;overflow:auto;padding:9px 4px 4px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.ip-card{width:100%;min-height:70px;border:1px solid rgba(54,38,28,.15);background:linear-gradient(135deg,rgba(255,248,234,.9),rgba(239,230,211,.72));padding:13px 12px 11px;cursor:pointer;text-align:left;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center;transition:.18s ease;border-radius:8px;position:relative;box-shadow:0 8px 18px rgba(65,58,47,.08);overflow:hidden}
+.ip-card:before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--green);opacity:.62}
+.ip-card:nth-child(4n+2):before{background:var(--blue)}
+.ip-card:nth-child(4n+3):before{background:var(--gold)}
+.ip-card:nth-child(4n+4):before{background:var(--rose)}
+.ip-card.active,.ip-card:hover{background:linear-gradient(135deg,#fffaf0,#edf1e4);border-color:rgba(15,107,77,.5);transform:translateY(-1px);box-shadow:none}
 .ip-card.coming{opacity:.68}
 .ip-card.coming:not(.active){border-style:dashed}
-.ip-card small{color:var(--red);align-self:start;padding-top:3px}
+.ip-card small{color:var(--rose);align-self:start;padding-top:3px}
 .ip-card b{font:800 20px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0}
 .ip-card span{grid-column:2;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto auto;align-content:start;gap:10px;overflow:visible;padding-right:0}
-.story{background:var(--sheet);border:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:16px;align-items:end;min-width:0;min-height:0;overflow:visible}
+.main-stack{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto auto;align-content:start;gap:16px;overflow:visible;padding-right:0}
+.story{background:linear-gradient(135deg,rgba(255,248,234,.96),rgba(241,230,211,.76));border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:20px;align-items:end;min-width:0;min-height:0;overflow:hidden;border-radius:8px;box-shadow:var(--shadow);position:relative}
+.story:before{content:"";position:absolute;right:20px;top:18px;width:min(360px,45%);height:1px;background:var(--blue);opacity:.28;pointer-events:none}
+.story:after{content:"";position:absolute;right:18px;bottom:16px;width:92px;height:7px;background:var(--green);opacity:.78;border-radius:99px}
 .story .eyebrow{color:var(--red)}
-.story h1{margin:6px 0 0;font:300 clamp(34px,3.2vw,52px)/.94 var(--display-light);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.story h1{margin:8px 0 0;font:300 50px/.94 var(--display-light);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .story-intro{min-width:0}
 .story-intro>p{margin:7px 0 0;color:var(--muted);font-size:12px;line-height:1.5;max-width:780px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
-.story-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line);background:rgba(238,231,218,.18)}
-.story-metrics div{min-width:0;padding:10px 11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
-.story-metrics b{display:block;font-size:24px;line-height:1;white-space:nowrap}
+.story-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid rgba(17,16,14,.14);border-left:1px solid rgba(17,16,14,.14);background:rgba(255,250,240,.52);border-radius:8px;overflow:hidden;box-shadow:none}
+.story-metrics div{min-width:0;padding:13px 12px;border-right:1px solid rgba(17,16,14,.14);border-bottom:1px solid rgba(17,16,14,.14)}
+.story-metrics b{display:block;font-size:25px;line-height:1;white-space:nowrap;color:var(--red)}
 .story-metrics span{display:block;margin-top:7px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.12em}
-.detail-section{background:var(--sheet);border:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(320px,1fr) minmax(560px,2fr);gap:18px;align-items:start}
+.detail-section{background:linear-gradient(135deg,rgba(255,248,234,.9),rgba(238,226,204,.66));border:1px solid var(--line);padding:22px;display:grid;grid-template-columns:minmax(320px,1fr) minmax(560px,2fr);gap:20px;align-items:start;border-radius:8px;box-shadow:var(--shadow)}
 .research-card{min-width:0}
-.research-card span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.research-card span{display:block;color:var(--rose);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .research-card strong{display:block;margin-top:10px;font-size:14px;line-height:1.65;color:var(--ink)}
 .research-card ul{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
 .research-card li{position:relative;padding-left:14px;color:var(--muted);font-size:12px;line-height:1.55}
-.research-card li:before{content:"";position:absolute;left:0;top:.72em;width:5px;height:1px;background:var(--red)}
+.research-card li:before{content:"";position:absolute;left:0;top:.72em;width:5px;height:1px;background:var(--rose)}
 .framework{min-width:0;border-left:1px solid var(--line);padding-left:18px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px}
-.framework>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.framework>span{display:block;color:var(--rose);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .framework-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0}
-.framework-grid div{min-width:0;border:1px solid var(--line);padding:11px;background:rgba(238,231,218,.24)}
+.framework-grid div{min-width:0;border:1px solid var(--line);padding:13px;background:rgba(255,248,234,.52);border-radius:8px;position:relative;overflow:hidden}
+.framework-grid div:before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:var(--blue)}
+.framework-grid div:nth-child(2n):before{background:var(--green)}
+.framework-grid div:nth-child(3n):before{background:var(--gold)}
 .framework small{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.08em}
 .framework b{display:block;margin-top:8px;font-size:13px}
 .framework p{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
-.site-note{border:1px solid var(--line);padding:14px 16px;background:rgba(255,250,240,.56);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.site-note{border:1px solid var(--line);padding:14px 16px;background:rgba(255,248,234,.64);display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center;border-radius:8px;box-shadow:var(--shadow)}
 .site-note b{display:block;font:800 12px var(--mono);letter-spacing:.22em;white-space:nowrap}
-.site-note span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.site-note span{display:block;color:var(--rose);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
 .site-note p{margin:0;color:var(--muted);font-size:12px;line-height:1.5;min-width:0}
 .site-note small{display:block;color:var(--muted);font-size:11px;line-height:1.4;white-space:nowrap}
 .site-note small a{color:inherit;text-decoration:none}
 .site-note small a:hover{color:var(--red)}
-.feature{background:var(--sheet);color:var(--ink);border:1px solid var(--line);padding:12px;display:block;min-width:0;min-height:0;overflow:visible}
+.feature{background:linear-gradient(135deg,rgba(255,248,234,.96),rgba(238,226,204,.72));color:var(--ink);border:1px solid var(--line);padding:16px;display:block;min-width:0;min-height:0;overflow:visible;border-radius:8px;box-shadow:var(--shadow);position:relative}
+.feature:before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:var(--blue);opacity:.72}
 .feature-head{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
 .feature-head>div{min-width:0}
-.feature h2{margin:3px 0 0;font:300 clamp(26px,2.1vw,40px)/1.02 var(--display-light);letter-spacing:0;max-width:1120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feature h2{margin:5px 0 0;font:300 39px/1.02 var(--display-light);letter-spacing:0;max-width:1120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .feature p{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.45;max-width:1120px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow-wrap:anywhere;word-break:break-word}
 .version-switch{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:stretch;width:100%;min-width:0;margin-top:10px}
-.version-switch>span{border:1px solid var(--line);display:grid;place-items:center;padding:0 8px;color:var(--muted);font:800 9px var(--mono);letter-spacing:.14em;white-space:nowrap}
+.version-switch>span{border:1px solid var(--line);display:grid;place-items:center;padding:0 8px;color:var(--red);font:800 9px var(--mono);letter-spacing:.14em;white-space:nowrap;background:rgba(255,248,234,.44);border-radius:7px}
 .page-count{border-left:1px solid rgba(255,250,240,.24);display:grid;place-items:center;text-align:center;color:rgba(255,250,240,.62);padding-left:12px;margin-left:10px;min-width:72px}
 .page-count b{display:block;white-space:nowrap;color:inherit;line-height:1.1}
 .page-count small{display:block;margin-top:6px;font:800 8px var(--mono);letter-spacing:.12em;white-space:nowrap}
-.stage{min-height:0;display:grid;grid-template-columns:minmax(0,3fr) minmax(280px,1fr);grid-template-areas:"image thumbs" "caption caption";grid-template-rows:auto auto;gap:8px 12px;overflow:visible;position:relative;background:var(--sheet);margin-top:10px;align-items:stretch}
-.image-shell{grid-area:image;position:relative;width:100%;aspect-ratio:var(--page-aspect,16 / 9);background:#f7f0e5;border:1px solid var(--line);overflow:hidden}
-.main-image{position:absolute;inset:0;width:100%;height:100%;min-width:0;min-height:0;border:0;display:block;padding:0;background:#f7f0e5;cursor:zoom-in;color:inherit;overflow:hidden}
-.main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:var(--page-aspect,16 / 9);object-fit:contain;background:#f7f0e5;transform:none}
-.zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(255,250,240,.9);border:1px solid var(--line);padding:8px 10px;color:var(--muted);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease}
+.stage{min-height:0;display:grid;grid-template-columns:minmax(0,3fr) minmax(286px,1fr);grid-template-areas:"image thumbs" "caption caption";grid-template-rows:auto auto;gap:12px 14px;overflow:visible;position:relative;background:transparent;margin-top:14px;align-items:stretch}
+.image-shell{grid-area:image;position:relative;width:100%;aspect-ratio:var(--page-aspect,16 / 9);background:#f7f0e5;border:1px solid var(--line);overflow:hidden;border-radius:8px;box-shadow:none}
+.image-shell:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.18;background-image:
+  radial-gradient(circle at 20% 20%,rgba(255,255,255,.9) 0 1px,transparent 1px),
+  radial-gradient(circle at 74% 42%,rgba(0,0,0,.5) 0 1px,transparent 1px);
+  background-size:15px 15px,19px 19px;mix-blend-mode:soft-light}
+.main-image{position:absolute;inset:10px;width:calc(100% - 20px);height:calc(100% - 20px);min-width:0;min-height:0;border:0;display:block;padding:0;background:#f8f1e5;cursor:zoom-in;color:inherit;overflow:hidden;border-radius:6px}
+.main-image img{position:absolute;inset:0;display:block;width:100%;height:100%;aspect-ratio:var(--page-aspect,16 / 9);object-fit:contain;background:#f8f1e5;transform:none}
+.zoom-hint{position:absolute;right:18px;bottom:18px;background:rgba(255,248,234,.92);border:1px solid var(--line);padding:8px 10px;color:var(--red);font:800 10px var(--mono);letter-spacing:.12em;opacity:0;transform:translateY(4px);transition:.18s ease;border-radius:7px}
 .main-image:hover .zoom-hint{opacity:1;transform:translateY(0)}
-.page-arrow{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:44px;height:68px;border:1px solid var(--line);background:rgba(255,250,240,.72);color:var(--ink);cursor:pointer;font-size:22px;display:grid;place-items:center}
+.page-arrow{position:absolute;top:50%;z-index:3;transform:translateY(-50%);width:42px;height:66px;border:1px solid var(--line);background:rgba(255,250,240,.72);color:var(--ink);cursor:pointer;font-size:22px;display:grid;place-items:center;border-radius:7px}
 .page-arrow:hover{background:var(--ink);color:var(--sheet)}
 .page-arrow-prev{left:10px}
 .page-arrow-next{right:10px}
-.thumbs{grid-area:thumbs;align-self:stretch;height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--thumb-rows,5),minmax(0,1fr));align-content:stretch;gap:8px;overflow-x:hidden;overflow-y:auto;padding:0 2px 2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:var(--sheet)}
-.thumbs button{border:1px solid var(--line);background:rgba(238,231,218,.22);padding:4px;cursor:pointer;min-width:0;min-height:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
-.thumbs button.active{border-color:var(--red);background:rgba(157,56,46,.06)}
-.thumbs img{display:block;width:100%;height:100%;aspect-ratio:var(--page-aspect,16 / 9);object-fit:contain;background:transparent}
+.thumbs{grid-area:thumbs;align-self:stretch;height:100%;min-height:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(var(--thumb-rows,5),minmax(0,1fr));align-content:stretch;gap:10px;overflow-x:hidden;overflow-y:auto;padding:8px 2px 2px 0;scrollbar-width:thin;scrollbar-color:var(--line) transparent;background:transparent}
+.thumbs button{border:1px solid rgba(54,38,28,.15);background:linear-gradient(135deg,rgba(255,248,234,.78),rgba(239,230,211,.52));padding:5px;cursor:pointer;min-width:0;min-height:0;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden;border-radius:8px;box-shadow:0 8px 16px rgba(65,58,47,.08)}
+.thumbs button:before{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:var(--blue);opacity:.32}
+.thumbs button:nth-child(3n+2):before{background:var(--green)}
+.thumbs button:nth-child(3n+3):before{background:var(--gold)}
+.thumbs button.active{border-color:rgba(15,107,77,.58);background:linear-gradient(135deg,rgba(255,250,240,.96),rgba(15,107,77,.07))}
+.thumbs button.active:before{background:var(--green);opacity:.8}
+.thumbs img{display:block;width:100%;height:100%;aspect-ratio:var(--page-aspect,16 / 9);object-fit:contain;background:#f8f1e5;border-radius:5px;overflow:hidden}
 .thumbs span{display:block;margin-top:4px;color:var(--muted);font:800 8px/1.2 var(--mono);letter-spacing:.08em;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .thumbs button.active span{color:var(--ink)}
-.caption{grid-area:caption;min-width:0;min-height:0;border-top:1px solid var(--line);padding-top:8px;margin-top:0;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:var(--sheet)}
-.caption b{font-size:18px}
+.caption{grid-area:caption;min-width:0;min-height:0;border:1px solid var(--line);padding:10px 12px;margin-top:0;display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:12px;align-items:center;width:100%;background:rgba(255,248,234,.58);border-radius:8px}
+.caption b{font-size:18px;font-family:var(--display);font-weight:700}
 .caption span{display:block;color:var(--muted);font:800 10px var(--mono);letter-spacing:.16em;white-space:nowrap}
 .tools{display:flex;justify-content:flex-end;gap:8px;min-width:0}
-.tools>button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:11px 10px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em;text-align:center}
-.tools>button:hover{background:var(--ink);color:var(--sheet)}
+.tools>button{border:1px solid var(--line);background:rgba(255,248,234,.56);color:var(--ink);padding:11px 10px;cursor:pointer;white-space:nowrap;font:800 10px var(--mono);letter-spacing:.12em;text-align:center;border-radius:7px}
+.tools>button:hover{background:var(--red);color:var(--sheet);border-color:var(--red)}
 .version{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;min-width:0;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.version button{color:var(--muted);border-color:var(--line);flex:1 1 0;min-width:122px;text-align:left;padding:7px 10px;background:rgba(238,231,218,.18);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+.version button{color:var(--muted);border-color:var(--line);flex:1 1 0;min-width:122px;text-align:left;padding:8px 10px;background:rgba(255,248,234,.52);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
 .version-copy{min-width:0}
 .version button b,.version button small{display:block}
 .version button b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .version button small{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.version button.active,.version button:hover{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.version button.active,.version button:hover{background:var(--red);color:var(--sheet);border-color:var(--red)}
 .version button.active small,.version button:hover small{color:rgba(255,250,240,.68)}
 .placeholder{width:100%;aspect-ratio:16/9;background:var(--sheet);color:var(--ink);display:grid;align-content:space-between;padding:22px}
 .placeholder strong{font:700 52px/.85 var(--display);letter-spacing:0}
 .placeholder span{color:var(--red);font:800 10px var(--mono);letter-spacing:.2em;text-transform:uppercase}
 .thumb-placeholder{padding:10px}
 .thumb-placeholder strong{font-size:24px}
-.reader{position:fixed;inset:0;background:rgba(10,10,9,.96);z-index:30;display:grid;grid-template-rows:auto minmax(0,1fr) auto;place-items:center;padding:22px;color:var(--sheet)}
+.reader{position:fixed;inset:0;background:
+  radial-gradient(circle at 18% 12%,rgba(31,106,77,.18),transparent 28%),
+  radial-gradient(circle at 82% 18%,rgba(47,95,132,.16),transparent 30%),
+  rgba(18,13,12,.96);z-index:30;display:grid;grid-template-rows:auto minmax(0,1fr) auto;place-items:center;padding:22px;color:var(--sheet)}
 .reader-top{width:100%;display:flex;justify-content:space-between;align-items:start;gap:18px}
 .reader-top span{display:block;color:rgba(255,250,240,.48);font:800 10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
 .reader-top b{display:block;margin-top:6px;font-size:24px}
-.reader-top button,.reader-nav,.reader-bottom button{border:1px solid rgba(255,250,240,.24);background:transparent;color:var(--sheet);padding:11px 14px;cursor:pointer;font-weight:800}
-.reader img{max-width:min(92vw,1680px);max-height:76vh;object-fit:contain;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.42)}
+.reader-top button,.reader-nav,.reader-bottom button{border:1px solid rgba(255,250,240,.24);background:rgba(255,248,234,.08);color:var(--sheet);padding:11px 14px;cursor:pointer;font-weight:800;border-radius:7px}
+.reader-top button:hover,.reader-nav:hover,.reader-bottom button:hover{background:var(--blue);border-color:var(--blue)}
+.reader img{max-width:min(92vw,1680px);max-height:76vh;object-fit:contain;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.42);border:10px solid rgba(255,248,234,.12);border-radius:8px}
 .reader-nav{position:absolute;top:50%;transform:translateY(-50%)}
 .reader-nav.prev{left:22px}
 .reader-nav.next{right:22px}
 .reader-bottom{display:flex;align-items:center;justify-content:center;gap:16px;color:rgba(255,250,240,.48);font:800 11px var(--mono);letter-spacing:.18em}
 .reader-bottom button{display:none}
-.research-modal{position:fixed;inset:0;z-index:35;background:rgba(10,10,9,.78);display:grid;place-items:center;padding:24px;color:var(--ink)}
-.research-panel{width:min(920px,96vw);max-height:86vh;overflow:auto;background:var(--sheet);border:1px solid var(--line);padding:28px;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.38)}
-.research-panel .close{position:absolute;right:18px;top:18px;border:1px solid var(--line);background:transparent;padding:10px 14px;cursor:pointer;font-weight:800}
+.research-modal{position:fixed;inset:0;z-index:35;background:rgba(20,12,12,.78);display:grid;place-items:center;padding:24px;color:var(--ink)}
+.research-panel{width:min(920px,96vw);max-height:86vh;overflow:auto;background:linear-gradient(135deg,rgba(255,248,234,.98),rgba(239,226,205,.9));border:1px solid var(--line);padding:30px;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.38);border-radius:8px}
+.research-panel:before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:var(--blue);opacity:.78}
+.research-panel .close{position:absolute;right:18px;top:18px;border:1px solid var(--line);background:rgba(255,248,234,.48);padding:10px 14px;cursor:pointer;font-weight:800;border-radius:7px}
+.research-panel .close:hover{background:var(--red);border-color:var(--red);color:var(--sheet)}
 .research-panel h3{margin:10px 0 0;font:800 44px/1.05 var(--display);letter-spacing:0}
 .research-panel>p{max-width:720px;margin:12px 0 0;color:var(--muted);line-height:1.75}
 .research-sections{margin-top:24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
-.research-sections article{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px;min-height:190px}
-.research-sections article>span{display:block;color:var(--red);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
+.research-sections article{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px;min-height:190px;background:rgba(255,248,234,.44)}
+.research-sections article>span{display:block;color:var(--rose);font:800 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
 .research-sections strong{font-size:19px}
 .research-sections p{color:var(--muted);font-size:13px;line-height:1.65}
 .research-sections div{border-top:1px solid rgba(17,16,14,.08);padding-top:10px;margin-top:10px}

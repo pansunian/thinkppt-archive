@@ -6,3 +6,5 @@ public/data
 !.env.aliyun.example
 .DS_Store
 .vercel
+.tools/
+ossutil_output/
